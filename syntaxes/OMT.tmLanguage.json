@@ -1,0 +1,388 @@
+{
+	"information_for_contributors": [
+		"This file has been converted from https://github.com/textmate/yaml.tmbundle/blob/master/Syntaxes/yaml.tmLanguage",
+		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
+		"Once accepted there, we are happy to receive an update request."
+	],
+	"version": "https://github.com/textmate/yaml.tmbundle/commit/efc96efafe5e48480cf55a2ed124b388cbea4440",
+	"name": "OMT",
+	"scopeName": "source.omt",
+	"patterns": [
+		{
+			"include": "#comment"
+		},
+		{
+			"include": "#omt-keywords"
+		},
+		{
+			"include": "#property"
+		},
+		{
+			"match": "^---",
+			"name": "entity.other.document.begin.omt"
+		},
+		{
+			"match": "^\\.{3}",
+			"name": "entity.other.document.end.omt"
+		},
+		{
+			"include": "#node"
+		}
+	],
+	"repository": {
+		"omt-variable": {
+			"patterns": [
+				{
+					"match" : "(\\$(\\w+)\\s?)",
+					"name" : "variable.omt"
+				}
+			]
+		},
+		"omt-storage": {
+			"patterns": [
+				{
+					"match" : "(VAR)",
+					"name" : "storage.omt"
+				}
+			]
+		},
+		"omt-string": {
+			"patterns": [
+				{
+					"begin" : "'",
+					"end": "'",
+					"name" : "string.omt"
+				}
+			]
+		},
+		"omt-prefix": {
+			"patterns": [
+				{
+					"begin" : "<",
+					"end": ">",
+					"name" : "string.omt"
+				}
+			]
+		},
+		"omt-function": {
+			"patterns": [
+				{
+					"begin": "@",
+					"end": ";|:",
+					"name" : "entity.name.function.omt",
+					"patterns":[
+						{
+							"include": "#omt-variable"
+						},
+						{
+							"include": "#omt-string"
+						},
+						{
+							"match" : "(!nested)",
+							"name" : "keyword.omt"
+						}
+					]
+				}
+			]
+		},
+		"omt-keywords": {
+			"patterns": [
+				{
+					"match": "(list|moduleName|onDone|model|variables|title|graphs|payload|rules|returns|import|export|declare|prefixes|queries|commands|params|live|edit|onSessionStart|menu|services|procedures|actions|id|description|icon|precondition|disabled|dynamicActionQuery|onSelect|value|onStart|onCommit|onCancel|onRun|bindTo|autonomous|bindings|onChange)",
+					"name": "keyword.omt, markup.underline.omt"
+				}
+			]
+		},
+		"odt-commands": {
+			"patterns": [
+				{
+					"match": "(AND|CAST|CATCH|CEIL|CONCAT|CONTAINS|COUNT|CURRENT_DATE|CURRENT_DATETIME|DISTINCT|DIVIDE_BY|DURATION|ELEMENTS|EMPTY|EQUALS|ERROR|EVERY|EXISTS|FILTER|FIRST|FLOOR|FORMAT|FORMAT_DATE|GRAPH|GREATER_THAN|GREATER_THAN_EQUALS|IDENTITY|IF_EMPTY|IN|INDEX_OF|IRI|JOIN|JSON|LAST|LENGTH|LESS_THAN|LESS_THAN_EQUALS|LOG|LOWERCASE|MAP|MAX|MERGE|MIN|MINUS|NOT|OR|ORDER_BY|PICK|PLUS|REPEAT|REVERSE|ROUND|SKIP|SOME|SUBSTRING|SUM|TAKE|TIMES|TRAVERSE|TRUNC|TYPE|UPPERCASE)",
+					"name": "support.function.omt"
+				}
+			]
+		},
+		"odt-control": {
+			"patterns": [
+				{
+					"match": "(IF|ELSE|RETURN|DEFINE|COMMAND|QUERY)",
+					"name": "keyword.control.omt"
+				}
+			]
+		},
+		"block-collection": {
+			"patterns": [
+				{
+					"include": "#block-list-item"
+				},
+				{
+					"include": "#block-mapping"
+				},		
+				{
+					"include": "#omt-variable"
+				},
+				{
+					"include": "#omt-storage"
+				},
+				{
+					"include": "#omt-string"
+				},
+				{
+					"include": "#comment"
+				}
+			]
+		},
+		"block-mapping": {
+			"patterns": [
+				{
+					"include": "#block-pair"
+				}
+			]
+		},
+		"block-node": {
+			"patterns": [
+				{
+					"include": "#block-scalar"
+				},
+				{
+					"include": "#block-collection"
+				},
+				{
+					"include": "#odt-commands"
+				},
+				{
+					"include": "#odt-control"
+				},
+				{
+					"include": "#omt-function"
+				},
+				{
+					"include": "#omt-variable"
+				}
+			]
+		},
+		"block-pair": {
+			"patterns": [
+				{
+					"begin": "\\?",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.key-value.begin.omt"
+						}
+					},
+					"end": "(?=\\?)|^ *(:)|(:)",
+					"endCaptures": {
+						"1": {
+							"name": "punctuation.separator.key-value.mapping.omt"
+						},
+						"2": {
+							"name": "invalid.illegal.expected-newline.omt"
+						}
+					},
+					"name": "meta.block-mapping.omt",
+					"patterns": [
+						{
+							"include": "#block-node"
+						}
+					]
+				},
+				{
+					"begin": "(?x)\n                        (?=\n                            (?x:\n                                  [^\\s[-?:,\\[\\]{}#&*!|>'\"%@`]]\n                                | [?:-] \\S\n                            )\n                            (\n                                  [^\\s:]\n                                | : \\S\n                                | \\s+ (?![#\\s])\n                            )*\n                            \\s*\n                            :\n\t\t\t\t\t\t\t(\\s|$)\n                        )\n                    ",
+					"end": "(?x)\n                        (?=\n                              \\s* $\n                            | \\s+ \\#\n                            | \\s* : (\\s|$)\n                        )\n                    ",
+					"patterns": [
+						{
+							"include": "#flow-scalar-plain-out-implicit-type"
+						},
+						{
+							"begin": "(?x)\n                                  [^\\s[-?:,\\[\\]{}#&*!|>'\"%@`]]\n                                | [?:-] \\S\n                            ",
+							"beginCaptures": {
+								"0": {
+									"name": "entity.name.tag.omt"
+								}
+							},
+							"contentName": "entity.name.tag.omt",
+							"end": "(?x)\n                                (?=\n                                      \\s* $\n                                    | \\s+ \\#\n                                    | \\s* : (\\s|$)\n                                )\n                            ",
+							"name": "string.unquoted.plain.out.omt"
+						}
+					]
+				},
+				{
+					"match": ":(?=\\s|$)",
+					"name": "punctuation.separator.key-value.mapping.omt"
+				},
+				{
+					"include": "#omt-prefix"
+				}
+			]
+		},
+		"block-scalar": {
+			"begin": "(?:(\\|))([1-9])?([-+])?(.*\\n?)",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.definition.block.scalar.literal.omt"
+				},
+				"2": {
+					"name": "constant.numeric.indentation-indicator.omt"
+				},
+				"3": {
+					"name": "support.other.chomping-indicator.omt"
+				},
+				"4": {
+					"patterns": [
+						{
+							"include": "#comment"
+						}
+					]
+				}
+			},
+			"end": "^(?=\\S)|(?!\\G)",
+			"patterns": [
+				{
+					"begin": "^([ ]+)(?! )",
+					"end": "^(?!\\1|\\s*$)",
+					"name": "string.unquoted.block.omt"
+				}
+			]
+		},
+		"block-list-item": {
+			"begin": "(-)(.+)",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.definition.omt"
+				},
+				"2": {
+					"patterns": [
+						{
+							"include": "#omt-variable"
+						},
+						{
+							"include": "#comment"
+						},
+						{
+							"include": "#omt-string"
+						},
+						{
+							"match": "(\\(.*?\\))",
+							"name": "entity.name.type.omt"
+						}
+					]
+				}
+			}, 
+			"end": "(\\n)"
+		},
+		"comment": {
+			"begin": "(?:(^[ \\t]*)|[ \\t]+)(?=#\\p{Print}*$)",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.whitespace.comment.leading.omt"
+				}
+			},
+			"end": "(?!\\G)",
+			"patterns": [
+				{
+					"begin": "#",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.omt"
+						}
+					},
+					"end": "\\n",
+					"name": "comment.line.number-sign.omt, debug.background.omt"
+				}
+			]
+		},
+		"directive": {
+			"begin": "^%",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.directive.begin.omt"
+				}
+			},
+			"end": "(?=$|[ \\t]+($|#))",
+			"name": "meta.directive.omt",
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "keyword.other.directive.omt.omt"
+						},
+						"2": {
+							"name": "constant.numeric.omt-version.omt"
+						}
+					},
+					"match": "\\G(omt)[ \\t]+(\\d+\\.\\d+)"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "keyword.other.directive.tag.omt"
+						},
+						"2": {
+							"name": "storage.type.tag-handle.omt"
+						},
+						"3": {
+							"name": "support.type.tag-prefix.omt"
+						}
+					},
+					"match": "(?x)\n                        \\G\n                        (TAG)\n                        (?:[ \\t]+\n                            ((?:!(?:[0-9A-Za-z\\-]*!)?))\n                            (?:[ \\t]+ (\n                                  !              (?x: %\\p{XDigit}{2} | [0-9A-Za-z\\-#;/?:@&=+$,_.!~*'()\\[\\]] )*\n                                | (?![,!\\[\\]{}]) (?x: %\\p{XDigit}{2} | [0-9A-Za-z\\-#;/?:@&=+$,_.!~*'()\\[\\]] )+\n                                )\n                            )?\n                        )?\n                    "
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "support.other.directive.reserved.omt"
+						},
+						"2": {
+							"name": "string.unquoted.directive-name.omt"
+						},
+						"3": {
+							"name": "string.unquoted.directive-parameter.omt"
+						}
+					},
+					"match": "(?x) \\G (\\w+) (?:[ \\t]+ (\\w+) (?:[ \\t]+ (\\w+))? )?"
+				},
+				{
+					"match": "\\S+",
+					"name": "invalid.illegal.unrecognized.omt"
+				}
+			]
+		},
+		"node": {
+			"patterns": [
+				{
+					"include": "#block-node"
+				}
+			]
+		},
+		"property": {
+			"begin": "(?=!|&)",
+			"end": "(?!\\G)",
+			"name": "meta.property.yaml",
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "keyword.control.property.anchor.yaml"
+						},
+						"2": {
+							"name": "punctuation.definition.anchor.yaml"
+						},
+						"3": {
+							"name": "entity.name.type.anchor.yaml"
+						},
+						"4": {
+							"name": "invalid.illegal.character.anchor.yaml"
+						}
+					},
+					"match": "\\G((&))([^\\s\\[\\]/{/},]+)(\\S+)?"
+				},
+				{
+					"match": "(?x)\n                        \\G\n                        (?:\n                            ! < (?: %\\p{XDigit}{2} | [0-9A-Za-z\\-#;/?:@&=+$,_.!~*'()\\[\\]] )+ >\n                          | (?:!(?:[0-9A-Za-z\\-]*!)?) (?: %\\p{XDigit}{2} | [0-9A-Za-z\\-#;/?:@&=+$_.~*'()] )+\n                          | !\n                        )\n                        (?=\\ |\\t|$)\n                    ",
+					"name": "entity.name.class.yaml"
+				},
+				{
+					"match": "\\S+",
+					"name": "invalid.illegal.tag-handle.yaml"
+				}
+			]
+		}
+	}
+}

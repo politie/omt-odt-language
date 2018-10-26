@@ -1,0 +1,122 @@
+{
+	"IF": {
+		"prefix": "if",
+		"body": [
+			"IF ${1:condition} {",
+			"\t${2:body}",
+			"}"
+		],
+		"description": "A simple IF statement"
+	},
+
+	"IF_ELSE": {
+		"prefix": "ifelse",
+		"body": [
+			"IF ${1:condition} {",
+			"\t${2:if body}",
+			"} ELSE {",
+			"\t${3:else body}",
+			"}"
+		],
+		"description": "A full IF ELSE statement"
+    },
+    
+    "@CLEAR_GRAPH": {
+		"prefix": "clearGraph",
+		"body": [
+			"@CLEAR_GRAPH(${1:graph to clear});"
+		],
+		"description": "The @CLEAR_GRAPH command will delete all the quads in the given graph and return the number of quads that were deleted."
+    },
+    
+    "@FORKJOIN": {
+		"prefix": "forkjoin",
+		"body": [
+            "@FORKJOIN(",
+            "\t${1:command to execute}",
+            "\t${2:command to execute}",
+            ");"
+		],
+		"description": "The @FORKJOIN command will execute the given commands in parallel."
+    },
+
+    "@HTTP_GET": {
+		"prefix": "httpGet",
+		"body": [
+            "@HTTP_GET('${1:url}', $${2:params});"
+		],
+		"description": "The @HTTP_GET command is used to fetch data from an arbitrary url."
+    },
+
+    "@HTTP_POST": {
+		"prefix": "httpPost",
+		"body": [
+            "@HTTP_POST('${1:url}', ${2:body}, $${3:params});"
+		],
+		"description": "The @HTTP_POST command is used to perform an http POST call to an url with a provided body."
+    },
+
+    "@HTTP_PUT": {
+		"prefix": "httpPut",
+		"body": [
+            "@HTTP_PUT('${1:url}', ${2:body}, $${3:params});"
+		],
+		"description": "The @HTTP_PUT command is used to perform an http PUT call to an url with a provided body."
+    },
+
+    "@IF": {
+		"prefix": "@if",
+		"body": [
+            "@IF(${1:condition}, ${2:then}, ${3:else});"
+		],
+		"description": "The @IF command executes then when condition evaluates to true, and optionally executes else when condition evaluates to false."
+    },
+
+    "@LOG": {
+		"prefix": "log",
+		"body": [
+            "@LOG('${1:string}', $${2:variable});"
+        ],
+		"description": "The @LOG command executes all the given commands in parallel. The results of these commands will be logged at LogLevel info."
+    },
+    
+    "@NEW": {
+		"prefix": "new",
+		"body": [
+            "@NEW(${1:type}, $${2:graph});"
+        ],
+		"description": "The @NEW command will create a new subject of the given type in the given graph."
+    },
+    
+    "@NEW_GRAPH": {
+        "prefix": "newGraph",
+		"body": [
+            "@NEW_GRAPH($${2:graph});"
+        ],
+		"description": "The @NEW_GRAPH command will create a new graph of the given graphClass type."
+    },
+    
+    "@NEW_TRANSIENT_GRAPH": {
+		"prefix": "newTransientGraph",
+		"body": [
+            "@NEW_TRANSIENT_GRAPH();"
+        ],
+		"description": "The @NEW_TRANSIENT_GRAPH command will create a new transient graph and return the iri of that graph. Any data created in the graph won't be persisted."
+    },
+    
+    "@REMOVE": {
+		"prefix": "remove",
+		"body": [
+            "@REMOVE_FROM($${1:collection}, ${2:item to remove});"
+        ],
+		"description": "The @REMOVE_FROM command removes removal from collection and returns the remaining Collection<T>."
+    },
+        
+	"VAR": {
+		"prefix": "var",
+		"body": [
+			"VAR $${1:variable}"
+		],
+		"description": "Add a new variable."
+	}
+}

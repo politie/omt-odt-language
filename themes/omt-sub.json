@@ -1,0 +1,15 @@
+{
+    "name": "omt-sub",
+    "type": "dark",
+    "tokenColors": [
+        {
+            "name": "Background Debug",
+            "scope": [
+                "debug.background"
+            ],
+            "settings": {
+                "foreground": "#FF0000"
+            }
+        }
+    ]
+}
