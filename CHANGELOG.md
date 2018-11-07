@@ -3,7 +3,7 @@ All notable changes to the "omt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.0.0]
 ### Added
 - All ODT commands are now available as snippets.
 - All OMT structures are now available as snippets.
