@@ -58,7 +58,7 @@
 		"omt-prefix": {
 			"patterns": [
 				{
-					"begin" : "<",
+					"begin" : "<(?=\\S)",
 					"end": ">",
 					"name" : "string.omt"
 				}

@@ -11,13 +11,15 @@ Like any serious programming language OMT deserves its own syntax highlighting. 
 
 The highlighter is based on the YAML syntax highlighting textmate bundle. From this we removed some of the unnessary parts and added the OMT specific items. At the moment most of the language features get some sort of color.
 
-Also take a look at all the snippets that are available, they cover most of OMT & ODT.
+Also take a look at all the snippets that are available, they cover most of OMT & ODT. For example adding an ontology:
+
+![snippet example](https://media.giphy.com/media/5bvFh94y681oBwA2pa/giphy.gif "Snippet")
 
 ## Extension Settings
 
 Add the folowing setting to your Preferences:
 
-```    
+```
     "files.associations": {
         "*.omt": "omt"
     },
