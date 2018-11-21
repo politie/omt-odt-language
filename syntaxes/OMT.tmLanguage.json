@@ -9,12 +9,6 @@
 	"scopeName": "source.omt",
 	"patterns": [
 		{
-			"include": "#comment"
-		},
-		{
-			"include": "#omt-keywords"
-		},
-		{
 			"include": "#property"
 		},
 		{
@@ -27,13 +21,16 @@
 		},
 		{
 			"include": "#node"
+		},
+		{
+			"include": "#comment"
 		}
 	],
 	"repository": {
 		"omt-variable": {
 			"patterns": [
 				{
-					"match" : "(\\$(\\w+)\\s?)",
+					"match" : "(\\$(\\w+))",
 					"name" : "variable.omt"
 				}
 			]
@@ -189,8 +186,8 @@
 					"begin": "(?x)\n                        (?=\n                            (?x:\n                                  [^\\s[-?:,\\[\\]{}#&*!|>'\"%@`]]\n                                | [?:-] \\S\n                            )\n                            (\n                                  [^\\s:]\n                                | : \\S\n                                | \\s+ (?![#\\s])\n                            )*\n                            \\s*\n                            :\n\t\t\t\t\t\t\t(\\s|$)\n                        )\n                    ",
 					"end": "(?x)\n                        (?=\n                              \\s* $\n                            | \\s+ \\#\n                            | \\s* : (\\s|$)\n                        )\n                    ",
 					"patterns": [
-						{
-							"include": "#flow-scalar-plain-out-implicit-type"
+						{			
+							"include": "#omt-keywords"
 						},
 						{
 							"begin": "(?x)\n                                  [^\\s[-?:,\\[\\]{}#&*!|>'\"%@`]]\n                                | [?:-] \\S\n                            ",

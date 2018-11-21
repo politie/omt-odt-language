@@ -21,7 +21,8 @@ Add the folowing setting to your Preferences:
 
 ```
     "files.associations": {
-        "*.omt": "omt"
+        "*.omt": "omt",
+        "*.odt": "omt"
     },
 ```
 
