@@ -3,7 +3,7 @@
 		"prefix": "if",
 		"body": [
 			"IF ${1:condition} {",
-			"\t${2:body}",
+			"    ${2:body}",
 			"}"
 		],
 		"description": "A simple IF statement"
@@ -13,9 +13,9 @@
 		"prefix": "ifelse",
 		"body": [
 			"IF ${1:condition} {",
-			"\t${2:if body}",
+			"    ${2:if body}",
 			"} ELSE {",
-			"\t${3:else body}",
+			"    ${3:else body}",
 			"}"
 		],
 		"description": "A full IF ELSE statement"
@@ -33,8 +33,8 @@
 		"prefix": "forkjoin",
 		"body": [
             "@FORKJOIN(",
-            "\t${1:command to execute}",
-            "\t${2:command to execute}",
+            "    ${1:command to execute}",
+            "    ${2:command to execute}",
             ");"
 		],
 		"description": "The @FORKJOIN command will execute the given commands in parallel."

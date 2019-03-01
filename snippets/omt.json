@@ -3,8 +3,8 @@
 		"prefix": "import",
 		"body": [
 			"import:",
-			"\t./${1:folder}/${2:file}.omt:",
-			"\t-\t${3:import}"
+			"    ./${1:folder}/${2:file}.omt:",
+			"    -   ${3:import}"
 		],
 		"description": "OMT files within a module can import objects from each other directly. But sometimes you want to import objects from other modules."
 	},
@@ -13,7 +13,7 @@
 		"prefix": "import_item",
 		"body": [
 			"./${1:folder}/${2:file}.omt:",
-			"-\t${3:import}"
+			"-   ${3:import}"
 		],
 		"description": "A single item in an import block"
 	},
@@ -22,7 +22,7 @@
 		"prefix": "prefixes",
 		"body": [
 			"prefixes:",
-			"\t${1:prefix}:\t<${2:value}>" 
+			"    ${1:prefix}: <${2:value}>" 
 		],
 		"description": "A dictionary with prefixes that will be used to resolve short iris in the associated document."
 	},
@@ -30,7 +30,7 @@
 	"PREFIXES_ITEM": {
 		"prefix": "prefixes_item",
 		"body": [
-			"${1:prefix}:\t<${2:value}>" 
+			"${1:prefix}: <${2:value}>" 
 		],
 		"description": "A single item in a prefixes block"
 	},
@@ -39,7 +39,7 @@
 		"prefix": "queries",
 		"body": [
 			"queries: |",
-			"\tDEFINE QUERY ${1:query name}() => ${2:query body};"
+			"    DEFINE QUERY ${1:query name}() => ${2:query body};"
 		],
 		"description": "An ODT script with one or more DEFINE QUERY statements to define reusable queries that can be used within the associated document."
 	},
@@ -56,7 +56,7 @@
 		"prefix": "commands",
 		"body": [
 			"commands: |",
-			"\tDEFINE COMMAND ${1:command name}() => ${2:command body};"
+			"    DEFINE COMMAND ${1:command name}() => ${2:command body};"
 		],
 		"description": "An ODT script with one or more DEFINE COMMAND statements to define reusable commands that can be used within the associated document."
 	},
@@ -73,7 +73,7 @@
 		"prefix": "commands_item_block",
 		"body": [
 			"DEFINE COMMAND ${1:command name}() => {",
-			"\t${2:command body}",
+			"    ${2:command body}",
 			"}"
 		],
 		"description": "A multi-statement command for a commands block"
@@ -83,8 +83,8 @@
 		"prefix": "model",
 		"body": [
 			"model:",
-			"\t${1:item name}: !${2:type name}",
-			"\t\ttitle: ${3:title}"
+			"    ${1:item name}: !${2:type name}",
+			"        title: ${3:title}"
 		],
 		"description": "A dictionary of object to use in or export from this document."
 	},
@@ -93,8 +93,8 @@
 		"prefix": "graphs",
 		"body": [
 			"graphs:",
-			"\tlive:",
-			"\t-\t${1:object} / GRAPH"
+			"    live:",
+			"    -   ${1:object} / GRAPH"
 		],
 		"description": "Specifies which named graphs should be available for the ODT queries in this module."
 	},
@@ -102,7 +102,7 @@
 	"GRAPHS_ITEM": {
 		"prefix": "graphs_item",
 		"body": [
-			"-\t${1:object} / GRAPH"
+			"-   ${1:object} / GRAPH"
 		],
 		"description": "A single item in a graphs block."
 	},
@@ -111,10 +111,10 @@
 		"prefix": "menu",
 		"body": [
 			"menu:",
-			"\t${1:menu name}:",
-			"\t-\ttitle: ${2:menu item title}",
-			"\t\tonSelect: |",
-			"\t\t\t@${3:activityName}();"
+			"    ${1:menu name}:",
+			"    -   title: ${2:menu item title}",
+			"        onSelect: |",
+			"            @${3:activityName}();"
 		],
 		"description": "A dictionary of menu items that should be presented to the end user."
 	},
@@ -123,9 +123,9 @@
 		"prefix": "action",
 		"body": [
 			"actions:",
-			"\t${1:action name}:",
-			"\t\tonSelect: |",
-			"\t\t\t@${3:activityName}();"
+			"    ${1:action name}:",
+			"        onSelect: |",
+			"            @${3:activityName}();"
 		],
 		"description": "ODT based piece of business logic that can be invoked by the user interface."
 	},
@@ -134,7 +134,7 @@
 		"prefix": "activity",
 		"body": [
 			"${1:activity name}: !Activity",
-			"\ttitle: ${1:title}"
+			"    title: ${1:title}"
 		],
 		"description": "An OMT Activity is a interactive piece of business logic that can be executed by an end user."
 	},
@@ -143,7 +143,7 @@
 		"prefix": "params",
 		"body": [
 			"params:",
-			"-\t$${1:param} (${2:type})"
+			"-   $${1:param} (${2:type})"
 		],
 		"description": "A params block."
 	},
@@ -152,7 +152,7 @@
 		"prefix": "variables",
 		"body": [
 			"variables:",
-			"-\t$${1:variable}"
+			"-   $${1:variable}"
 		],
 		"description": "A variable block."
 	},
@@ -169,7 +169,7 @@
 		"prefix": "payload",
 		"body": [
 			"payload:",
-			"\t${1:item name}: $${2:item variable}"
+			"    ${1:item name}: $${2:item variable}"
 
 		],
 		"description": "A payload block."
@@ -179,16 +179,25 @@
 		"prefix": "rules",
 		"body": [
 			"rules:",
-			"\t${1:rule name}: ${2:rule body}"
+			"    ${1:rule name}: ${2:rule body}"
 		],
 		"description": "Rules block for data validation."
+	},
+
+	"ON_INIT": {
+		"prefix": "onInit",
+		"body": [
+			"onInit: |",
+			"    ${1:init body}"
+		],
+		"description": "An onInit block."
 	},
 
 	"ON_START": {
 		"prefix": "onStart",
 		"body": [
 			"onStart: |",
-			"\t${1:start body}"
+			"    ${1:start body}"
 		],
 		"description": "An onStart block."
 	},
@@ -197,7 +206,7 @@
 		"prefix": "onCommit",
 		"body": [
 			"onCommit: |",
-			"\t${1:commit body}"
+			"    ${1:commit body}"
 		],
 		"description": "An onCommit block."
 	},
@@ -206,7 +215,7 @@
 		"prefix": "onCancel",
 		"body": [
 			"onCancel: |",
-			"\t${1:cancel body}"
+			"    ${1:cancel body}"
 		],
 		"description": "An onCancel block."
 	},
@@ -215,7 +224,7 @@
 		"prefix": "onDone",
 		"body": [
 			"onDone: |",
-			"\t${1:done body}"
+			"    ${1:done body}"
 		],
 		"description": "An onDone block."
 	},
@@ -224,7 +233,7 @@
 		"prefix": "bindings",
 		"body": [
 			"bindings:",
-			"\t${1:binding name}: $${2:variable}"
+			"    ${1:binding name}: $${2:variable}"
 		],
 		"description": "A Binding is the bridge between the javascript user interface layer and an OMT component."
 	},
@@ -233,7 +242,7 @@
 		"prefix": "onChange",
 		"body": [
 			"onChange: |",
-			"\t${2:change body}"
+			"    ${2:change body}"
 		],
 		"description": "An ODT script that gets executed each time the ODT variable for this binding returns a different value."
 	},
@@ -242,8 +251,8 @@
 		"prefix": "component",
 		"body": [
 			"${1:component name}: !Component",
-			"\tvariables:",
-			"\t-\t${2:variable name}"
+			"    variables:",
+			"    -   ${2:variable name}"
 		],
 		"description": "An OMT Component is an interactive piece of business logic that can be executed by an end user."
 	},
@@ -252,11 +261,11 @@
 		"prefix": "ontology",
 		"body": [
 			"${1:ontology name}: !Ontology",
-			"\tprefix: ${2:prefix}",
-			"\tclasses:",
-			"\t\t${3:class id}:",
-			"\t\t\tproperties:",
-			"\t\t\t\t${4:property name}: ${5:property type}"
+			"    prefix: ${2:prefix}",
+			"    classes:",
+			"        ${3:class id}:",
+			"            properties:",
+			"                ${4:property name}: ${5:property type}"
 		],
 		"description": "An Ontology describes and restricts the structure of data."
 	},	
@@ -265,10 +274,10 @@
 		"prefix": "procedure",
 		"body": [
 			"${1:procedure name}: !Procedure",
-			"\tparams:",
-			"\t-\t$${2:param}",
-			"\tonRun: |",
-			"\t\t${3:run body}"
+			"    params:",
+			"    -   $${2:param}",
+			"    onRun: |",
+			"        ${3:run body}"
 		],
 		"description": "An OMT Procedure is a piece of business logic that can be executed at will, for example from the command line or in response to some external event."
 	}
