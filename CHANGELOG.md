@@ -3,6 +3,13 @@ All notable changes to the "omt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.2]
+### Added
+- onInit is added as a keyword
+
+### Fixed
+- Spaces are better then tabs for the snippets
+
 ## [1.0.1]
 ### Fixed
 - Fixed a bug where some comments don't get highlighting (#1)
