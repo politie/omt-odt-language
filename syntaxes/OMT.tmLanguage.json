@@ -85,7 +85,7 @@
 		"omt-keywords": {
 			"patterns": [
 				{
-					"match": "(list|moduleName|onDone|model|variables|title|graphs|payload|rules|returns|import|export|declare|prefixes|queries|commands|params|live|edit|onSessionStart|menu|services|procedures|actions|id|description|icon|precondition|disabled|dynamicActionQuery|onSelect|value|onStart|onCommit|onCancel|onRun|bindTo|autonomous|bindings|onChange)",
+					"match": "(list|moduleName|onDone|model|variables|title|graphs|payload|rules|returns|import|export|declare|prefixes|queries|commands|params|live|edit|onSessionStart|menu|services|procedures|actions|id|description|icon|precondition|disabled|dynamicActionQuery|onSelect|value|onInit|onStart|onCommit|onCancel|onRun|bindTo|autonomous|bindings|onChange)",
 					"name": "keyword.omt, markup.underline.omt"
 				}
 			]
