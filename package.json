@@ -2,7 +2,7 @@
     "name": "omt",
     "displayName": "OMT & ODT",
     "description": "OMT & ODT Language Support",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/pcmill/omt-vscode.git"
@@ -12,7 +12,7 @@
         "vscode": "^1.23.0"
     },
     "author":{
-        "name": "Team Bluefingers"
+        "name": "Team Bluefingers, Team Pragmaten"
     },
     "categories": [
         "Programming Languages",
