@@ -2,7 +2,7 @@
     "name": "omt",
     "displayName": "OMT & ODT",
     "description": "OMT & ODT Language Support",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "repository": {
         "type": "git",
         "url": "https://github.com/pcmill/omt-vscode.git"
@@ -11,7 +11,7 @@
     "engines": {
         "vscode": "^1.23.0"
     },
-    "author":{
+    "author": {
         "name": "Team Bluefingers, Team Pragmaten"
     },
     "categories": [
@@ -19,17 +19,27 @@
         "Snippets"
     ],
     "contributes": {
-        "languages": [{
-            "id": "omt",
-            "aliases": ["OMT", "odt"],
-            "extensions": [".omt",".odt"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "omt",
-            "scopeName": "source.omt",
-            "path": "./syntaxes/OMT.tmLanguage.json"
-        }],
+        "languages": [
+            {
+                "id": "omt",
+                "aliases": [
+                    "OMT",
+                    "odt"
+                ],
+                "extensions": [
+                    ".omt",
+                    ".odt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "omt",
+                "scopeName": "source.omt",
+                "path": "./syntaxes/OMT.tmLanguage.json"
+            }
+        ],
         "themes": [
             {
                 "label": "OMT Sub Theme",

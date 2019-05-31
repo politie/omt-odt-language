@@ -30,34 +30,34 @@
 		"omt-variable": {
 			"patterns": [
 				{
-					"match" : "(\\$(\\w+))",
-					"name" : "variable.omt"
+					"match": "(\\$(\\w+))",
+					"name": "variable.omt"
 				}
 			]
 		},
 		"omt-storage": {
 			"patterns": [
 				{
-					"match" : "(VAR)",
-					"name" : "storage.omt"
+					"match": "(VAR)",
+					"name": "storage.omt"
 				}
 			]
 		},
 		"omt-string": {
 			"patterns": [
 				{
-					"begin" : "'",
+					"begin": "'",
 					"end": "'",
-					"name" : "string.omt"
+					"name": "string.omt"
 				}
 			]
 		},
 		"omt-prefix": {
 			"patterns": [
 				{
-					"begin" : "<(?=\\S)",
+					"begin": "<(?=\\S)",
 					"end": ">",
-					"name" : "string.omt"
+					"name": "string.omt"
 				}
 			]
 		},
@@ -66,8 +66,8 @@
 				{
 					"begin": "@",
 					"end": ";|:",
-					"name" : "entity.name.function.omt",
-					"patterns":[
+					"name": "entity.name.function.omt",
+					"patterns": [
 						{
 							"include": "#omt-variable"
 						},
@@ -75,8 +75,8 @@
 							"include": "#omt-string"
 						},
 						{
-							"match" : "(!nested)",
-							"name" : "keyword.omt"
+							"match": "(!nested)",
+							"name": "keyword.omt"
 						}
 					]
 				}
@@ -85,7 +85,7 @@
 		"omt-keywords": {
 			"patterns": [
 				{
-					"match": "(list|moduleName|onDone|model|variables|title|graphs|payload|rules|returns|import|export|declare|prefixes|queries|commands|params|live|edit|onSessionStart|menu|services|procedures|actions|id|description|icon|precondition|disabled|dynamicActionQuery|onSelect|value|onInit|onStart|onCommit|onCancel|onRun|bindTo|autonomous|bindings|onChange)",
+					"match": "(actions|autonomous|base|bindings|bindTo|commands|declare|description|disabled|dynamicActionQuery|edit|export|graphs|icon|id|import|list|live|maxCardinality|menu|model|moduleName|multiple|onCancel|onChange|onCommit|onDone|onInit|onRequest|onRun|onSelect|onSessionStart|onStart|params|payload|precondition|prefixes|procedures|queries|query|returns|rules|services|title|type|value|variables|watchers)",
 					"name": "keyword.omt, markup.underline.omt"
 				}
 			]
@@ -93,7 +93,7 @@
 		"odt-commands": {
 			"patterns": [
 				{
-					"match": "(AND|CAST|CATCH|CEIL|CONCAT|CONTAINS|COUNT|CURRENT_DATETIME|CURRENT_DATE|DISTINCT|DIVIDE_BY|DURATION|ELEMENTS|EMPTY|EQUALS|ERROR|EVERY|EXISTS|FILTER|FIRST|FLOOR|FORMAT_DATE|FORMAT|GRAPH|GREATER_THAN_EQUALS|GREATER_THAN|IDENTITY|IF_EMPTY|INDEX_OF|IN|IRI|JOIN|JSON|LAST|LENGTH|LESS_THAN_EQUALS|LESS_THAN|LOG|LOWERCASE|MAP|MAX|MERGE|MINUS|MIN|NOT|ORDER_BY|OR|PICK|PLUS|REPEAT|REVERSE|ROUND|SKIP|SOME|SUBSTRING|SUM|TAKE|TIMES|TRAVERSE|TRUNC|TYPE|UPPERCASE)",
+					"match": "(AND|BLANK_NODE|CAST|CATCH|CEIL|CONCAT|CONTAINS|COUNT|CURRENT_DATETIME|CURRENT_DATE|DISTINCT|DIVIDE_BY|DURATION|ELEMENTS|EMPTY|EQUALS|ERROR|EVERY|EXISTS|FILTER|FIND_SUBJECTS|FIRST|FLOOR|FORMAT_DATE|FORMAT|GRAPH|GREATER_THAN_EQUALS|GREATER_THAN|HAS|IDENTITY|IF_EMPTY|INDEX_OF|IN|IRI|JOIN|JSON|LAST|LENGTH|LESS_THAN_EQUALS|LESS_THAN|LOG|LOWERCASE|MAP|MAX|MERGE|MINUS|MIN|NOT|ORDER_BY|OR|PICK|PLUS|REPEAT|REVERSE|ROUND|SKIP|SOME|SUBSTRING|SUM|TAKE|TIMES|TRAVERSE|TRIM|TRUNC|TYPE|UPPERCASE)",
 					"name": "support.function.omt"
 				}
 			]
@@ -113,7 +113,7 @@
 				},
 				{
 					"include": "#block-mapping"
-				},		
+				},
 				{
 					"include": "#omt-variable"
 				},
@@ -186,7 +186,7 @@
 					"begin": "(?x)\n                        (?=\n                            (?x:\n                                  [^\\s[-?:,\\[\\]{}#&*!|>'\"%@`]]\n                                | [?:-] \\S\n                            )\n                            (\n                                  [^\\s:]\n                                | : \\S\n                                | \\s+ (?![#\\s])\n                            )*\n                            \\s*\n                            :\n\t\t\t\t\t\t\t(\\s|$)\n                        )\n                    ",
 					"end": "(?x)\n                        (?=\n                              \\s* $\n                            | \\s+ \\#\n                            | \\s* : (\\s|$)\n                        )\n                    ",
 					"patterns": [
-						{			
+						{
 							"include": "#omt-keywords"
 						},
 						{
@@ -263,7 +263,7 @@
 						}
 					]
 				}
-			}, 
+			},
 			"end": "(\\n)"
 		},
 		"comment": {
