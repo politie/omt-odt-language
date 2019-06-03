@@ -3,6 +3,10 @@ All notable changes to the "omt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.0]
+### Added
+- It is now possible to ctrl + click on omt files in the import section.
+
 ## [1.0.4]
 ### Added
 - Support is added for some of the newer commands like `TRIM`, `FIND_SUBJECTS`, `HAS` and `BLANK_NODE`

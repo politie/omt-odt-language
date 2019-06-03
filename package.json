@@ -2,7 +2,7 @@
     "name": "omt",
     "displayName": "OMT & ODT",
     "description": "OMT & ODT Language Support",
-    "version": "1.0.4",
+    "version": "1.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/pcmill/omt-vscode.git"
@@ -14,9 +14,25 @@
     "author": {
         "name": "Team Bluefingers, Team Pragmaten"
     },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./"
+    },
+    "devDependencies": {
+        "@types/node": "^8.10.25",
+        "@types/vscode": "^1.23.0",
+        "tslint": "^5.11.0",
+        "typescript": "^3.1.1"
+    },
     "categories": [
         "Programming Languages",
-        "Snippets"
+        "Snippets",
+        "Other"
+    ],
+    "main": "./out/extension.js",
+    "activationEvents": [
+        "onLanguage:omt"
     ],
     "contributes": {
         "languages": [
