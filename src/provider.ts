@@ -15,8 +15,8 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
 
 // Loop door de regels van een OMT bestand en zoek links naar andere OMT bestanden
 // TODO: Loop alleen door de import regels heen.
-function findOMTUrl(document: TextDocument): DocumentLink | undefined {
-    let documentLinks: DocumentLink[] = [];
+function findOMTUrl(document: TextDocument): DocumentLink[] {
+    let _DocumentLinks: DocumentLink[] = [];
     for (let l = 0; l <= document.lineCount - 1; l++) {
         const line = document.lineAt(l);
         const match = MATCHER.exec(line.text);
@@ -27,14 +27,14 @@ function findOMTUrl(document: TextDocument): DocumentLink | undefined {
             const end = start.translate(0, match[0].length - 1);
 
             // Maak een lege Uri aan om later een relative path in te stoppen.
-            let url = new Uri('file');
+            let url = Uri.file('');
 
             url = url.with({
                 scheme: 'file',
                 path: path.resolve(path.dirname(document.fileName), link)
             });
 
-            documentLinks.push(new DocumentLink(new Range(start, end), url));
+            _DocumentLinks.push(new DocumentLink(new Range(start, end), url));
         }
 
         if (l === document.lineCount) {
@@ -42,5 +42,5 @@ function findOMTUrl(document: TextDocument): DocumentLink | undefined {
         }
     }
 
-    return documentLinks;
+    return _DocumentLinks;
 }

@@ -11,7 +11,6 @@ export function activate(context: ExtensionContext) {
     );
 
     context.subscriptions.push(
-        provider,
         providerRegistrations
     );
 }
