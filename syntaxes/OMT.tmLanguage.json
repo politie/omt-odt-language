@@ -101,7 +101,7 @@
 		"odt-control": {
 			"patterns": [
 				{
-					"match": "(COMMAND|CHOOSE|ELSE|END|IF|RETURN|DEFINE|QUERY|WHEN)",
+					"match": "(COMMAND|CHOOSE|DEFINE|ELSE|END|IF|OTHERWISE|RETURN|QUERY|WHEN)",
 					"name": "keyword.control.omt"
 				}
 			]
