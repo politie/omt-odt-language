@@ -1,4 +1,17 @@
 {
+	"CHOOSE": {
+		"prefix": "chooseWhen",
+		"body": [
+		  "CHOOSE",
+		  "  WHEN ${1:condition} => ${2:execute}",
+		  "  WHEN ${3:condition} => ${4:execute}",
+		  "  WHEN ${5:condition} => ${6:execute}",
+		  "  OTHERWISE => ${7:execute}",
+		  "END"
+		],
+		"description": "a CHOOSE WHEN statement"
+	},
+
 	"IF": {
 		"prefix": "if",
 		"body": [

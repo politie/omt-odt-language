@@ -3,6 +3,10 @@ All notable changes to the "omt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.1]
+### Added
+- Support CHOOSE WHEN odt statement.
+
 ## [1.1.0]
 ### Added
 - It is now possible to ctrl + click on omt files in the import section.
