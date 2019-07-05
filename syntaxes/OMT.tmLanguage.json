@@ -75,7 +75,7 @@
 							"include": "#omt-string"
 						},
 						{
-							"match": "(!nested)",
+							"match": "(!nested|!dialog)",
 							"name": "keyword.omt"
 						}
 					]

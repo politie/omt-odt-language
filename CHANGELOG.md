@@ -3,6 +3,11 @@ All notable changes to the "omt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.2]
+### Added
+- Added onRun snippet.
+- Made `!dialog` a keyword.
+
 ## [1.1.1]
 ### Added
 - Support CHOOSE WHEN odt statement.
