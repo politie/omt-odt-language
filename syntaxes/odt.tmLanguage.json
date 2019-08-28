@@ -1,0 +1,205 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "ODT",
+    "scopeName": "source.odt",
+    "patterns": [
+        { "include": "#command-&-query" },
+        { "include": "#comments" },
+        { "include": "#constants" },
+        { "include": "#keywords" },
+        { "include": "#prefixes" },
+        { "include": "#strings" },
+        { "include": "#variables" }
+    ],
+    "repository": {
+        "command-&-query": {
+            "patterns": [
+                {
+                    "begin": "^\\s*(DEFINE\\s+(?:COMMAND|QUERY))\\s+([\\w@\\u0100-\\u017f-]+)\\s*",
+                    "beginCaptures": {
+                        "1": { "name": "storage.type.function.odt" },
+                        "2": { "name": "entity.name.function.odt" }
+                    },
+                    "end": "\\s*(=>)",
+                    "endCaptures": {
+                        "1": { "name": "storage.type.function.arrow.odt" }
+                    },
+                    "patterns": [{
+                        "begin": "\\(",
+                        "end": "\\)",
+                        "patterns": [{
+                            "name": "variable.parameter.odt",
+                            "match": "\\$[\\w@\\u0100-\\u017f-]+"
+                        }]
+                    }]
+                },
+                {
+                    "match": "\\B(@[\\w@\\u0100-\\u017f-]+)(\\![\\w@\\u0100-\\u017f-]+)?",
+                    "captures": {
+                        "1": { "name": "entity.name.function.odt"},
+                        "2": { "name": "variable.parameter.flag.odt" }
+                    }
+                }
+            ]
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.number-sign.odt",
+                    "match": "#.*$"
+                },
+                {
+                    "name": "comment.line.double-slash.odt",
+                    "match": "//.*$"
+                },
+                {
+                    "name": "comment.block.odt",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                }
+            ]
+        },
+        "constants": {
+            "patterns": [
+                {
+                    "name": "constant.language.odt",
+                    "match": "\\b(null|true|false|BLANK_NODE|IRI|JSON)\\b"
+                },
+                {
+                    "name": "constant.numeric.odt",
+                    "match": "-?([1-9]\\d+|\\d)(\\.\\d)?"
+                }
+            ]
+        },
+        "_escape": {
+            "name": "constant.character.escape.odt",
+            "match": "\\\\."
+        },
+        "_iri-literals": {
+            "patterns": [
+                {
+                    "name": "string.other.iri.odt",
+                    "match": "<[a-zA-Z][a-zA-Z0-9\\+\\.-]+:[\\w@\\?&#/\\+\\*\\.\\u0100-\\u017f-]+>"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.odt",
+                    "match": "\\b(IF|ELSE|CHOOSE|WHEN|OTHERWISE|END|RETURN)\\b"
+                },
+                {
+                    "name": "keyword.operator.boolean.odt",
+                    "match": "\\b(AND|EVERY|NOT|OR|SOME)\\b"
+                },
+                {
+                    "name": "keyword.operator.collection.odt",
+                    "match": "\\B(\\+=|-=|\\|)\\B"
+                },
+                {
+                    "name": "keyword.operator.collection.odt",
+                    "match": "\\b(COUNT|DISTINCT|EMPTY|EXISTS|FILTER|FIRST|IF_EMPTY|LAST|MAP|MAX|MERGE|MIN|ORDER_BY|PICK|REVERSE|SKIP|SUM|TAKE)\\b"
+                },
+                {
+                    "name": "keyword.operator.comparisson.odt",
+                    "match": "\\B(==|>|>=|<|<=)\\B"
+                },
+                {
+                    "name": "keyword.operator.comparisson.odt",
+                    "match": "\\b(EQUALS|GREATER_THAN|GREATER_THAN_EQUALS|HAS|IN|LESS_THAN|LESS_THAN_EQUALS)\\b"
+                },
+                {
+                    "name": "keyword.operator.date.odt",
+                    "match": "\\b(CURRENT_DATE|CURRENT_DATETIME|DURATION|TRUNC)\\b"
+                },
+                {
+                    "name": "keyword.operator.number.odt",
+                    "match": "\\b(CEIL|DIVIDE_BY|FLOOR|MINUS|PLUS|ROUND|TIMES)\\b"
+                },
+                {
+                    "name": "keyword.operator.string.odt",
+                    "match": "\\b(CONCAT|CONTAINS|FORMAT|FORMAT_DATE|INDEX_OF|JOIN|LENGTH|LOWERCASE|SPLIT|SUBSTRING|TRIM|UPPERCASE)\\b"
+                },
+                {
+                    "name": "keyword.operator.odt",
+                    "match": "\\B(=|\\.|\\?|\\+|\\*|\\/)\\B"
+                },
+                {
+                    "name": "keyword.operator.odt",
+                    "match": "\\b(CALL|CAST|CATCH|ELEMENTS|ERROR|FIND_SUBJECTS|GRAPH|IDENTITY|LOG|REPEAT|TRAVERSE|TYPE)\\b"
+                }
+            ]
+        },
+        "prefixes": {
+            "patterns": [
+                {
+                    "begin": "^\\s*(PREFIX)\\s+([a-zA-Z][a-zA-Z0-9]*)?:\\s+",
+                    "beginCaptures": {
+                        "1": { "name": "storage.type.prefix.odt" },
+                        "2": { "name": "variable.other.constant.odt" }
+                    },
+                    "end": "\\s*;$",
+                    "patterns": [
+                        { "include": "#_iri-literals" }
+                    ]
+                },
+                {
+                    "name": "constant.other.prefixed-iri.odt",
+                    "match": "([a-zA-Z][a-zA-Z0-9]*)?:[\\w@\\u0100-\\u017f-]+"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.single.odt",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        { "include": "#_escape" }
+                    ]
+                },
+                {
+                    "name": "string.quoted.double.odt",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        { "include": "#_escape" }
+                    ]
+                },
+                {
+                    "name": "string.interpolated.odt",
+                    "begin": "`",
+                    "end": "`",
+                    "patterns": [
+                        { "include": "#_escape" },
+                        {
+                            "contentName": "source.odt",
+                            "begin": "${",
+                            "end": "}",
+                            "patterns": {
+                                "include": "$self"
+                            }
+                        }
+                    ]
+                },
+                { "include": "#_iri-literals" }
+            ]
+        },
+        "variables": {
+            "patterns": [
+                {
+                    "name": "variable.odt",
+                    "match": "\\$[\\w@\\u0100-\\u017f-]+"
+                },
+                {
+                    "match": "^\\s*(VAR)\\b",
+                    "captures": {
+                        "1": { "name": "storage.type.var.odt" }
+                    }
+                }
+            ]
+        }
+    }
+}
