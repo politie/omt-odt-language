@@ -2,7 +2,7 @@
     "name": "omt-odt-language",
     "displayName": "omt-odt-language",
     "description": "A language extension for the OMT and ODT languages",
-    "version": "0.0.1",
+    "version": "2.0.0",
     "engines": {
         "vscode": "^1.36.0"
     },
@@ -10,16 +10,41 @@
         "Programming Languages"
     ],
     "contributes": {
-        "languages": [{
-            "id": "odt",
-            "aliases": ["ODT", "odt"],
-            "extensions": [".odt"],
-            "configuration": "./configurations/odt.language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "odt",
-            "scopeName": "source.odt",
-            "path": "./syntaxes/odt.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "odt",
+                "aliases": ["ODT", "odt"],
+                "extensions": [".odt"],
+                "configuration": "./configurations/odt.language-configuration.json"
+            },
+            {
+                "id": "omt",
+                "aliases": ["OMT", "omt"],
+                "extensions": [".omt"],
+                "configuration": "./configurations/omt.language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "odt",
+                "scopeName": "source.odt",
+                "path": "./syntaxes/odt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.odt": "odt"
+                }
+            },
+            {
+                "language": "omt",
+                "scopeName": "source.omt",
+                "path": "./syntaxes/omt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.odt": "odt",
+                    "meta.embedded.inline.odt": "odt",
+                    "meta.embedded.interpolated.odt": "odt",
+                    "meta.embedded.iri-literal.odt": "odt",
+                    "meta.embedded.iri-prefixed.odt": "odt"
+                }
+            }
+        ]
     }
 }

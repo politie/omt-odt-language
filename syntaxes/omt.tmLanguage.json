@@ -1,0 +1,701 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "OMT",
+    "scopeName": "source.omt",
+    "patterns": [
+        { "include": "#commands-&-queries" },
+        { "include": "#comments" },
+        { "include": "#declare" },
+        { "include": "#expose" },
+        { "include": "#global-actions" },
+        { "include": "#graphs" },
+        { "include": "#import" },
+        { "include": "#menu" },
+        { "include": "#model" },
+        { "include": "#module-name" },
+        { "include": "#on-session-start" },
+        { "include": "#prefixes" }
+    ],
+    "repository": {
+        "_action-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(icon|id): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "string.unquoted.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(description|title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "source.odt#_interpolated" }]
+                },
+                {
+                    "begin": "(?:\\G|^) +(disabled|dynamicActionQuery|precondition): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "((?:\\G|^) +)(onSelect): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_params" }
+            ]
+        },
+        "_activity-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^ +(title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "source.odt#_interpolated" }]
+                },
+                {
+                    "begin": "^ +(returns): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "^( +)(on(?:Cancel|Commit|Done|Start)): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_actions" },
+                { "include": "#commands-&-queries" },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#_payload" },
+                { "include": "#prefixes" },
+                { "include": "#_rules" },
+                { "include": "#_variables" },
+                { "include": "#_watchers" }
+            ]
+        },
+        "_declaration-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(type): +(Activity|Command|Procedure)(.*)",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "storage.type.class.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(returns): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(params):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.param-types.omt",
+                    "patterns": [
+                        { "include": "#_list-comment" },
+                        {
+                            "begin": "^( *)- *",
+                            "end": "(?=^(\\1[\\S]|(?!\\1) *\\S))",
+                            "contentName": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                        }
+                    ]
+                }
+            ]
+        },
+        "_param-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+)(?: *\\((\\S+)\\))?(.*)$",
+                    "captures": {
+                        "1": { "name": "variable.parameter.omt" },
+                        "2": {
+                            "name": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "(?:\\G|^) +(name): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(type): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_payload-property-def": {
+            "patterns": [
+                {
+                    "begin": "( +)(\\w+): +(?=[^#\\s])",
+                    "beginCaptures": { "2": { "name": "entity.name.tag.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "( +)(\\w+): *(#.*)?",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.omt" },
+                        "3": { "patterns": [{ "include": "#comments" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.def.payload-property.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "begin": "^( +)(value|query): +",
+                            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                            "contentName": "meta.embedded.inline.odt",
+                            "patterns": [{ "include": "source.odt" }]
+                        },
+                        {
+                            "match": "^ +(list): +(true|false) *(.*)$",
+                            "captures": {
+                                "1": { "name": "entity.name.tag.omt" },
+                                "2": { "name": "constant.language.omt" },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        },
+                        { "include": "#_on-change" }
+                    ]
+                }
+            ]
+        },
+        "_variable-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+\\b)(?! *= *)(.*)?$",
+                    "captures": {
+                        "1": { "name": "variable.omt" },
+                        "2": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+) *(=) *",
+                    "beginCaptures": {
+                        "1": { "name": "variable.omt" },
+                        "2": { "name": "keyword.operator.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(name): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(value): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_on-change" }
+            ]
+        },
+        "_watcher-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(query): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_on-change" }
+            ]
+        },
+        "_actions": {
+            "begin": "^( *)(actions):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s]|(?!\\1) *\\S))",
+            "contentName": "meta.list.actions-kv.omt",
+            "patterns": [{ "include": "#_kv-action" }]
+        },
+        "commands-&-queries": {
+            "begin": "^( *)(commands|queries): *\\|(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "comments": {
+            "name": "comment.line.number-sign.omt",
+            "match": "(?:^#|(?<= )#).*$"
+        },
+        "_comments-only": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "name": "invalid.illegal.omt",
+                    "match": "([^#]|(?<! )#)+"
+                }
+            ]
+        },
+        "declare": {
+            "begin": "^(declare):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.declare.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.list.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.list.declare-module.omt",
+                    "patterns": [{ "include": "#_kv-declaration" }]
+                }
+            ]
+        },
+        "_escape": {
+            "name": "constant.character.escape.omt",
+            "match": "\\\\."
+        },
+        "expose": {
+            "begin": "^(export|procedures|services):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^[^#\\s-])",
+            "contentName": "meta.list.expose.omt",
+            "patterns": [{ "include": "#_li-ref" }]
+        },
+        "global-actions": {
+            "begin": "^(actions):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.global-actions.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(notifications|dashboard(?:Actions)?|dossier):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.list.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.omt",
+                    "patterns": [{ "include": "#_li-action" }]
+                }
+            ]
+        },
+        "graphs": {
+            "begin": "^( *)(graphs):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.graphs.omt",
+            "patterns": [{
+                "begin": "^( *)(edit|live):(.*)$",
+                "beginCaptures": {
+                    "2": { "name": "entity.name.tag.omt" },
+                    "3": { "patterns": [{ "include": "#_comments-only" }] }
+                },
+                "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                "contentName": "meta.list.graphs.omt",
+                "patterns": [{ "include": "#_li-odt" }]
+            }]
+        },
+        "import": {
+            "begin": "^(import):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.imports.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\S+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.list.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.import.omt",
+                    "patterns": [{ "include": "#_li-ref" }]
+                }
+            ]
+        },
+        "_kv-action": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!Action))?(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+        },
+        "_kv-declaration": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.declaration.omt",
+                    "patterns": [{ "include": "#_declaration-def" }]
+                }
+            ]
+        },
+        "_kv-payload": {
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_payload-property-def" }
+            ]
+        },
+        "_kv-odt": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+): *",
+                    "beginCaptures": { "2": { "name": "entity.name.tag.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                }
+            ]
+        },
+        "_li-action": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( *)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.def.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+
+        },
+        "_li-odt": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( *)- *",
+                    "end": "(?=^(\\1[\\S]|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                }
+            ]
+        },
+        "_li-param": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( *)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.def.param.omt",
+                    "patterns": [{ "include": "#_param-def" }]
+                }
+            ]
+        },
+        "_li-ref": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "match": "^ *- *([\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "support.function.omt" },
+                        "2": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_li-variable": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( *)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.def.variable.omt",
+                    "patterns": [{ "include": "#_variable-def" }]
+                }
+            ]
+        },
+        "_li-watcher": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( *)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.def.watcher.omt",
+                    "patterns": [{ "include": "#_watcher-def" }]
+                }
+            ]
+        },
+        "_list-comment": {
+            "match": "^ *([^ -].*)$",
+            "captures": {
+                "1": { "patterns": [{ "include": "#_comments-only" }] }
+            }
+        },
+        "menu": {
+            "begin": "^(menu):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.menu.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(\\s+)(\\S+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.list.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.menu.omt",
+                    "patterns": [{ "include": "#_li-action" }]
+                }
+            ]
+        },
+        "model": {
+            "begin": "^(model):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.model.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( *)(\\w+): +(!Action)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( *)(\\w+): +(!Activity)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.activity.omt",
+                    "patterns": [{ "include": "#_activity-def" }]
+                }
+            ]
+        },
+        "module-name": {
+            "match": "^(moduleName): *(\\w+)(.*)$",
+            "captures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": {
+                    "name": "string.unquoted.omt",
+                    "patterns": [{ "include": "#_escape" }]
+                },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            }
+        },
+        "_on-change": {
+            "begin": "((?:\\G|^) +)(onChange): *\\|(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "on-session-start": {
+            "begin": "^(onSessionStart): *\\|(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "_params": {
+            "begin": "^( +)(params):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.params.omt",
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_li-param" }
+            ]
+        },
+        "_payload": {
+            "begin": "^( +)(payload):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.payload.omt",
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_kv-payload" }
+            ]
+        },
+        "prefixes": {
+            "begin": "^( *)(prefixes):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.prefixes.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^ +([a-zA-Z][a-zA-Z0-9]*)?: +",
+                    "beginCaptures": {
+                        "1": { "name": "storage.type.prefix.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.iri-literal.odt",
+                    "patterns": [{ "include": "source.odt#_iri-literal"}]
+                }
+            ]
+        },
+        "_rules": {
+            "begin": "^( +)(rules):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.rules-kv.omt",
+            "patterns": [{ "include": "#_kv-odt" }]
+        },
+        "_variables": {
+            "begin": "^( +)(variables):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.variables.omt",
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_li-variable" }
+            ]
+        },
+        "_watchers": {
+            "begin": "^( +)(watchers):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.watchers.omt",
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_li-watcher" }
+            ]
+
+        }
+    }
+}

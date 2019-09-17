@@ -15,9 +15,9 @@
         "command-&-query": {
             "patterns": [
                 {
-                    "begin": "^\\s*(DEFINE\\s+(?:COMMAND|QUERY))\\s+([\\w@\\u0100-\\u017f-]+)\\s*",
+                    "begin": "^ *(DEFINE +(?:COMMAND|QUERY)) +([\\w@\\u0100-\\u017f-]+)\\s*",
                     "beginCaptures": {
-                        "1": { "name": "storage.type.function.odt" },
+                        "1": { "name": "keyword.control.function.odt" },
                         "2": { "name": "entity.name.function.odt" }
                     },
                     "end": "\\s*(=>)",
@@ -27,14 +27,11 @@
                     "patterns": [{
                         "begin": "\\(",
                         "end": "\\)",
-                        "patterns": [{
-                            "name": "variable.parameter.odt",
-                            "match": "\\$[\\w@\\u0100-\\u017f-]+"
-                        }]
+                        "patterns": [{ "include": "#_variable" }]
                     }]
                 },
                 {
-                    "match": "\\B(@[\\w@\\u0100-\\u017f-]+)(\\![\\w@\\u0100-\\u017f-]+)?",
+                    "match": "\\B(@[\\w@\\u0100-\\u017f-]+)(![\\w@\\u0100-\\u017f-]+)?",
                     "captures": {
                         "1": { "name": "entity.name.function.odt"},
                         "2": { "name": "variable.parameter.flag.odt" }
@@ -75,19 +72,32 @@
             "name": "constant.character.escape.odt",
             "match": "\\\\."
         },
-        "_iri-literals": {
+        "_interpolated": {
             "patterns": [
+                { "include": "#_escape" },
                 {
-                    "name": "string.other.iri.odt",
-                    "match": "<[a-zA-Z][a-zA-Z0-9\\+\\.-]+:[\\w@\\?&#/\\+\\*\\.\\u0100-\\u017f-]+>"
+                    "begin": "\\$\\{",
+                    "end": "\\}",
+                    "contentName": "meta.embedded.odt",
+                    "patterns": [{
+                        "include": "$self"
+                    }]
                 }
             ]
+        },
+        "_iri-literal": {
+            "name": "string.other.iri.odt",
+            "match": "<[a-zA-Z][a-zA-Z0-9\\+\\.-]+:[\\w@\\?&#/\\+\\*\\.\\u0100-\\u017f-]+>"
         },
         "keywords": {
             "patterns": [
                 {
                     "name": "keyword.control.odt",
                     "match": "\\b(IF|ELSE|CHOOSE|WHEN|OTHERWISE|END|RETURN)\\b"
+                },
+                {
+                    "name": "storage.type.function.arrow.odt",
+                    "match": "\\B=>\\B"
                 },
                 {
                     "name": "keyword.operator.boolean.odt",
@@ -103,7 +113,7 @@
                 },
                 {
                     "name": "keyword.operator.comparisson.odt",
-                    "match": "\\B(==|>|>=|<|<=)\\B"
+                    "match": "\\B(==|(?<!=)>|>=|<|<=)\\B"
                 },
                 {
                     "name": "keyword.operator.comparisson.odt",
@@ -123,7 +133,7 @@
                 },
                 {
                     "name": "keyword.operator.odt",
-                    "match": "\\B(=|\\.|\\?|\\+|\\*|\\/)\\B"
+                    "match": "\\B(=(?!>)|\\.|\\?|\\+|\\*|\\/)\\B"
                 },
                 {
                     "name": "keyword.operator.odt",
@@ -131,23 +141,22 @@
                 }
             ]
         },
+        "_prefixed-iri": {
+            "name": "constant.other.prefixed-iri.odt",
+            "match": "([a-zA-Z][a-zA-Z0-9]*)?:[\\w@\\u0100-\\u017f-]+"
+        },
         "prefixes": {
             "patterns": [
                 {
-                    "begin": "^\\s*(PREFIX)\\s+([a-zA-Z][a-zA-Z0-9]*)?:\\s+",
+                    "begin": "^ *(PREFIX) +([a-zA-Z][a-zA-Z0-9]*)?: +",
                     "beginCaptures": {
                         "1": { "name": "storage.type.prefix.odt" },
                         "2": { "name": "variable.other.constant.odt" }
                     },
-                    "end": "\\s*;$",
-                    "patterns": [
-                        { "include": "#_iri-literals" }
-                    ]
+                    "end": " *;$",
+                    "patterns": [{ "include": "#_iri-literal" }]
                 },
-                {
-                    "name": "constant.other.prefixed-iri.odt",
-                    "match": "([a-zA-Z][a-zA-Z0-9]*)?:[\\w@\\u0100-\\u017f-]+"
-                }
+                { "include": "#_prefixed-iri" }
             ]
         },
         "strings": {
@@ -156,45 +165,32 @@
                     "name": "string.quoted.single.odt",
                     "begin": "'",
                     "end": "'",
-                    "patterns": [
-                        { "include": "#_escape" }
-                    ]
+                    "patterns": [{ "include": "#_escape" }]
                 },
                 {
                     "name": "string.quoted.double.odt",
                     "begin": "\"",
                     "end": "\"",
-                    "patterns": [
-                        { "include": "#_escape" }
-                    ]
+                    "patterns": [{ "include": "#_escape" }]
                 },
                 {
                     "name": "string.interpolated.odt",
                     "begin": "`",
                     "end": "`",
-                    "patterns": [
-                        { "include": "#_escape" },
-                        {
-                            "contentName": "source.odt",
-                            "begin": "${",
-                            "end": "}",
-                            "patterns": {
-                                "include": "$self"
-                            }
-                        }
-                    ]
+                    "patterns": [{ "include": "#_interpolated" }]
                 },
-                { "include": "#_iri-literals" }
+                { "include": "#_iri-literal" }
             ]
+        },
+        "_variable": {
+            "name": "variable.odt",
+            "match": "\\$[\\w@\\u0100-\\u017f-]+"
         },
         "variables": {
             "patterns": [
+                { "include": "#_variable" },
                 {
-                    "name": "variable.odt",
-                    "match": "\\$[\\w@\\u0100-\\u017f-]+"
-                },
-                {
-                    "match": "^\\s*(VAR)\\b",
+                    "match": "^ *(VAR)\\b",
                     "captures": {
                         "1": { "name": "storage.type.var.odt" }
                     }
