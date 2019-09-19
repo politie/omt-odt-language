@@ -244,54 +244,7 @@
                     },
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.list.properties.omt",
-                    "patterns": [
-                        { "include": "#comments" },
-                        {
-                            "match": "^ +(\\w+): +(\\S+)(.*)$",
-                            "captures": {
-                                "1": { "name": "variable.parameter.omt" },
-                                "2": {
-                                    "name": "meta.embedded.iri-prefixed.odt",
-                                    "patterns": [{ "include": "source.odt#_prefixed-iri" }]
-                                },
-                                "3": { "patterns": [{ "include": "#_comments-only" }] }
-                            }
-                        },
-                        {
-                            "begin": "^( +)(\\w+): *(?=#|$)",
-                            "beginCaptures": { "2": { "name": "variable.parameter.omt" } },
-                            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                            "patterns": [
-                                {
-                                    "match": "^ +(type): +(\\S+)(.*)$",
-                                    "captures": {
-                                        "1": { "name": "entity.name.tag.omt" },
-                                        "2": {
-                                            "name": "meta.embedded.iri-prefixed.odt",
-                                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
-                                        },
-                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                                    }
-                                },
-                                {
-                                    "match": "^ +(required|multiple): +(\\w+)(.*)$",
-                                    "captures": {
-                                        "1": { "name": "entity.name.tag.omt" },
-                                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
-                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                                    }
-                                },
-                                {
-                                    "match": "^ +(maxCardinality): +(-?(?:[1-9]\\d+|\\d)(?:\\.\\d)?)(.*)$",
-                                    "captures": {
-                                        "1": { "name": "entity.name.tag.omt" },
-                                        "2": { "name": "constant.numeric.omt" },
-                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                                    }
-                                }
-                            ]
-                        }
-                    ]
+                    "patterns": [{ "include": "#_ontology-prop-def" }]
                 }
             ]
         },
@@ -318,6 +271,56 @@
                         { "include": "#comments" },
                         { "include": "#_kv-ontology-class" },
                         { "include": "#_li-ontology-class" }
+                    ]
+                }
+            ]
+        },
+        "_ontology-prop-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(\\w+): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "variable.parameter.omt" },
+                        "2": {
+                            "name": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(\\w+): *(?=#|$)",
+                    "beginCaptures": { "2": { "name": "variable.parameter.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "patterns": [
+                        {
+                            "match": "^ +(type): +(\\S+)(.*)$",
+                            "captures": {
+                                "1": { "name": "entity.name.tag.omt" },
+                                "2": {
+                                    "name": "meta.embedded.iri-prefixed.odt",
+                                    "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                                },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        },
+                        {
+                            "match": "^ +(required|multiple): +(\\w+)(.*)$",
+                            "captures": {
+                                "1": { "name": "entity.name.tag.omt" },
+                                "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        },
+                        {
+                            "match": "^ +(maxCardinality): +(-?(?:[1-9]\\d+|\\d)(?:\\.\\d)?)(.*)$",
+                            "captures": {
+                                "1": { "name": "entity.name.tag.omt" },
+                                "2": { "name": "constant.numeric.omt" },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        }
                     ]
                 }
             ]
@@ -394,6 +397,94 @@
                         { "include": "#_on-change" }
                     ]
                 }
+            ]
+        },
+        "_procedure-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(onRun): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#prefixes" },
+                { "include": "#_variables" }
+            ]
+        },
+        "_service-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(onRequest): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#prefixes" }
+            ]
+        },
+        "_standalone-query-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(base): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( *)(graphs):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.graphs.standalone-query.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "match": "^ *(edit)\\b",
+                            "captures": { "1": { "name": "invalid.illegal.omt" } }
+                        },
+                        {
+                            "begin": "^( *)(live):(.*)$",
+                            "beginCaptures": {
+                                "2": { "name": "entity.name.tag.omt" },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            },
+                            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                            "contentName": "meta.list.graphs.omt",
+                            "patterns": [{ "include": "#_li-odt" }]
+                        }
+                    ]
+                },
+                {
+                    "begin": "^( +)(query): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_params" },
+                { "include": "#prefixes" }
             ]
         },
         "_variable-def": {
@@ -823,6 +914,39 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.object.ontology.omt",
                     "patterns": [{ "include": "#_ontology-def" }]
+                },
+                {
+                    "begin": "^( *)(\\w+): +(!Procedure)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.procedure.omt",
+                    "patterns": [{ "include": "#_procedure-def" }]
+                },
+                {
+                    "begin": "^( *)(\\w+): +(!Service)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.service.omt",
+                    "patterns": [{ "include": "#_service-def" }]
+                },
+                {
+                    "begin": "^( *)(\\w+): +(!StandaloneQuery)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.standalone-query.omt",
+                    "patterns": [{ "include": "#_standalone-query-def" }]
                 }
             ]
         },
