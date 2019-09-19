@@ -225,6 +225,103 @@
                 }
             ]
         },
+        "_ontology-class-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(id): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "string.unquoted.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "((?:\\G|^) +)(properties):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.list.properties.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "match": "^ +(\\w+): +(\\S+)(.*)$",
+                            "captures": {
+                                "1": { "name": "variable.parameter.omt" },
+                                "2": {
+                                    "name": "meta.embedded.iri-prefixed.odt",
+                                    "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                                },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        },
+                        {
+                            "begin": "^( +)(\\w+): *(?=#|$)",
+                            "beginCaptures": { "2": { "name": "variable.parameter.omt" } },
+                            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                            "patterns": [
+                                {
+                                    "match": "^ +(type): +(\\S+)(.*)$",
+                                    "captures": {
+                                        "1": { "name": "entity.name.tag.omt" },
+                                        "2": {
+                                            "name": "meta.embedded.iri-prefixed.odt",
+                                            "patterns": [{ "include": "source.odt#_prefixed-iri" }]
+                                        },
+                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                                    }
+                                },
+                                {
+                                    "match": "^ +(required|multiple): +(\\w+)(.*)$",
+                                    "captures": {
+                                        "1": { "name": "entity.name.tag.omt" },
+                                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                                    }
+                                },
+                                {
+                                    "match": "^ +(maxCardinality): +(-?(?:[1-9]\\d+|\\d)(?:\\.\\d)?)(.*)$",
+                                    "captures": {
+                                        "1": { "name": "entity.name.tag.omt" },
+                                        "2": { "name": "constant.numeric.omt" },
+                                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "_ontology-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(prefix): +(\\w+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "string.unquoted.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(classes):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.ontology-classes.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        { "include": "#_kv-ontology-class" },
+                        { "include": "#_li-ontology-class" }
+                    ]
+                }
+            ]
+        },
         "_param-def": {
             "patterns": [
                 { "include": "#comments" },
@@ -543,6 +640,17 @@
                 }
             ]
         },
+        "_kv-ontology-class": {
+            "begin": "^( +)(\\w+):(?: +(!OntologyClass))?(.*)$",
+            "beginCaptures": {
+                "2": { "name": "entity.name.class.omt" },
+                "3": { "name": "storage.type.class.omt" },
+                "4": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.object.ontology-class.omt",
+            "patterns": [{ "include": "#_ontology-class-def" }]
+        },
         "_kv-payload": {
             "patterns": [
                 { "include": "#comments" },
@@ -571,7 +679,6 @@
                     "patterns": [{ "include": "#_action-def" }]
                 }
             ]
-
         },
         "_li-odt": {
             "patterns": [
@@ -583,6 +690,12 @@
                     "patterns": [{ "include": "source.odt" }]
                 }
             ]
+        },
+        "_li-ontology-class": {
+            "begin": "^( *)-",
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.def.ontology-class.omt",
+            "patterns": [{ "include": "#_ontology-class-def" }]
         },
         "_li-param": {
             "patterns": [
@@ -699,6 +812,17 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.object.component.omt",
                     "patterns": [{ "include": "#_component-def" }]
+                },
+                {
+                    "begin": "^( *)(\\w+): +(!Ontology)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.class.omt" },
+                        "3": { "name": "storage.type.class.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.object.ontology.omt",
+                    "patterns": [{ "include": "#_ontology-def" }]
                 }
             ]
         },
