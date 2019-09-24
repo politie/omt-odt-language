@@ -1,7 +1,8 @@
 {
     "name": "omt-odt-language",
-    "displayName": "omt-odt-language",
+    "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
+    "publisher": "OPP",
     "version": "2.0.0",
     "engines": {
         "vscode": "^1.36.0"

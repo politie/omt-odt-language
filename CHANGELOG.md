@@ -5,23 +5,24 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [2.0.Unreleased]
+## [2.0.0]
 
 ### Added
 
-- Separate ODT syntax highlighting
+- ODT syntax highlighting
+- Embedded ODT syntax highlighting in OMT syntax highlighting
 
 ### Changed
 
 - Removed ODT syntax from OMT highlighting
 - Revised OMT syntax highlighting
-- Renamed plugin
+- Renamed plugin from "omt-vscode" to "omt-odt-language"
 
 ### Removed
 
-- Snippets (*for now, should be reimplemented*)
+- Snippets (*to be reimplemented later*)
 - OMT sub theme
-- clickable links to file imports in OMT (*for now, should be reimplemented*)
+- clickable links to file imports in OMT (*to be reimplemented later*)
 
 ## [1.1.2]
 
