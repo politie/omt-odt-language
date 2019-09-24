@@ -2,6 +2,10 @@
     "name": "omt-odt-language",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/emielb/omt-odt-language.git"
+    },
     "publisher": "OPP",
     "version": "2.0.0",
     "engines": {
