@@ -1,19 +1,31 @@
 {
     "name": "omt-odt-language",
+    "version": "2.0.0",
+    "license": "Apache-2.0",
+
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/emielb/omt-odt-language.git"
-    },
     "publisher": "OPP",
-    "version": "2.0.0",
-    "engines": {
-        "vscode": "^1.36.0"
+    "icon": "logo.png",
+    "galleryBanner": {
+        "color": "#E4F3FF",
+        "theme": "dark"
     },
     "categories": [
         "Programming Languages"
     ],
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/emielb/omt-odt-language.git"
+    },
+    "bugs": {
+        "url": "https://github.com/emielb/omt-odt-language/issues"
+    },
+
+    "engines": {
+        "vscode": "^1.36.0"
+    },
     "contributes": {
         "languages": [
             {
