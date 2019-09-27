@@ -11,21 +11,21 @@
     ],
     // symbols that are auto closed when typing
     "autoClosingPairs": [
-		["{", "}"],
-		["[", "]"],
-		["(", ")"],
-		["\"", "\""],
-		["'", "'"]
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
     ],
     // auto close pairs when they are followed by these characters
     "autoCloseBefore": ";:.,=}]> \n\t",
     // symbols that that can be used to surround a selection
     "surroundingPairs": [
-		["{", "}"],
-		["[", "]"],
-		["(", ")"],
-		["\"", "\""],
-		["'", "'"]
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["\"", "\""],
+        ["'", "'"]
     ],
     "folding": {
         "offSide": true
