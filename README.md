@@ -20,7 +20,7 @@ In the future, more advanced features like snippets, syntax checking, hover info
 ## Extension Settings
 
 The plugin shoul automatically recognise OMT and ODT files, no configuration needed.
-If it doesn't, add the folowing settings to your Preferences:
+**If it doesn't**, add the folowing settings to your Preferences:
 
 ```json
     "files.associations": {

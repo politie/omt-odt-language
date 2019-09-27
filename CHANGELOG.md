@@ -11,12 +11,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - ODT syntax highlighting
 - Embedded ODT syntax highlighting in OMT syntax highlighting
+- Plugin logo
+- `LICENSE` file
 
 ### Changed
 
 - Removed ODT syntax from OMT highlighting
 - Revised OMT syntax highlighting
 - Renamed plugin from "omt-vscode" to "omt-odt-language"
+- Updated `README.md`
 
 ### Removed
 
