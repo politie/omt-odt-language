@@ -1,0 +1,42 @@
+{
+    "comments": {
+        // symbol used for single line comment
+        "lineComment": "#", // "//" can also be used though
+        // symbols used to start and end a block comment
+        "blockComment": [ "/*", "*/" ]
+    },
+    // symbols used as brackets
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"]
+    ],
+    // symbols that are auto closed when typing
+    "autoClosingPairs": [
+        { "open": "{",  "close": "}",  "notIn": ["comment"] },
+        { "open": "[",  "close": "]",  "notIn": ["string", "comment"] },
+        { "open": "(",  "close": ")",  "notIn": ["string", "comment"] },
+        { "open": "`",  "close": "`",  "notIn": ["string", "comment"] },
+        { "open": "\"", "close": "\"", "notIn": ["string", "comment"] },
+        { "open": "'",  "close": "'",  "notIn": ["string", "comment"] },
+        { "open": "/*", "close": "*/", "notIn": ["string", "comment"] }
+    ],
+    // auto close pairs when they are followed by these characters
+    "autoCloseBefore": ";:.,=}])>` \n\t",
+    // symbols that that can be used to surround a selection
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"],
+        ["(", ")"],
+        ["`", "`"],
+        ["\"", "\""],
+        ["'", "'"],
+        ["<", ">"]
+    ],
+    "indentationRules": {
+        // ends in (, {, [ outside of a comment (final comments excluded)
+        "increaseIndentPattern": "^((?!(\\/\\/|#|\\/\\*)).|\\/\\*.*?\\*\\/)*(\\{[^}\\\"'`]*|\\([^)\\\"'`]*|\\[[^\\]\\\"'`]*)$",
+        // starts with (optionally a block comment end, and) a closing bracket
+        "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[)}\\]].*$"
+    }
+}

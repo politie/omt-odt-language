@@ -1,76 +1,66 @@
 {
-    "name": "omt",
+    "name": "omt-odt-language",
+    "version": "2.0.0",
+    "license": "Apache-2.0",
+
     "displayName": "OMT & ODT",
-    "description": "OMT & ODT Language Support",
-    "version": "1.1.2",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/pcmill/omt-vscode.git"
-    },
-    "publisher": "OPP",
-    "engines": {
-        "vscode": "^1.23.0"
-    },
-    "author": {
-        "name": "Team Bluefingers, Team Pragmaten"
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./"
-    },
-    "devDependencies": {
-        "@types/node": "^8.10.25",
-        "@types/vscode": "^1.23.0",
-        "tslint": "^5.11.0",
-        "typescript": "^3.1.1"
+    "description": "A language extension for the OMT and ODT languages",
+    "publisher": "pvr",
+    "icon": "logo.png",
+    "galleryBanner": {
+        "color": "#E4F3FF",
+        "theme": "dark"
     },
     "categories": [
-        "Programming Languages",
-        "Snippets",
-        "Other"
+        "Programming Languages"
     ],
-    "main": "./out/extension.js",
-    "activationEvents": [
-        "onLanguage:omt"
-    ],
+
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/emielb/omt-odt-language.git"
+    },
+    "bugs": {
+        "url": "https://github.com/emielb/omt-odt-language/issues"
+    },
+
+    "engines": {
+        "vscode": "^1.36.0"
+    },
     "contributes": {
         "languages": [
             {
+                "id": "odt",
+                "aliases": ["ODT", "odt"],
+                "extensions": [".odt"],
+                "configuration": "./configurations/odt.language-configuration.json"
+            },
+            {
                 "id": "omt",
-                "aliases": [
-                    "OMT",
-                    "odt"
-                ],
-                "extensions": [
-                    ".omt",
-                    ".odt"
-                ],
-                "configuration": "./language-configuration.json"
+                "aliases": ["OMT", "omt"],
+                "extensions": [".omt"],
+                "configuration": "./configurations/omt.language-configuration.json"
             }
         ],
         "grammars": [
             {
-                "language": "omt",
-                "scopeName": "source.omt",
-                "path": "./syntaxes/OMT.tmLanguage.json"
-            }
-        ],
-        "themes": [
-            {
-                "label": "OMT Sub Theme",
-                "uiTheme": "vs-dark",
-                "path": "./themes/omt-sub.json"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "omt",
-                "path": "./snippets/omt.json"
+                "language": "odt",
+                "scopeName": "source.odt",
+                "path": "./syntaxes/odt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.odt": "odt"
+                }
             },
             {
                 "language": "omt",
-                "path": "./snippets/odt.json"
+                "scopeName": "source.omt",
+                "path": "./syntaxes/omt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.odt": "odt",
+                    "meta.embedded.inline.odt": "odt",
+                    "meta.embedded.interpolated.odt": "odt",
+                    "meta.embedded.iri-literal.odt": "odt",
+                    "meta.embedded.iri-prefixed.odt": "odt"
+                }
             }
         ]
     }

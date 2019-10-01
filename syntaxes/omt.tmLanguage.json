@@ -1,0 +1,1086 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "OMT",
+    "scopeName": "source.omt",
+    "patterns": [
+        { "include": "#commands-&-queries" },
+        { "include": "#comments" },
+        { "include": "#declare" },
+        { "include": "#expose" },
+        { "include": "#global-actions" },
+        { "include": "#graphs" },
+        { "include": "#import" },
+        { "include": "#menu" },
+        { "include": "#model" },
+        { "include": "#module-name" },
+        { "include": "#on-session-start" },
+        { "include": "#prefixes" }
+    ],
+    "repository": {
+        "_action-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(icon|id): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(description|title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "#_interpolated-odt" }]
+                },
+                {
+                    "begin": "(?:\\G|^) +(disabled|dynamicActionQuery|precondition): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "((?:\\G|^) +)(onSelect): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_params" }
+            ]
+        },
+        "_activity-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^ +(title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "#_interpolated-odt" }]
+                },
+                {
+                    "begin": "^ +(returns): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "^( +)(on(?:Cancel|Commit|Done|Start)): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_actions" },
+                { "include": "#commands-&-queries" },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#_payload" },
+                { "include": "#prefixes" },
+                { "include": "#_rules" },
+                { "include": "#_variables" },
+                { "include": "#_watchers" }
+            ]
+        },
+        "_binding-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(bindTo): +(\\$\\w+) *(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(input|output): +(\\w+) *(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                { "include": "#_on-change" }
+            ]
+        },
+        "_component-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^ +(title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "source.odt#_interpolated" }]
+                },
+                {
+                    "match": "^ +(autonomous): +(\\w+) *(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comment-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(onInit): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_actions" },
+                { "include": "#_bindings" },
+                { "include": "#commands-&-queries" },
+                { "include": "#graphs" },
+                { "include": "#_payload" },
+                { "include": "#prefixes" },
+                { "include": "#_variables" },
+                { "include": "#_watchers" }
+            ]
+        },
+        "_declaration-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(type): +(Activity|Command|Procedure)(.*)",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "support.type.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(returns): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(params):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.param-types.omt",
+                    "patterns": [
+                        { "include": "#_list-comment" },
+                        {
+                            "match": "^ +- *(\\S+)(.*)$",
+                            "captures": {
+                                "1": { "patterns": [{ "include": "#_types" }] },
+                                "2": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "_ontology-class-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(id): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "((?:\\G|^) +)(properties):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.kv.ontology-props.omt",
+                    "patterns": [{ "include": "#_kv-ontology-prop" }]
+                }
+            ]
+        },
+        "_ontology-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(prefix): +(\\w+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(classes):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.kv-list.ontology-classes.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        { "include": "#_kv-ontology-class" },
+                        { "include": "#_li-ontology-class" }
+                    ]
+                }
+            ]
+        },
+        "_ontology-prop-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(type): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(required|multiple): +(\\w+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(maxCardinality): +(-?(?:[1-9]\\d+|\\d)(?:\\.\\d)?)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.numeric.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_param-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+)(?: +\\((\\S+)\\))?(.*)$",
+                    "captures": {
+                        "1": { "name": "variable.parameter.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "(?:\\G|^) +(name): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "^ +(type): +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_payload-property-def": {
+            "patterns": [
+                {
+                    "begin": "( +)(\\w+): +(?=[^#\\s])",
+                    "beginCaptures": { "2": { "name": "variable.parameter.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "( +)(\\w+): *(#.*)?",
+                    "beginCaptures": {
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#comments" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.payload-property.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "begin": "^( +)(value|query): +",
+                            "beginCaptures": { "2": { "name": "keyword.control.omt" } },
+                            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                            "contentName": "meta.embedded.inline.odt",
+                            "patterns": [{ "include": "source.odt" }]
+                        },
+                        {
+                            "match": "^ +(list): +(\\w+) *(.*)$",
+                            "captures": {
+                                "1": { "name": "keyword.control.omt" },
+                                "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        },
+                        { "include": "#_on-change" }
+                    ]
+                }
+            ]
+        },
+        "_procedure-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(onRun): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#prefixes" },
+                { "include": "#_variables" }
+            ]
+        },
+        "_service-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(onRequest): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#graphs" },
+                { "include": "#_params" },
+                { "include": "#prefixes" }
+            ]
+        },
+        "_standalone-query-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(base): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(graphs):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.graphs.standalone-query.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "begin": "^( +)(edit):(.*)$",
+                            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                            "name": "invalid.illegal.omt"
+                        },
+                        {
+                            "begin": "^( +)(live):(.*)$",
+                            "beginCaptures": {
+                                "2": { "name": "entity.name.tag.omt" },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            },
+                            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                            "contentName": "meta.list.graphs.omt",
+                            "patterns": [{ "include": "#_li-odt" }]
+                        }
+                    ]
+                },
+                {
+                    "begin": "^( +)(query): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_params" },
+                { "include": "#prefixes" }
+            ]
+        },
+        "_variable-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+\\b)(?! *=)(.*)?$",
+                    "captures": {
+                        "1": { "name": "variable.omt" },
+                        "2": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(\\$[\\w@\\u0100-\\u017f-]+) *= *",
+                    "beginCaptures": { "1": { "name": "variable.omt" } },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(name): +(\\$[\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "variable.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(value): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_on-change" }
+            ]
+        },
+        "_watcher-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(query): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_on-change" }
+            ]
+        },
+        "_actions": {
+            "begin": "^( +)(actions):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s]|(?!\\1) *\\S))",
+            "contentName": "meta.kv.actions.omt",
+            "patterns": [{ "include": "#_kv-action" }]
+        },
+        "_bindings": {
+            "begin": "^( +)(bindings):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.kv.bindings.omt",
+            "patterns": [{ "include": "#_kv-binding" }]
+        },
+        "_boolean-only": {
+            "match": "(?:(true|false)|(.*))",
+            "captures": {
+                "1": { "name": "constant.language.boolean.omt" },
+                "2": { "name": "invalid.illegal.omt" }
+            }
+        },
+        "commands-&-queries": {
+            "begin": "^( *)(commands|queries): *\\|(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "comments": {
+            "name": "comment.line.number-sign.omt",
+            "match": "(?:^#|(?<= )#).*$"
+        },
+        "_comments-only": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "name": "invalid.illegal.omt",
+                    "match": "([^#]|(?<! )#)+"
+                }
+            ]
+        },
+        "declare": {
+            "begin": "^(declare):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.declare.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "support.type.module.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.kv.declarations.omt",
+                    "patterns": [{ "include": "#_kv-declaration" }]
+                }
+            ]
+        },
+        "_escape": {
+            "name": "constant.character.escape.omt",
+            "match": "\\\\."
+        },
+        "expose": {
+            "begin": "^(export|procedures|services):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^[^#\\s-])",
+            "contentName": "meta.list.exposes.omt",
+            "patterns": [{ "include": "#_li-ref" }]
+        },
+        "global-actions": {
+            "begin": "^(actions):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.global-actions.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(notifications|dashboard(?:Actions)?|dossier):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.omt",
+                    "patterns": [{ "include": "#_li-action" }]
+                }
+            ]
+        },
+        "graphs": {
+            "begin": "^( *)(graphs):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.graphs.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(edit|live):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.graphs.omt",
+                    "patterns": [{ "include": "#_li-odt" }]
+                }
+            ]
+        },
+        "import": {
+            "begin": "^(import):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.imports.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\S+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "support.type.module.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.imports.omt",
+                    "patterns": [{ "include": "#_li-ref" }]
+                }
+            ]
+        },
+        "_interpolated-odt": {
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "source.odt#_interpolated" }
+            ]
+        },
+        "_kv-action": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!Action))?(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+        },
+        "_kv-binding": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(\\w+): +(\\$\\w+)(?: +\\((input|output|sync)\\))?(?: +(.*))?$",
+                    "captures": {
+                        "1": { "name": "variable.parameter.omt" },
+                        "2": { "name": "variable.parameter.omt" },
+                        "3": { "name": "constant.language.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }]}
+                    }
+                },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!Binding))? *(#.*)?$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#comments" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.binding.omt",
+                    "patterns": [{ "include": "#_binding-def" }]
+                }
+            ]
+        },
+        "_kv-declaration": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "support.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.declaration.omt",
+                    "patterns": [{ "include": "#_declaration-def" }]
+                }
+            ]
+        },
+        "_kv-iri-literal": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^ +([a-zA-Z][a-zA-Z0-9]*)?: +",
+                    "beginCaptures": {
+                        "1": { "name": "support.type.prefix.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.iri-literal.odt",
+                    "patterns": [{ "include": "source.odt#_iri-literal"}]
+                }
+            ]
+        },
+        "_kv-ontology-class": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!OntologyClass))?(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.ontology-class.omt",
+                    "patterns": [{ "include": "#_ontology-class-def" }]
+                }
+            ]
+        },
+        "_kv-ontology-prop": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "^ +(\\w+): +([^#]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "variable.parameter.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^( +)(\\w+): *(?=#|$)",
+                    "beginCaptures": { "2": { "name": "variable.parameter.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.ontology-prop.omt",
+                    "patterns": [{ "include": "#_ontology-prop-def" }]
+                }
+            ]
+        },
+        "_kv-payload": {
+            "patterns": [
+                { "include": "#comments" },
+                { "include": "#_payload-property-def" }
+            ]
+        },
+        "_kv-odt": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+): *",
+                    "beginCaptures": { "2": { "name": "entity.name.tag.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                }
+            ]
+        },
+        "_li-action": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+        },
+        "_li-odt": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)- *",
+                    "end": "(?=^(\\1[\\S]|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                }
+            ]
+        },
+        "_li-ontology-class": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.ontology-class.omt",
+                    "patterns": [{ "include": "#_ontology-class-def" }]
+                }
+            ]
+        },
+        "_li-param": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.param.omt",
+                    "patterns": [{ "include": "#_param-def" }]
+                }
+            ]
+        },
+        "_li-ref": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "match": "^ *- +([\\w@\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "support.function.omt" },
+                        "2": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_li-variable": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.variable.omt",
+                    "patterns": [{ "include": "#_variable-def" }]
+                }
+            ]
+        },
+        "_li-watcher": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)-",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.watcher.omt",
+                    "patterns": [{ "include": "#_watcher-def" }]
+                }
+            ]
+        },
+        "_list-comment": {
+            "match": "^ *([^ -].*)$",
+            "captures": {
+                "1": { "patterns": [{ "include": "#_comments-only" }] }
+            }
+        },
+        "menu": {
+            "begin": "^(menu):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.menu.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(.+?):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.menu.omt",
+                    "patterns": [{ "include": "#_li-action" }]
+                }
+            ]
+        },
+        "model": {
+            "begin": "^(model):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.model.omt",
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "^( +)(\\w+): +(!Action)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Activity)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.activity.omt",
+                    "patterns": [{ "include": "#_activity-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Component)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.component.omt",
+                    "patterns": [{ "include": "#_component-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Ontology)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.ontology.omt",
+                    "patterns": [{ "include": "#_ontology-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Procedure)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.procedure.omt",
+                    "patterns": [{ "include": "#_procedure-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Service)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.service.omt",
+                    "patterns": [{ "include": "#_service-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!StandaloneQuery)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.standalone-query.omt",
+                    "patterns": [{ "include": "#_standalone-query-def" }]
+                }
+            ]
+        },
+        "module-name": {
+            "match": "^(moduleName): *(.+?)(#.*)?$",
+            "captures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": {
+                    "name": "string.unquoted.omt",
+                    "patterns": [{ "include": "#_escape" }]
+                },
+                "3": { "patterns": [{ "include": "#comments" }] }
+            }
+        },
+        "_on-change": {
+            "begin": "((?:\\G|^) +)(onChange): *\\|(.*)$",
+            "beginCaptures": {
+                "2": { "name": "entity.name.function.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "on-session-start": {
+            "begin": "^(onSessionStart): *\\|(.*)$",
+            "beginCaptures": {
+                "1": { "name": "entity.name.function.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^\\S)",
+            "contentName": "meta.embedded.block.odt",
+            "patterns": [{ "include": "source.odt" }]
+        },
+        "_params": {
+            "begin": "^( +)(params):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.params.omt",
+            "patterns": [{ "include": "#_li-param" }]
+        },
+        "_payload": {
+            "begin": "^( +)(payload):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.kv.payload.omt",
+            "patterns": [{ "include": "#_kv-payload" }]
+        },
+        "prefixes": {
+            "begin": "^( *)(prefixes):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+            "contentName": "meta.kv.prefixes.omt",
+            "patterns": [{ "include": "#_kv-iri-literal" }]
+        },
+        "_rules": {
+            "begin": "^( +)(rules):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.kv.rules.omt",
+            "patterns": [{ "include": "#_kv-odt" }]
+        },
+        "_types": {
+            "patterns": [
+                {
+                    "match": "\\b(?:(boolean|date|dateTime|decimal|duration|integer|json|string|time)|(\\S+))\\b",
+                    "captures": {
+                        "1": { "name": "support.type.primitive.omt" },
+                        "2": {
+                            "name": "meta.embedded.iri-prefixed.odt",
+                            "patterns": [{ "include": "source.odt#_prefixed-iri", "name":"entity.name.type.omt" }]
+                        }
+                    }
+                }
+            ]
+        },
+        "_variables": {
+            "begin": "^( +)(variables):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.variables.omt",
+            "patterns": [{ "include": "#_li-variable" }]
+        },
+        "_watchers": {
+            "begin": "^( +)(watchers):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.watchers.omt",
+            "patterns": [{ "include": "#_li-watcher" }]
+        }
+    }
+}

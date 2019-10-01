@@ -1,13 +1,13 @@
 {
     "comments": {
-        // symbol used for single line comment. Remove this entry if your language does not support line comments
+        // symbol used for single line comment
         "lineComment": "#"
     },
     // symbols used as brackets
     "brackets": [
-        ["{", "}"],
-        ["[", "]"],
-        ["(", ")"]
+        [ "{", "}" ],
+        [ "[", "]" ],
+        [ "(", ")" ]
     ],
     // symbols that are auto closed when typing
     "autoClosingPairs": [
@@ -17,6 +17,8 @@
         ["\"", "\""],
         ["'", "'"]
     ],
+    // auto close pairs when they are followed by these characters
+    "autoCloseBefore": ";:.,=}]> \n\t",
     // symbols that that can be used to surround a selection
     "surroundingPairs": [
         ["{", "}"],
@@ -26,14 +28,11 @@
         ["'", "'"]
     ],
     "folding": {
-		"offSide": true,
-		"markers": {
-			"start": "^\\s*#\\s*region\\b",
-			"end": "^\\s*#\\s*endregion\\b"
-		}
-	},
-	"indentationRules": {
-		"increaseIndentPattern": "^\\s*.*(:|-) ?(&amp;\\w+)?(\\{[^}\"']*|\\([^)\"']*)?$",
-		"decreaseIndentPattern": "^\\s+\\}$"
-	}
+        "offSide": true
+    },
+    "indentationRules": {
+        // from VSCode YAML config 
+        "increaseIndentPattern": "^\\s*.*(:|-) ?([&amp;\\!]\\w+)?(\\{[^}\"']*|\\([^)\"']*)?$",
+        "decreaseIndentPattern": "^\\s+\\}$",
+    }
 }
