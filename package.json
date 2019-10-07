@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "license": "Apache-2.0",
 
     "displayName": "OMT & ODT",
@@ -12,7 +12,8 @@
         "theme": "dark"
     },
     "categories": [
-        "Programming Languages"
+        "Programming Languages",
+        "Snippets"
     ],
 
     "repository": {
@@ -61,6 +62,12 @@
                     "meta.embedded.iri-literal.odt": "odt",
                     "meta.embedded.iri-prefixed.odt": "odt"
                 }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "odt",
+                "path": "./snippets/odt.snippets.json"
             }
         ]
     }
