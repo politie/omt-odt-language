@@ -5,10 +5,15 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unpublished]
+## [2.1.0]
+
+### Added
 
 - ODT snippets
 - OMT snippets
+
+### Changed
+
 - Updated `README.md` and `README-DEVELOP.md`
 
 ## [2.0.0]
