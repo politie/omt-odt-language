@@ -68,6 +68,10 @@
             {
                 "language": "odt",
                 "path": "./snippets/odt.snippets.json"
+            },
+            {
+                "language": "omt",
+                "path": "./snippets/omt.snippets.json"
             }
         ]
     }
