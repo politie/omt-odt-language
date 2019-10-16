@@ -11,15 +11,15 @@ They then worked around the clock for two years to develop this extremely exciti
 
 ## Features
 
-The plugin includes two languages for syntax highlighting, OMT and ODT.
+The plugin includes two languages for syntax highlighting, OMT and ODT. It also includes several nifty snippets.
 
 ### Roadmap
 
-In the future, more advanced features like snippets, syntax checking, hover information, and code completion will be added.
+In the future, more advanced features like syntax checking, hover information, and code completion will be added.
 
 ## Extension Settings
 
-The plugin shoul automatically recognise OMT and ODT files, no configuration needed.
+The plugin should automatically recognise OMT and ODT files, no configuration needed.
 **If it doesn't**, add the folowing settings to your Preferences:
 
 ```json
@@ -35,4 +35,5 @@ After you restart VSCode OMT files should have a little OMT label in the bottom 
 
 ## Issues
 
-If you notice any problems or have suggestions for improved highlighting you can add an issue on Github.
+If you notice any problems or have suggestions for improved highlighting you can add an issue on GitHub.
+You are also welcome to make a pull request of your own for the desired changes.

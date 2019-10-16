@@ -8,6 +8,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unpublished]
 
 - ODT snippets
+- OMT snippets
+- Updated `README.md` and `README-DEVELOP.md`
 
 ## [2.0.0]
 
@@ -17,6 +19,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Embedded ODT syntax highlighting in OMT syntax highlighting
 - Plugin logo
 - `LICENSE` file
+- `README-DEVELOP.md`
 
 ### Changed
 

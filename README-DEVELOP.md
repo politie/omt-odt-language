@@ -28,6 +28,13 @@ These files end in `.language-configuration.json` and control declarative langua
 For more information on language configuration,
 have a look at the [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide).
 
+### The `snippets` folder
+
+This folder contains all code snippets.
+These files end in `*.snippets.json` and define snippets that can be inserted and filled out for the developer's convenience.
+
+For more information on snippets, see the [Snippet Guide](https://code.visualstudio.com/api/language-extensions/snippet-guide).
+
 ### The `syntaxes` folder
 
 This folder contains all TextMate grammar files for syntax highlighting.

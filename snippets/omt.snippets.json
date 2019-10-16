@@ -22,7 +22,7 @@
             "    ${1:SectionName}:",
             "    -   title: ${2:Menu item name}",
             "        onSelect: |",
-            "            ${0:ODT script here;}"
+            "            ${0:@LOG('snippet');}"
         ]
     },
     "Global actions": {
@@ -35,7 +35,7 @@
             "         title: ${3:Action name}",
             "         icon: ${4:Action icon}",
             "         onSelect: |",
-            "             $0"
+            "             ${0:@LOG('snippet');}"
         ]
     },
     "Declared imports": {
@@ -58,6 +58,41 @@
             "import:",
             "    ${1|./,module:|}:",
             "    -   ${0:ThingToImport}"
+        ]
+    },
+
+    // MODEL TEMPLATES
+    "Activity model": {
+        "prefix": "model-act",
+        "description": "Define an OMT Activity. Includes the most used properties.\n\nUse within `model:` element.",
+        "body": [
+            "${1:ActivityName}: !Activity",
+            "    title: ${0:Display name of the activity}",
+            "    params:",
+            "    -   \\$foo",
+            "    graphs:",
+            "        live:",
+            "        -   ...",
+            "        edit:",
+            "        -   ...",
+            "    payload:",
+            "        foo: \\$foo"
+        ]
+    },
+    "Procedure model": {
+        "prefix": "model-proc",
+        "description": "Define an OMT Procedure. Includes the most used properties.\n\nUse within `model:` element.",
+        "body": [
+            "${0:ProcedureName}: !Procedure",
+            "    params:",
+            "    -   \\$foo",
+            "    graphs:",
+            "        live:",
+            "        -   ...",
+            "        edit:",
+            "        -   ...",
+            "    onRun: |",
+            "        RETURN 'snippet';"
         ]
     }
 }
