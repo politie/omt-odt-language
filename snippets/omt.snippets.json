@@ -22,7 +22,7 @@
             "    ${1:SectionName}:",
             "    -   title: ${2:Menu item name}",
             "        onSelect: |",
-            "            ${0:@LOG('snippet');}"
+            "            ${0:@LOG(`$2`);}"
         ]
     },
     "Global actions": {
