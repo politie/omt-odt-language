@@ -1,0 +1,98 @@
+{
+    // Place your snippets for odt here. Each snippet is defined under a snippet name and has a prefix, body and
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+    // same ids are connected.
+    // Example:
+    // "Print to console": {
+    //     "prefix": "log",
+    //     "description": "Log output to console",
+    //     "body": [
+    //         "console.log('$1');",
+    //         "$2"
+    //     ]
+    // }
+
+    // MODULE ENTRY POINT / DOCUMENT CONSTRUCTS
+    "Menu definition": {
+        "prefix": "menu",
+        "description": "Define sections of the application menu.\n\nUse in OMT modules only.",
+        "body": [
+            "menu:",
+            "    ${1:SectionName}:",
+            "    -   title: ${2:Menu item name}",
+            "        onSelect: |",
+            "            ${0:@LOG(`$2`);}"
+        ]
+    },
+    "Global actions": {
+        "prefix": "global-actions",
+        "description": "Define global actions.\n\nUse in OMT modules only.",
+        "body": [
+            "actions:",
+            "    ${1|dashboard,dossier,notifications,dashboardActions|}:",
+            "    -    id: $2",
+            "         title: ${3:Action name}",
+            "         icon: ${4:Action icon}",
+            "         onSelect: |",
+            "             ${0:@LOG('snippet');}"
+        ]
+    },
+    "Declared imports": {
+        "prefix": "declare",
+        "description": "Declare modules with their imports.\n\nUse in OMT modules only.",
+        "body": [
+            "declare:",
+            "    ${1:ModuleName}:",
+            "        ${2:ThingToDeclare}:",
+            "            type: ${3|Activity,Command,Procedure|}",
+            "            params:",
+            "            -   ${4:primitive type or prefixed IRI}",
+            "            returns: ${0:primitive type or prefixed IRI}"
+        ]
+    },
+    "Imports": {
+        "prefix": "import",
+        "description": "Import definitions from another OMT file and/or module.",
+        "body": [
+            "import:",
+            "    ${1|./,module:|}:",
+            "    -   ${0:ThingToImport}"
+        ]
+    },
+
+    // MODEL TEMPLATES
+    "Activity model": {
+        "prefix": "model-act",
+        "description": "Define an OMT Activity. Includes the most used properties.\n\nUse within `model:` element.",
+        "body": [
+            "${1:ActivityName}: !Activity",
+            "    title: ${0:Display name of the activity}",
+            "    params:",
+            "    -   \\$foo",
+            "    graphs:",
+            "        live:",
+            "        -   ...",
+            "        edit:",
+            "        -   ...",
+            "    payload:",
+            "        foo: \\$foo"
+        ]
+    },
+    "Procedure model": {
+        "prefix": "model-proc",
+        "description": "Define an OMT Procedure. Includes the most used properties.\n\nUse within `model:` element.",
+        "body": [
+            "${0:ProcedureName}: !Procedure",
+            "    params:",
+            "    -   \\$foo",
+            "    graphs:",
+            "        live:",
+            "        -   ...",
+            "        edit:",
+            "        -   ...",
+            "    onRun: |",
+            "        RETURN 'snippet';"
+        ]
+    }
+}

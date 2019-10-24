@@ -1,0 +1,41 @@
+{
+    // Place your snippets for odt here. Each snippet is defined under a snippet name and has a prefix, body and
+    // description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+    // $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the
+    // same ids are connected.
+    // Example:
+    // "Print to console": {
+    //     "prefix": "log",
+    //     "description": "Log output to console",
+    //     "body": [
+    //         "console.log('$1');",
+    //         "$2"
+    //     ]
+    // }
+    "Choose-when construct": {
+        "prefix": "choose",
+        "description": "Give your query several paths.",
+        "body": [
+            "CHOOSE",
+            "    WHEN ${1:condition} => ${2:expression}",
+            "    ${3:...}",
+            "    OTHERWISE => ${4:expression}",
+            "END$0"
+        ]
+    },
+    "Command definition": {
+        "prefix": "define-command",
+        "description": "Define an ODT command.",
+        "body": "DEFINE COMMAND ${1:name}(${2:\\$optionalParam}) => {$0}"
+    },
+    "Query definition": {
+        "prefix": "define-query",
+        "description": "Define an ODT query.",
+        "body": "DEFINE QUERY ${1:name}(${2:\\$optionalParam}) => {$0}"
+    },
+    "When": {
+        "prefix": "when",
+        "description": "Add another path to your CHOOSE-WHEN construct.",
+        "body": "WHEN ${1:condition} => ${0:expression}"
+    }
+}
