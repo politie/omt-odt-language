@@ -34,6 +34,7 @@
             "    -    id: $2",
             "         title: ${3:Action name}",
             "         icon: ${4:Action icon}",
+            "         promoteSubMenuItemToMainMenu: ${5:Action promoteSubMenuItemToMainMenu}",
             "         onSelect: |",
             "             ${0:@LOG('snippet');}"
         ]
