@@ -21,6 +21,8 @@
             "menu:",
             "    ${1:SectionName}:",
             "    -   title: ${2:Menu item name}",
+            "        icon: ${3:Menu icon}",
+            "        promoteSubMenuItemToMainMenu: ${4:Menu promoteSubMenuItemToMainMenu}",
             "        onSelect: |",
             "            ${0:@LOG(`$2`);}"
         ]
@@ -34,7 +36,6 @@
             "    -    id: $2",
             "         title: ${3:Action name}",
             "         icon: ${4:Action icon}",
-            "         promoteSubMenuItemToMainMenu: ${5:Action promoteSubMenuItemToMainMenu}",
             "         onSelect: |",
             "             ${0:@LOG('snippet');}"
         ]
