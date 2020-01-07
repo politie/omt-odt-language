@@ -28,8 +28,7 @@
                             "name": "string.unquoted.omt",
                             "patterns": [{ "include": "#_escape" }]
                         },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] },
-                        "4": { "patterns": [{ "include": "#_boolean-only" }] }
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 },
                 {
