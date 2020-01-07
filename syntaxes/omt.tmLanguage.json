@@ -35,7 +35,8 @@
                     "match": "(?:\\G|^) +(promoteSubMenuItemToMainMenu): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
-                        "2": { "patterns": [{ "include": "#_boolean-only" }] }
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 },
                 {
