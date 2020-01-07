@@ -28,7 +28,15 @@
                             "name": "string.unquoted.omt",
                             "patterns": [{ "include": "#_escape" }]
                         },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                        "3": { "patterns": [{ "include": "#_comments-only" }] },
+                        "4": { "patterns": [{ "include": "#_boolean-only" }] }
+                    }
+                },
+                {
+                    "match": "(?:\\G|^) +(promoteSubMenuItemToMainMenu): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] }
                     }
                 },
                 {
