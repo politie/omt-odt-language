@@ -5,6 +5,12 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.1.1]
+
+### Changed
+
+- OMT snippet and highlighting for menu with icon and newly added promoteSubMenuItemToMainMenu
+
 ## [2.1.0]
 
 ### Added

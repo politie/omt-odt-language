@@ -21,6 +21,8 @@
             "menu:",
             "    ${1:SectionName}:",
             "    -   title: ${2:Menu item name}",
+            "        icon: ${3:icon}",
+            "        promoteSubMenuItemToMainMenu: ${4:false}",
             "        onSelect: |",
             "            ${0:@LOG(`$2`);}"
         ]
