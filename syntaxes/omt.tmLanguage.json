@@ -605,7 +605,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^( +)(notifications|dashboard(?:Actions)?|dossier):(.*)$",
+                    "begin": "^( +)(notifications|dashboard(?:Actions)?|dossier|bottomNavigation):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
