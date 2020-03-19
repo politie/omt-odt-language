@@ -5,6 +5,12 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.1.2]
+
+### Added
+
+- OMT highlighting for newly added global action type "bottomNavigation"
+
 ## [2.1.1]
 
 ### Changed
