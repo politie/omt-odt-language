@@ -1,20 +1,18 @@
-/* --------------------------------------------------------------------------------------------
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- * ------------------------------------------------------------------------------------------ */
-
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { getDocUri, activate } from './helper';
 
 suite('Should do completion', () => {
-	const docUri = getDocUri('completion.txt');
+	const omtDocUri = getDocUri('completion.omt');
 
-	test('Completes JS/TS in txt file', async () => {
-		await testCompletion(docUri, new vscode.Position(0, 0), {
+	test('Completes static items in omt file', async () => {
+		/** these just static items in the completion list,
+		 * they will be autocompleted in the supported docunments
+		 */
+		await testCompletion(omtDocUri, new vscode.Position(0, 0), {
 			items: [
 				{ label: 'JavaScript', kind: vscode.CompletionItemKind.Text },
-				{ label: 'TypeScript', kind: vscode.CompletionItemKind.Text }
+				{ label: 'TypeScript', kind: vscode.CompletionItemKind.Text },
 			]
 		});
 	});
@@ -33,7 +31,7 @@ async function testCompletion(
 		docUri,
 		position
 	)) as vscode.CompletionList;
-
+	actualCompletionList.items.forEach(i => console.log(i.label));
 	assert.ok(actualCompletionList.items.length >= 2);
 	expectedCompletionList.items.forEach((expectedItem, i) => {
 		const actualItem = actualCompletionList.items[i];
