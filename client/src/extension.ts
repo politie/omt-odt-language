@@ -1,12 +1,14 @@
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, commands, languages, Disposable } from 'vscode';
 
 import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
-	TransportKind
+	TransportKind,
+
 } from 'vscode-languageclient';
+import OMTLinkProvider from './omtLinkProvider';
 
 let client: LanguageClient;
 
@@ -53,7 +55,21 @@ export function activate(context: ExtensionContext) {
 
 	// Start the client. This will also launch the server
 	client.start();
+
+
+	// register document link provider for OMT files
+	const providerRegistrations = Disposable.from(
+		languages.registerDocumentLinkProvider(
+			{ scheme: 'file', language: 'omt' },
+			new OMTLinkProvider())
+	);
+
+	context.subscriptions.push(
+		providerRegistrations
+	)
 }
+
+// commands.executeCommand('vscode.executeLinkProvider', uri);
 
 export function deactivate(): Thenable<void> | undefined {
 	if (!client) {

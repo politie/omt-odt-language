@@ -1,0 +1,19 @@
+import:
+    module:Declared:
+    -   DeclaredQuery
+    ../relative.omt:
+    -   RelativeAction
+    @one/shorthanded.omt:
+    -   shorthandAction
+    '@one/quotedShorthand.omt':
+    -   quotedShorthandAction
+    "@one/doubleQuotedShorthand.omt":
+    -   doubleQuotedShorthandAction
+    @two/siblingShorthanded.omt:
+    -   siblingShorthanded
+    @three/parentPathed.omt:
+    -   parentPathed
+
+model:
+    TestActivity: !Activity
+        title: Test Activity
