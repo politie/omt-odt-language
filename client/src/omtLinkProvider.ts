@@ -1,18 +1,14 @@
-
 import * as path from 'path';
 import { DocumentLink, DocumentLinkProvider, TextDocument } from 'vscode';
 import { Position, Range, Uri, workspace } from 'vscode';
 import { readFileSync } from 'fs';
 
-const MATCHER = /( {4}["']?)(.*\.omt)/;
+const MATCHER = /( +["']?)(.*\.omt)/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
-// Geeft een set zogenaamde DocumentLinks terug die VSCode in de editor toont.
+// Provides DocumentLinks for the imports of an OMT file.
 export default class OMTLinkProvider implements DocumentLinkProvider {
-
-    constructor() {
-    }
 
     public provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {
 
@@ -25,8 +21,8 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
                         const file = readFileSync(uri.path, 'utf8');
                         try {
                             const json = JSON.parse(file);
-                            if (!!(json.compilerOptions) && !!(json.compilerOptions.paths)) {
-                                // now make  a path from the config folder to the keys value and map that
+                            if (json.compilerOptions && json.compilerOptions.paths) {
+                                // now make a path from the config folder to the keys value and map that
                                 const paths: [string, string][] = [];
                                 for (var key in json.compilerOptions.paths) {
                                     const relPath = json.compilerOptions.paths[key].toString();
@@ -51,7 +47,7 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
     }
 }
 
-// Loop door de regels van een OMT bestand en zoek links naar andere OMT bestanden
+// Find links to other imported OMT files
 function findOMTUrl(document: TextDocument, roots: Map<string, string>): DocumentLink[] {
     let _DocumentLinks: DocumentLink[] = [];
     // so match after import: until we need any other (\w+): without any preceding spaces
@@ -63,7 +59,7 @@ function findOMTUrl(document: TextDocument, roots: Map<string, string>): Documen
             isScanning = true;
         } else if (isScanning) {
             if (otherDeclareMatch.exec(line.text)) {
-                break; // we can stop matching after the import block 
+                break; // we can stop matching after the import block
             } else {
                 const match = MATCHER.exec(line.text);
                 if (match) {
@@ -81,7 +77,7 @@ function findOMTUrl(document: TextDocument, roots: Map<string, string>): Documen
                         }
                     })
 
-                    // Maak een lege Uri aan om later een relative path in te stoppen.
+                    // create an emptu\y Uri as placeholder for a relative path.
                     let url = Uri.file('');
 
                     url = url.with({

@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.1.2",
+    "version": "2.2.0",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
@@ -97,9 +97,6 @@
     "main": "./client/out/extension",
     "activationEvents": [
         "onLanguage:omt",
-        "onLanguage:plaintext",
-        "onLanguage:typescript",
-        "onLanguage:json",
         "onLanguage:odt"
     ],
     "scripts": {
