@@ -34,7 +34,7 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
                         } catch (e) { console.error(); }
                         // all other paths return undefined
                     }).filter(paths => paths != undefined);
-                //make it typed
+                // make it typed
                 const sourceType: [string, string][] = [];
                 const mapSource = sourceType.concat.apply([], pathPaths) as [string, string][];
                 return new Map<string, string>(mapSource);
