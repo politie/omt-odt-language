@@ -77,7 +77,7 @@ function findOMTUrl(document: TextDocument, roots: Map<string, string>): Documen
                         }
                     })
 
-                    // create an emptu\y Uri as placeholder for a relative path.
+                    // create an empty Uri as placeholder for a relative path.
                     let url = Uri.file('');
 
                     url = url.with({
