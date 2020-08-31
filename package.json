@@ -22,7 +22,7 @@
         "url": "https://github.com/emielb/omt-odt-language/issues"
     },
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.43.0"
     },
     "contributes": {
         "languages": [
@@ -111,7 +111,7 @@
         "@types/mocha": "^7.0.2",
         "@types/node": "^12.12.0",
         "@typescript-eslint/parser": "^2.3.0",
-        "@types/vscode": "1.43.0",
+        "@types/vscode": "^1.43.0",
         "eslint": "^6.4.0",
         "chai": "^4.2.0",
         "mocha": "^7.2.0",

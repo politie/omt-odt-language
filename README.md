@@ -11,7 +11,7 @@ They then worked around the clock for two years to develop this extremely exciti
 
 ## Features
 
-The plugin includes two languages for syntax highlighting, OMT and ODT. It also includes several nifty snippets.
+The plugin includes two languages for syntax highlighting, OMT and ODT. It will add document links to OMT imports with paths and it also includes several nifty snippets for both languages.
 
 ### Roadmap
 

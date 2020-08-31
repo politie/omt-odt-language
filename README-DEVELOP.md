@@ -10,7 +10,16 @@
 - `logo.png` - a logo for the extension in the marketplace
 - `package.json` - the manifest file declaring all capabilities of the extension
 - `README.md` - for users
+- `tsconfig.json` - configuration for typescript compilation for the client and server code
 - this file for the extension's developers
+
+### The `client` folder
+
+This folder contains the extension code that will be run on the client. it will start and connect to the server defined in `/server`. The client features can be tested by running `npm run test` from the workspace root. Features provided by the client:
+
+- Document link for OMT imports with:
+    - Relative paths
+    - Paths beginning with a @Shorthand
 
 ### The `configurations` folder
 
@@ -27,6 +36,10 @@ These files end in `.language-configuration.json` and control declarative langua
 
 For more information on language configuration,
 have a look at the [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide).
+
+## The `server` folder
+
+This folder contains all the code run as a node server. Ir provides the language-server functionality to the client plugin and is started by the extension in `/client`. It currently provides no additional functionality.
 
 ### The `snippets` folder
 
