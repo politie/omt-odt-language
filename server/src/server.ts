@@ -1,22 +1,22 @@
 import {
-	createConnection,
-	TextDocuments,
-	ProposedFeatures,
-	InitializeParams,
-	DidChangeConfigurationNotification,
-	TextDocumentSyncKind,
-	InitializeResult
+    createConnection,
+    TextDocuments,
+    ProposedFeatures,
+    InitializeParams,
+    DidChangeConfigurationNotification,
+    TextDocumentSyncKind,
+    InitializeResult
 } from 'vscode-languageserver';
 
 import {
-	TextDocument
+    TextDocument
 } from 'vscode-languageserver-textdocument';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 let connection = createConnection(ProposedFeatures.all);
 
-// Create a simple text document manager. 
+// Create a simple text document manager.
 let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability: boolean = false;
@@ -24,52 +24,52 @@ let hasWorkspaceFolderCapability: boolean = false;
 let hasDiagnosticRelatedInformationCapability: boolean = false;
 
 connection.onInitialize((params: InitializeParams) => {
-	let capabilities = params.capabilities;
+    let capabilities = params.capabilities;
 
-	// Does the client support the `workspace/configuration` request?
-	// If not, we fall back using global settings.
-	hasConfigurationCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.configuration
-	);
-	hasWorkspaceFolderCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.workspaceFolders
-	);
-	hasDiagnosticRelatedInformationCapability = !!(
-		capabilities.textDocument &&
-		capabilities.textDocument.publishDiagnostics &&
-		capabilities.textDocument.publishDiagnostics.relatedInformation
-	);
+    // Does the client support the `workspace/configuration` request?
+    // If not, we fall back using global settings.
+    hasConfigurationCapability = !!(
+        capabilities.workspace && !!capabilities.workspace.configuration
+    );
+    hasWorkspaceFolderCapability = !!(
+        capabilities.workspace && !!capabilities.workspace.workspaceFolders
+    );
+    hasDiagnosticRelatedInformationCapability = !!(
+        capabilities.textDocument &&
+        capabilities.textDocument.publishDiagnostics &&
+        capabilities.textDocument.publishDiagnostics.relatedInformation
+    );
 
-	const result: InitializeResult = {
-		capabilities: {
-			textDocumentSync: TextDocumentSyncKind.Incremental,
-		}
-	};
-	if (hasWorkspaceFolderCapability) {
-		result.capabilities.workspace = {
-			workspaceFolders: {
-				supported: true
-			}
-		};
-	}
-	return result;
+    const result: InitializeResult = {
+        capabilities: {
+            textDocumentSync: TextDocumentSyncKind.Incremental,
+        }
+    };
+    if (hasWorkspaceFolderCapability) {
+        result.capabilities.workspace = {
+            workspaceFolders: {
+                supported: true
+            }
+        };
+    }
+    return result;
 });
 
 connection.onInitialized(() => {
-	if (hasConfigurationCapability) {
-		// Register for all configuration changes.
-		connection.client.register(DidChangeConfigurationNotification.type, undefined);
-	}
-	if (hasWorkspaceFolderCapability) {
-		connection.workspace.onDidChangeWorkspaceFolders(_event => {
-			connection.console.log('Workspace folder change event received.');
-		});
-	}
+    if (hasConfigurationCapability) {
+        // Register for all configuration changes.
+        connection.client.register(DidChangeConfigurationNotification.type, undefined);
+    }
+    if (hasWorkspaceFolderCapability) {
+        connection.workspace.onDidChangeWorkspaceFolders(_event => {
+            connection.console.log('Workspace folder change event received.');
+        });
+    }
 });
 
 // The example settings
 interface ExampleSettings {
-	maxNumberOfProblems: number;
+    maxNumberOfProblems: number;
 }
 
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -82,19 +82,19 @@ let globalSettings: ExampleSettings = defaultSettings;
 let documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
 connection.onDidChangeConfiguration(change => {
-	if (hasConfigurationCapability) {
-		// Reset all cached document settings
-		documentSettings.clear();
-	} else {
-		globalSettings = <ExampleSettings>(
-			(change.settings.languageServerExample || defaultSettings)
-		);
-	}
+    if (hasConfigurationCapability) {
+        // Reset all cached document settings
+        documentSettings.clear();
+    } else {
+        globalSettings = <ExampleSettings>(
+            (change.settings.languageServerExample || defaultSettings)
+        );
+    }
 });
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri);
+    documentSettings.delete(e.document.uri);
 });
 
 // The content of a text document has changed. This event is emitted
@@ -103,8 +103,8 @@ documents.onDidChangeContent(() => {
 });
 
 connection.onDidChangeWatchedFiles(_change => {
-	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
+    // Monitored files have change in VSCode
+    connection.console.log('We received an file change event');
 });
 
 // Make the text document manager listen on the connection

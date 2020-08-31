@@ -10,7 +10,7 @@ const otherDeclareMatch = /^(\w+):/g;
 // Provides DocumentLinks for the imports of an OMT file.
 export default class OMTLinkProvider implements DocumentLinkProvider {
 
-    public provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {
+    provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {
 
         return Promise.resolve(workspace.findFiles('**/tsconfig**.json').then(
             (tsConfigs) => {
@@ -24,7 +24,7 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
                             if (json.compilerOptions && json.compilerOptions.paths) {
                                 // now make a path from the config folder to the keys value and map that
                                 const paths: [string, string][] = [];
-                                for (var key in json.compilerOptions.paths) {
+                                for (let key in json.compilerOptions.paths) {
                                     const relPath = json.compilerOptions.paths[key].toString();
                                     const newPath = path.resolve(path.dirname(uri.path), relPath);
                                     paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);

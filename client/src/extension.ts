@@ -65,7 +65,7 @@ export function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
         providerRegistrations
-    )
+    );
 }
 
 export function deactivate(): Thenable<void> | undefined {
