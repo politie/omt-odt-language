@@ -39,7 +39,7 @@ export function activate(context: ExtensionContext) {
             { scheme: 'file', language: 'odt' },
         ],
         synchronize: {
-            // Notify the server about file changes to '.clientrc files contained in the workspace
+            // Notify the server about file changes to '.clientrc' files contained in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
         }
     };
