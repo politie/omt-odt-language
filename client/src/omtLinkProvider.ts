@@ -63,7 +63,7 @@ function findOMTUrl(document: TextDocument, roots: Map<string, string>): Documen
             } else {
                 const match = MATCHER.exec(line.text);
                 if (match) {
-                    // match[0] is the full match inluding the whitespace of match[1]
+                    // match[0] is the full match including the whitespace of match[1]
                     // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
                     // match[2] is the link text, including the @shorthands
                     let link = match[2].trim();
@@ -88,10 +88,6 @@ function findOMTUrl(document: TextDocument, roots: Map<string, string>): Documen
                     _DocumentLinks.push(new DocumentLink(new Range(start, end), url));
                 }
             }
-        }
-
-        if (l === document.lineCount) {
-            break;
         }
     }
     return _DocumentLinks;
