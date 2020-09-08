@@ -1,8 +1,7 @@
 {
     "name": "omt-odt-language",
-    "version": "2.1.2",
+    "version": "2.2.0",
     "license": "Apache-2.0",
-
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
     "publisher": "pvr",
@@ -15,7 +14,6 @@
         "Programming Languages",
         "Snippets"
     ],
-
     "repository": {
         "type": "git",
         "url": "https://github.com/emielb/omt-odt-language.git"
@@ -23,22 +21,31 @@
     "bugs": {
         "url": "https://github.com/emielb/omt-odt-language/issues"
     },
-
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.43.0"
     },
     "contributes": {
         "languages": [
             {
                 "id": "odt",
-                "aliases": ["ODT", "odt"],
-                "extensions": [".odt"],
+                "aliases": [
+                    "ODT",
+                    "odt"
+                ],
+                "extensions": [
+                    ".odt"
+                ],
                 "configuration": "./configurations/odt.language-configuration.json"
             },
             {
                 "id": "omt",
-                "aliases": ["OMT", "omt"],
-                "extensions": [".omt"],
+                "aliases": [
+                    "OMT",
+                    "omt"
+                ],
+                "extensions": [
+                    ".omt"
+                ],
                 "configuration": "./configurations/omt.language-configuration.json"
             }
         ],
@@ -73,6 +80,42 @@
                 "language": "omt",
                 "path": "./snippets/omt.snippets.json"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "OMT-ODT configuration",
+            "properties": {
+                "languageServerExample.maxNumberOfProblems": {
+                    "scope": "resource",
+                    "type": "number",
+                    "default": 100,
+                    "description": "Controls the maximum number of problems produced by the server."
+                }
+            }
+        }
+    },
+    "main": "./client/out/extension",
+    "activationEvents": [
+        "onLanguage:omt",
+        "onLanguage:odt"
+    ],
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -b",
+        "watch": "tsc -b -w",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "test": "sh ./scripts/e2e.sh"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.2.12",
+        "@types/mocha": "^7.0.2",
+        "@types/node": "^12.12.0",
+        "@typescript-eslint/parser": "^2.3.0",
+        "@types/vscode": "^1.43.0",
+        "eslint": "^6.4.0",
+        "chai": "^4.2.0",
+        "mocha": "^7.2.0",
+        "ts-node": "^9.0.0",
+        "typescript": "^3.9.4"
     }
 }

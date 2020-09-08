@@ -5,6 +5,13 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.2.0]
+
+## Added
+
+- Document link support for OMT imports with filepaths
+- Startup configuration for the language server for OMT and ODT
+
 ## [2.1.2]
 
 ### Added

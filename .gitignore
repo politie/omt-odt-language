@@ -1,3 +1,9 @@
-node_modules
+
+**/target
+**/dist
+**/bin
+**/node_modules/
+**/.vscode-test/
+
 *.vsix
 out
