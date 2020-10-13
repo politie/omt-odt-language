@@ -5,9 +5,23 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.2.1]
+
+### Added
+
+- OMT highlighting support for:
+  - up to two flags on a `Command`
+  - empty lists in the `imports` section and empty dictionaries in the `declare` section
+  - the `busyDisabled` property for `Action`s
+  - the `fixed` and `bestandstatus` global action registries
+
+### Changed
+
+- OMT highlighting for fully specified bindings and binding shortcuts is now the same
+
 ## [2.2.0]
 
-## Added
+### Added
 
 - Document link support for OMT imports with filepaths
 - Startup configuration for the language server for OMT and ODT
