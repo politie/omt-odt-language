@@ -5,13 +5,16 @@ import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
-    TransportKind,
+    TransportKind, DocumentLinkClientCapabilities, ClientCapabilities, DocumentLinkRequest
 } from 'vscode-languageclient';
 import OMTLinkProvider from './omtLinkProvider';
+import { ENETRESET } from 'constants';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
+    const test: ClientCapabilities = {};
+
     // The server is implemented in node
     let serverModule = context.asAbsolutePath(
         path.join('server', 'out', 'server.js')
@@ -28,7 +31,7 @@ export function activate(context: ExtensionContext) {
             module: serverModule,
             transport: TransportKind.ipc,
             options: debugOptions
-        }
+        },
     };
 
     // Options to control the language client
@@ -37,7 +40,14 @@ export function activate(context: ExtensionContext) {
         documentSelector: [
             { scheme: 'file', language: 'omt' },
             { scheme: 'file', language: 'odt' },
-        ]
+        ],
+        synchronize: {
+            // Notify the server about file changes to '.clientrc' files contained in the workspace
+            fileEvents: [
+                workspace.createFileSystemWatcher('**/.omt'),
+                workspace.createFileSystemWatcher('**/package.json'),
+            ],
+        },
     };
 
     // Create the language client and start the client.
@@ -51,16 +61,11 @@ export function activate(context: ExtensionContext) {
     // Start the client. This will also launch the server
     client.start();
 
-
     // register document link provider for OMT files
     const providerRegistrations = Disposable.from(
         languages.registerDocumentLinkProvider(
             { scheme: 'file', language: 'omt' },
-            new OMTLinkProvider())
-    );
-
-    context.subscriptions.push(
-        providerRegistrations
+            new OMTLinkProvider(client))
     );
 }
 
