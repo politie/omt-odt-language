@@ -5,7 +5,9 @@ import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
 
-const MATCHER = /( +["']?)(.*\.omt)/;
+const omtUriMatch = /( +["']?)(.*\.omt)/;
+const declaredImportMatch = /( +)(module:)(.*):/;
+const importedElementMatch = /( +\- +)(.*)/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
@@ -19,7 +21,7 @@ export default class OMTLinkProvider {
 
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
-        const DocumentLinks: DocumentLink[] = findOMTUrl(document, (uri) => replaceStart(uri, shorthands));
+        const DocumentLinks: DocumentLink[] = findOMTUrl(document, (uri) => replaceStart(uri, shorthands), this.workspaceLookup);
 
         // declared imports
         /** TODO for declared imports
@@ -107,11 +109,16 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
  * @param document the OMT file we are scanning
  * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
  */
-function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => string): DocumentLink[] {
+function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => string, workspaceLookup: WorkspaceLookup): DocumentLink[] {
     console.log('server omtLinkProvider.findOMTUrl');
     let documentLinks: DocumentLink[] = [];
     // so match after import: until we need any other (\w+): without any preceding spaces
     let isScanning = false;
+    const scanContext = {
+        declaredImport: {
+            module: '',
+        }
+    }
     for (let l = 0; l <= document.lineCount - 1; l++) {
         const line = getLine(document, l);
         if (importMatch.exec(line)) {
@@ -120,16 +127,15 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
             if (otherDeclareMatch.exec(line)) {
                 break; // we can stop matching after the import block
             } else {
-                const match = MATCHER.exec(line);
-                if (match) {
+                const uriMatch = omtUriMatch.exec(line);
+                const diMatch = declaredImportMatch.exec(line);
+                if (uriMatch) {
+                    // this is no longer within a declared import
+                    scanContext.declaredImport.module = '';
                     // match[0] is the full match inluding the whitespace of match[1]
                     // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
                     // match[2] is the link text, including the @shorthands
-                    let link = match[2].trim();
-                    const start = Position.create(l, match[1].length);
-                    const end = Position.create(l, start.character + match[2].length);
-
-                    link = resolveShorthand(link);
+                    let link = resolveShorthand(uriMatch[2].trim());
 
                     let url: string;
                     if (path.isAbsolute(link)) {
@@ -137,11 +143,41 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     } else {
                         url = toAbsolutePath(document, link);
                     }
+                    documentLinks.push(
+                        createDocumentLink(l, uriMatch[1].length, uriMatch[2].length, url));
+                }
+                else if (diMatch) {
+                    // match[0] is the full line match including the trailing colon
+                    // match[1] is the whitespace prepending the import
+                    // match[2] is the text 'module:'
+                    // match[3] is the module name
+                    const declaredImportModule = '' + diMatch[3];
+                    scanContext.declaredImport.module = diMatch[3];
 
-                    documentLinks.push(DocumentLink.create(Range.create(start, end), url));
+                    const moduleUri: string = workspaceLookup.getModuleUri(declaredImportModule);
+
+                    documentLinks.push(
+                        createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, moduleUri));
+                } else if (scanContext.declaredImport.module) {
+                    const elementMatch = importedElementMatch.exec(line);
+                    if (elementMatch) {
+                        // match[0] is the full line match
+                        // match[1] is the whitespace and dash prepending the imported element
+                        // match[2] is the name of the imported element
+                        const elementUri: string = workspaceLookup.getModuleElementUri(scanContext.declaredImport.module, elementMatch[2]);
+
+                        documentLinks.push(
+                            createDocumentLink(l, elementMatch[1].length, elementMatch[2].length, elementUri));
+                    }
                 }
             }
         }
     }
     return documentLinks;
+}
+
+function createDocumentLink(line: number, start: number, length: number, uri: string): DocumentLink {
+    const from = Position.create(line, start);
+    const to = Position.create(line, start + length);
+    return DocumentLink.create(Range.create(from, to), uri);
 }

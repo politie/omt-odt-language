@@ -64,4 +64,14 @@ export class WorkspaceLookup {
         return [];
         // throw new Error('workplaceLookup.scanForOMTModules: Not Implemented');
     }
+
+    getModuleElementUri(module: string, elementName: string): string {
+        return '';
+        // throw new Error('Method not implemented.');
+    }
+
+    getModuleUri(declaredImportModule: string): string {
+        return '';
+        // throw new Error('Method not implemented.');
+    }
 }
