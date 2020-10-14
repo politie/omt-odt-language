@@ -1,7 +1,6 @@
 import { DocumentLink, DocumentLinkProvider, TextDocument } from 'vscode';
 import { LanguageClient, DocumentLinkRequest, CancellationToken, DocumentLinkParams } from 'vscode-languageclient';
 
-
 /**
  * Proxy for handling OMT document links with LSP
  */

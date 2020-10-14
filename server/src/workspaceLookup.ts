@@ -1,6 +1,5 @@
 import { WorkspaceFolder, RemoteWorkspace, FileChangeType } from 'vscode-languageserver';
-import * as fs from 'fs';
-import path = require('path');
+import { readFile } from 'fs';
 import { glob } from 'glob';
 
 type scanOptions = {
@@ -100,7 +99,7 @@ export class WorkspaceLookup {
 
     private processOmtFile(uri: string, modules: Map<string, OMTModule>) {
         // console.log(`workspaceLookup.processOmtFile: ${uri}`);
-        fs.readFile(uri, 'utf-8', (err, data) => {
+        readFile(uri, 'utf-8', (err, data) => {
             if (err) {
                 console.error(`failed during reading ${uri}`, err);
                 return;

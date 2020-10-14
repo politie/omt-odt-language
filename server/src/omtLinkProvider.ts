@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { dirname, isAbsolute, resolve } from 'path';
 import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
@@ -7,7 +7,7 @@ import { WorkspaceLookup } from './workspaceLookup';
 
 const omtUriMatch = /( +["']?)(.*\.omt)/;
 const declaredImportMatch = /( +)(module:)(.*):/;
-const importedElementMatch = /( +\- +)(.*)/;
+// const importedElementMatch = /( +\- +)(.*)/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
@@ -56,7 +56,7 @@ export default class OMTLinkProvider {
                         const paths: [string, string][] = [];
                         for (let key in json.compilerOptions.paths) {
                             const relPath = json.compilerOptions.paths[key].toString();
-                            const newPath = path.resolve(path.dirname(uri), relPath);
+                            const newPath = resolve(dirname(uri), relPath);
                             paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);
                         }
                         return paths;
@@ -86,7 +86,7 @@ function getLine(document: TextDocument, line: number): string {
  * @param link a relative path from the document
  */
 function toAbsolutePath(document: TextDocument, link: string): string {
-    return path.resolve(dirpath(document.uri), link)
+    return resolve(dirpath(document.uri), link)
 }
 
 /**
@@ -94,7 +94,7 @@ function toAbsolutePath(document: TextDocument, link: string): string {
  * @param uri path to be made into a dirpath
  */
 function dirpath(uri: string): string {
-    uri = path.dirname(uri);
+    uri = dirname(uri);
     return uri.startsWith('file:') ? uri.substr(7) : uri;
 }
 
@@ -107,7 +107,7 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
     shorthands.forEach((value, key) => {
         if (uri.startsWith(key)) {
             uri = uri.substr(key.length);
-            uri = path.resolve(value.substr(0, value.lastIndexOf('/*')), '.' + uri);
+            uri = resolve(value.substr(0, value.lastIndexOf('/*')), '.' + uri);
         }
     });
     return uri;
@@ -140,8 +140,8 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     let link = resolveShorthand(uriMatch[2].trim());
 
                     let url: string;
-                    if (path.isAbsolute(link)) {
-                        url = path.resolve(document.uri, link);
+                    if (isAbsolute(link)) {
+                        url = resolve(document.uri, link);
                     } else {
                         url = toAbsolutePath(document, link);
                     }
