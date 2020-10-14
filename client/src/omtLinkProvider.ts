@@ -1,14 +1,6 @@
-import * as path from 'path';
 import { DocumentLink, DocumentLinkProvider, TextDocument } from 'vscode';
-import { Position, Range, Uri, workspace } from 'vscode';
-import { readFileSync } from 'fs';
-import { LanguageClient, DocumentLinkRequest, CancellationToken, DocumentLinkParams, TextDocumentIdentifier } from 'vscode-languageclient';
-import { debug } from 'console';
-import { doc } from './test/helper';
+import { LanguageClient, DocumentLinkRequest, CancellationToken, DocumentLinkParams } from 'vscode-languageclient';
 
-const MATCHER = /( +["']?)(.*\.omt)/;
-const importMatch = /^import:/g;
-const otherDeclareMatch = /^(\w+):/g;
 
 /**
  * Proxy for handling OMT document links with LSP
@@ -19,8 +11,7 @@ export default class OMTLinkProvider implements DocumentLinkProvider {
     }
 
     resolveDocumentLink(link: DocumentLink, token: CancellationToken) {
-        this.client.sendRequest(DocumentLinkRequest.method, token);
-        return null;
+        return this.client.sendRequest<DocumentLink>('documentLink/resolve', link, token);
     }
 
     provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {

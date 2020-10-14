@@ -11,13 +11,15 @@ const importedElementMatch = /( +\- +)(.*)/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
-// Provides DocumentLinks for the imports of an OMT file.
+/**
+ * Provides DocumentLinks for the imports of an OMT file.
+ */
 export default class OMTLinkProvider {
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
     provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {
-        console.log('server omtLinkProvider.provideDocumentLinks');
+        // console.log('server omtLinkProvider.provideDocumentLinks');
 
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
@@ -25,13 +27,20 @@ export default class OMTLinkProvider {
 
         // declared imports
         /** TODO for declared imports
-         * find declared import links by pattern
-         * find module they are declared in and make that a link
          * when no apropriate module can be found give a tooltip
-         * find the activities that are listed under the declared import in subsequent files and link there
          */
 
         return Promise.resolve(DocumentLinks ? DocumentLinks : []);
+    }
+
+    /**
+     * Resolve the target of a DocumentLink using its data. Returns undefined when unable to resolve
+     * @param data the data from a document link
+     */
+    public resolve(data?: any) {
+        if (data && data.isDeclaredImport) {
+            return this.workspaceLookup.getModuleUri(data.module);
+        }
     }
 
     private contextPaths(document: TextDocument) {
@@ -114,11 +123,6 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
     let documentLinks: DocumentLink[] = [];
     // so match after import: until we need any other (\w+): without any preceding spaces
     let isScanning = false;
-    const scanContext = {
-        declaredImport: {
-            module: '',
-        }
-    }
     for (let l = 0; l <= document.lineCount - 1; l++) {
         const line = getLine(document, l);
         if (importMatch.exec(line)) {
@@ -130,8 +134,6 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                 const uriMatch = omtUriMatch.exec(line);
                 const diMatch = declaredImportMatch.exec(line);
                 if (uriMatch) {
-                    // this is no longer within a declared import
-                    scanContext.declaredImport.module = '';
                     // match[0] is the full match inluding the whitespace of match[1]
                     // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
                     // match[2] is the link text, including the @shorthands
@@ -152,23 +154,16 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     // match[2] is the text 'module:'
                     // match[3] is the module name
                     const declaredImportModule = '' + diMatch[3];
-                    scanContext.declaredImport.module = diMatch[3];
-
-                    const moduleUri: string = workspaceLookup.getModuleUri(declaredImportModule);
-
+                    const moduleUri = workspaceLookup.getModuleUri(declaredImportModule);
+                    console.log(`loaded uri: ${moduleUri}`);
+                    // because the server may not be done scanning the workspace when this is called
+                    // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
+                    // the url will be undefined and we pass the declared import information as data with the link
                     documentLinks.push(
-                        createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, moduleUri));
-                } else if (scanContext.declaredImport.module) {
-                    const elementMatch = importedElementMatch.exec(line);
-                    if (elementMatch) {
-                        // match[0] is the full line match
-                        // match[1] is the whitespace and dash prepending the imported element
-                        // match[2] is the name of the imported element
-                        const elementUri: string = workspaceLookup.getModuleElementUri(scanContext.declaredImport.module, elementMatch[2]);
-
-                        documentLinks.push(
-                            createDocumentLink(l, elementMatch[1].length, elementMatch[2].length, elementUri));
-                    }
+                        createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, undefined, {
+                            isDeclaredImport: true,
+                            module: declaredImportModule,
+                        }));
                 }
             }
         }
@@ -176,8 +171,16 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
     return documentLinks;
 }
 
-function createDocumentLink(line: number, start: number, length: number, uri: string): DocumentLink {
+/**
+ * Create a DocumentLink linking to another document or to be resolved later.
+ * @param line the line number within the document where the link should be
+ * @param start the start position on the line
+ * @param length the length of the text representing the link
+ * @param uri the path to the document. leave undefined if the link will be resolved using the resolveDocumentLink request
+ * @param data the data passed with the link when resolving it with the resolveDocumentLink request
+ */
+function createDocumentLink(line: number, start: number, length: number, uri: string | undefined, data?: any): DocumentLink {
     const from = Position.create(line, start);
     const to = Position.create(line, start + length);
-    return DocumentLink.create(Range.create(from, to), uri);
+    return DocumentLink.create(Range.create(from, to), uri, data);
 }

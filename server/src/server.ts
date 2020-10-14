@@ -5,7 +5,7 @@ import {
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	TextDocumentSyncKind,
-	InitializeResult, DocumentLinkParams
+	InitializeResult, DocumentLinkParams, DocumentLink
 } from 'vscode-languageserver';
 
 import {
@@ -74,7 +74,9 @@ connection.onInitialized(() => {
 	}
 	if (hasDocumentLinkCapabilities) {
 		connection.onDocumentLinks(documentLinksHandler);
+		connection.onDocumentLinkResolve(documentLinkResolve);
 	}
+	workspaceLookup.scanForOMTModules();
 });
 
 
@@ -150,19 +152,20 @@ connection.onDocumentLinkResolve(_link => {
 
 // scans for document links in a document usually when it is opened
 const documentLinksHandler = (params: DocumentLinkParams) => {
-	console.log('server.documentLinksHandler');
-	// console.log(params);
-	TextDocument.update
+	// console.log('server.documentLinksHandler');
 	const document = documents.get(params.textDocument.uri);
-	// console.log(document);
 	if (document) {
-		// return t;
 		return omtLinkProvider.provideDocumentLinks(document);
 	} else {
 		return undefined;
 	}
 }
 
+const documentLinkResolve = (link: DocumentLink) => {
+	// console.log(`server.documentLinkResolve`)
+	link.target = omtLinkProvider.resolve(link.data);
+	return Promise.resolve(link);
+}
 
 // to debug that no other request is being sent instead of what we expect
 connection.onRequest((method: string) => {
