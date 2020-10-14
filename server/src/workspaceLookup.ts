@@ -1,10 +1,11 @@
 import { WorkspaceFolder, RemoteWorkspace, FileChangeType } from 'vscode-languageserver';
 import * as fs from 'fs';
 import path = require('path');
+import { glob } from 'glob';
 
 type scanOptions = {
     operators: { matcher: RegExp, exec: (uri: string, modules: Map<string, OMTModule>) => void }[],
-    filters?: RegExp[]
+    pattern: string,
 }
 
 type OMTModule = {
@@ -25,7 +26,7 @@ export class WorkspaceLookup {
             // { matcher: /(package.json)$/, exec: (uri) => { console.log(`found config: ${uri}`) } }
         ],
         // TODO: make this a configuration item
-        filters: [/(node_modules)/] // filter for scanning folders
+        pattern: '**/*.omt' // filter for scanning folders  !(**/node_modules/**)
     }
 
     /**
@@ -94,11 +95,11 @@ export class WorkspaceLookup {
     }
 
     private scanFolder(folder: WorkspaceFolder) {
-        fromDir(folder.uri.substr(7), this.folderScanOptions, this.modules);
+        this.fromDir(folder.uri.substr(7), this.folderScanOptions);
     }
 
     private processOmtFile(uri: string, modules: Map<string, OMTModule>) {
-        // console.log(`found omt: ${uri}`);
+        // console.log(`workspaceLookup.processOmtFile: ${uri}`);
         fs.readFile(uri, 'utf-8', (err, data) => {
             if (err) {
                 console.error(`failed during reading ${uri}`, err);
@@ -109,12 +110,12 @@ export class WorkspaceLookup {
             if (match) {
                 const name = match[1];
                 this.processModule(modules, name, uri);
-
             }
         })
     }
 
     private processModule(modules: Map<string, OMTModule>, name: string, uri: string) {
+        // console.log(`workspaceLookup.processModule ${name}`);
         const existing = modules.get(name);
         if (existing && existing.uri != uri) {
             console.warn(`There is another module named '${existing.name}' found at ${existing.uri}. Will now replace with ${uri}`);
@@ -137,47 +138,25 @@ export class WorkspaceLookup {
         const module = this.modules.get(moduleName);
         return module?.uri;
     }
+
+    /**
+     * Scan the directory for files using the options as parameters
+     * @param startPath the root path of the search
+     * @param options options to adjust the search
+     * @param modules module collection of the workspace (can be modified)
+     */
+    private fromDir(startPath: string, options: scanOptions) {
+        // console.log('Starting from dir ' + startPath + '/');
+        glob(`${startPath}/${options.pattern}`, (err, files) => {
+            if (err) {
+                console.error('While executing glob, scanning for omt files', err);
+            } else {
+                console.log(files.length);
+                for (var i = 0; i < files.length; i++) {
+                    this.processOmtFile(files[i], this.modules);
+                };
+            }
+        });
+    }
 }
 
-/**
- * Scan the directory for files using the options as parameters
- * @param startPath the root path of the search
- * @param options options to adjust the search
- * @param modules module collection of the workspace (can be modified)
- */
-function fromDir(startPath: string, options: scanOptions, modules: Map<string, OMTModule>) {
-    // console.log('Starting from dir ' + startPath + '/');
-
-    // TODO refactor so that modules does not need to be re-passed
-    // TODO do this with glob
-    if (!fs.existsSync(startPath)) {
-        console.log("no dir ", startPath);
-        return;
-    }
-
-    let shouldBeFiltered = false;
-    options.filters?.forEach(filter => {
-        if (filter.exec(startPath)) {
-            shouldBeFiltered = true;
-        }
-    });
-    if (shouldBeFiltered) {
-        return;
-    }
-
-    var files = fs.readdirSync(startPath);
-    for (var i = 0; i < files.length; i++) {
-        var filename = path.join(startPath, files[i]);
-        var stat = fs.lstatSync(filename);
-        if (stat.isDirectory()) {
-            fromDir(filename, options, modules); //recurse
-        }
-        else {
-            options.operators.forEach(op => {
-                if (op.matcher.exec(filename)) {
-                    op.exec(filename, modules);
-                }
-            });
-        }
-    };
-};
