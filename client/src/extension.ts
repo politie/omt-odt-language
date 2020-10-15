@@ -42,9 +42,9 @@ export function activate(context: ExtensionContext) {
             { scheme: 'file', language: 'odt' },
         ],
         synchronize: {
-            // Notify the server about file changes to '.clientrc' files contained in the workspace
+            // Notify the server about changes to files conforming to these patterns:
             fileEvents: [
-                workspace.createFileSystemWatcher('**/.omt'),
+                workspace.createFileSystemWatcher('**/*.omt'),
                 workspace.createFileSystemWatcher('**/package.json'),
             ],
         },

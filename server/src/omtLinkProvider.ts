@@ -38,8 +38,9 @@ export default class OMTLinkProvider {
      * @param data the data from a document link
      */
     public resolve(data?: any) {
+        // console.log(`omtLinkProvider.resolve ${data.isDeclaredImport} ${data.module}`)
         if (data && data.isDeclaredImport) {
-            return this.workspaceLookup.getModuleUri(data.module);
+            return this.workspaceLookup.getModulePath(data.module);
         }
     }
 
@@ -119,7 +120,7 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
  * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
  */
 function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => string, workspaceLookup: WorkspaceLookup): DocumentLink[] {
-    console.log('server omtLinkProvider.findOMTUrl');
+    // console.log('server omtLinkProvider.findOMTUrl');
     let documentLinks: DocumentLink[] = [];
     // so match after import: until we need any other (\w+): without any preceding spaces
     let isScanning = false;
@@ -154,8 +155,7 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     // match[2] is the text 'module:'
                     // match[3] is the module name
                     const declaredImportModule = '' + diMatch[3];
-                    const moduleUri = workspaceLookup.getModuleUri(declaredImportModule);
-                    console.log(`loaded uri: ${moduleUri}`);
+                    const moduleUri = workspaceLookup.getModulePath(declaredImportModule);
                     // because the server may not be done scanning the workspace when this is called
                     // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
                     // the url will be undefined and we pass the declared import information as data with the link
