@@ -12,33 +12,20 @@ type Case = { i: number, line: number, start: number, end: number, target: strin
 
 describe('OMTLinkProvider', () => {
     let linkProvider: OMTLinkProvider;
+    let lookupStub: WorkspaceLookup;
 
-    before(() => {
-        const stubbedWorkspace = <RemoteWorkspace><any>{
-            getWorkspaceFolders: () => { },
-            onDidChangeWorkspaceFolders: () => { },
-            applyEdit: () => { },
-            connection: {
-                onDidChangeWatchedFiles: () => { }
-            }
+    beforeEach(() => {
+        lookupStub = <WorkspaceLookup>{
+            getModulePath: (module: string) => '',
         };
-        // adding file:// at the start because the vscode librart does that when it creates the WorkspaceFolders
-        const workspaceFolderStub = stub(stubbedWorkspace, 'getWorkspaceFolders').returns(Promise.resolve([
-            { uri: 'file://' + resolve('./testFixture/one/'), name: 'one' },
-            { uri: 'file://' + resolve('./testFixture/two/'), name: 'two' }]));
 
-        //TODO: decouple the unittest for OMTLinkProvider from testing WorkspaceLookup
-        const lookup = new WorkspaceLookup(stubbedWorkspace as {} as RemoteWorkspace);
-
-        assert.calledOnce(workspaceFolderStub);
-
-        linkProvider = new OMTLinkProvider(lookup);
+        linkProvider = new OMTLinkProvider(lookupStub);
     });
 
     describe('provideDocumentLinks', () => {
         let actualDocumentLinks: DocumentLink[];
 
-        before((done) => {
+        beforeEach((done) => {
             const uri = 'testFixture/one/imports.omt';
             const textDocument = TextDocument.create(uri, 'omt', 1, readFileSync(resolve(uri)).toString());
 
@@ -85,7 +72,42 @@ describe('OMTLinkProvider', () => {
     });
 
     describe('resolve', () => {
-        it('should resolve declared imports');
+        it('should resolve declared imports', () => {
+            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
+
+            const result = linkProvider.resolve({
+                isDeclaredImport: true,
+                module: 'moduleName'
+            });
+
+            assert.calledWith(functionStub, 'moduleName');
+            expect(result).to.eq('modulePath');
+        });
+
+        it('should return undefined when the data is undefined', () => {
+            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
+
+            const result = linkProvider.resolve(undefined);
+
+            assert.notCalled(functionStub);
+            expect(result).to.be.undefined;
+        });
+
+        it('should return undefined when the data is not for a declared import', () => {
+            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
+
+            let result = linkProvider.resolve({
+                isDeclaredImport: false
+            });
+
+            assert.notCalled(functionStub);
+            expect(result).to.be.undefined;
+
+            result = linkProvider.resolve({});
+
+            assert.notCalled(functionStub);
+            expect(result).to.be.undefined;
+        });
     });
 });
 
