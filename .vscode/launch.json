@@ -50,6 +50,13 @@
                 "Launch Client",
                 "Attach to Server"
             ]
+        },
+        {
+            "name": "Test + Server",
+            "configurations": [
+                "Language Server E2E Test",
+                "Attach to Server"
+            ]
         }
     ]
 }

@@ -1,5 +1,4 @@
 import { WorkspaceFolder, RemoteWorkspace, FileChangeType, TextDocumentChangeEvent, combineConsoleFeatures, DidChangeWatchedFilesParams } from 'vscode-languageserver';
-import { readFile } from 'fs';
 import { glob } from 'glob';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { parseOmtFile, parseOmtText } from './omtFileParser';
@@ -31,7 +30,6 @@ export class WorkspaceLookup {
             event.added.forEach(folder => this.addFolder(folder));
             event.removed.forEach(folder => this.removeFolder(folder));
         });
-
         workspace.connection.onDidChangeWatchedFiles((params) => this.watchedFilesChanged(params));
     }
 

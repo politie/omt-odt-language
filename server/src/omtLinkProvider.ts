@@ -7,7 +7,6 @@ import { WorkspaceLookup } from './workspaceLookup';
 
 const omtUriMatch = /( +["']?)(.*\.omt)/;
 const declaredImportMatch = /( +)(module:)(.*):/;
-// const importedElementMatch = /( +\- +)(.*)/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
@@ -23,14 +22,13 @@ export default class OMTLinkProvider {
 
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
-        const DocumentLinks: DocumentLink[] = findOMTUrl(document, (uri) => replaceStart(uri, shorthands), this.workspaceLookup);
+        const documentLinks: DocumentLink[] = findOMTUrl(document, (uri) => replaceStart(uri, shorthands), this.workspaceLookup);
 
         // declared imports
         /** TODO for declared imports
          * when no apropriate module can be found give a tooltip
          */
-
-        return Promise.resolve(DocumentLinks ? DocumentLinks : []);
+        return Promise.resolve(documentLinks ? documentLinks : []);
     }
 
     /**
