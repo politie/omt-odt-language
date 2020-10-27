@@ -1,4 +1,4 @@
-name: build
+name: Build and Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: build
+    name: Instal and build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,12 +21,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Cache node_modules
         id: cache-modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.2
         with:
           path: node_modules
           key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-      - name: Build
+      
+      - name: Install
         if: steps.cache-modules.output.cache-hit != 'true'
-        run: |
-          npm install
-          npm run vscode:prepublish
+        run: npm install
+
+      - name: Build
+        run: npm run vscode:prepublish
+      
+      - name: Test
+        run: npm run test
