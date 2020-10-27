@@ -1,3 +1,5 @@
+![build](https://github.com/emielb/omt-odt-language/workflows/build/badge.svg?event=push)
+
 # OMT & ODT Language Support README
 
 > Developers, developers, developers!
