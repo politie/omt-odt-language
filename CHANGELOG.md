@@ -10,7 +10,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 - OMT highlighting support for:
-  - the `reason` property for `Activities`s
+  - the `reason` property for an `Activity`
 
 ## [2.2.1]
 
