@@ -399,6 +399,17 @@
                     "contentName": "meta.embedded.block.odt",
                     "patterns": [{ "include": "source.odt" }]
                 },
+                {
+                    "match": "(?:\\G|^) +(reason): *([\\w ]*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
                 { "include": "#graphs" },
                 { "include": "#_params" },
                 { "include": "#prefixes" },
