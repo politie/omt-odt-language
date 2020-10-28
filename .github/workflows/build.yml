@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Instal and build
+    name: Install and build
     runs-on: ubuntu-latest
     strategy:
       matrix:
