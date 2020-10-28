@@ -91,17 +91,6 @@
                     "patterns": [{ "include": "#_interpolated-odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(reason): *([\\w ]*)(.*)$",
-                    "captures": {
-                        "1": { "name": "keyword.control.omt" },
-                        "2": {
-                            "name": "string.unquoted.omt",
-                            "patterns": [{ "include": "#_escape" }]
-                        },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    }
-                },
-                {
                     "begin": "^ +(returns): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
@@ -120,6 +109,7 @@
                     "contentName": "meta.embedded.block.odt",
                     "patterns": [{ "include": "source.odt" }]
                 },
+                { "include": "#_reason" },
                 { "include": "#_actions" },
                 { "include": "#commands-&-queries" },
                 { "include": "#graphs" },
@@ -399,6 +389,7 @@
                     "contentName": "meta.embedded.block.odt",
                     "patterns": [{ "include": "source.odt" }]
                 },
+                { "include": "#_reason" },
                 { "include": "#graphs" },
                 { "include": "#_params" },
                 { "include": "#prefixes" },
@@ -1122,6 +1113,17 @@
             "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
             "contentName": "meta.list.watchers.omt",
             "patterns": [{ "include": "#_li-watcher" }]
+        },
+        "_reason": {
+            "match": "(?:\\G|^) +(reason): *([\\w ]*)(.*)$",
+            "captures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": {
+                    "name": "string.unquoted.omt",
+                    "patterns": [{ "include": "#_escape" }]
+                },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            }
         }
     }
 }
