@@ -1,3 +1,5 @@
+![Build and Test](https://github.com/emielb/omt-odt-language/workflows/Build%20and%20Test/badge.svg)
+
 # OMT & ODT Language Support README
 
 > Developers, developers, developers!
