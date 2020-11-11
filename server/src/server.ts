@@ -67,6 +67,9 @@ connection.onInitialize((params: InitializeParams) => {
 connection.onInitialized(() => {
 	workspaceLookup = new WorkspaceLookup(connection.workspace);
 	omtLinkProvider = new OMTLinkProvider(workspaceLookup);
+	workspaceLookup.init().then(() => {
+		workspaceLookup.scanAll();
+	});
 
 	if (hasConfigurationCapability) {
 		// Register for all configuration changes.
@@ -76,7 +79,6 @@ connection.onInitialized(() => {
 		connection.onDocumentLinks(documentLinksHandler);
 		connection.onDocumentLinkResolve(documentLinkResolve);
 	}
-	workspaceLookup.scanForOMTModules();
 });
 
 
@@ -141,19 +143,24 @@ documents.onDidChangeContent((change) => {
 
 // scans for document links in a document usually when it is opened
 const documentLinksHandler = (params: DocumentLinkParams) => {
-	// console.log('server.documentLinksHandler');
+	console.log('server.documentLinksHandler');
 	const document = documents.get(params.textDocument.uri);
 	if (document) {
-		return omtLinkProvider.provideDocumentLinks(document);
+		return omtLinkProvider.provideDocumentLinks(document)
+		// omtLinkProvider.provideDocumentLinks(document).then(result => {
+		// 	return result;
+		// });
 	} else {
 		return undefined;
 	}
 }
 
 const documentLinkResolve = (link: DocumentLink) => {
-	// console.log(`server.documentLinkResolve`)
+	console.log(`server.documentLinkResolve`)
+	console.log(link.data);
 	link.target = omtLinkProvider.resolve(link.data);
-	return Promise.resolve(link);
+
+	return link;
 }
 
 // to debug that no other request is being sent instead of what we expect

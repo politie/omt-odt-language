@@ -5,11 +5,10 @@ import { LanguageClient, DocumentLinkRequest, CancellationToken, DocumentLinkPar
  * Proxy for handling OMT document links with LSP
  */
 export default class OMTLinkProvider implements DocumentLinkProvider {
-    constructor(private client: LanguageClient) {
-
-    }
+    constructor(private client: LanguageClient) { }
 
     resolveDocumentLink(link: DocumentLink, token: CancellationToken) {
+        // resolve in the language server
         return this.client.sendRequest<DocumentLink>('documentLink/resolve', link, token);
     }
 

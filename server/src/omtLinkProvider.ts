@@ -17,18 +17,10 @@ export default class OMTLinkProvider {
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
-    provideDocumentLinks(document: TextDocument): Promise<DocumentLink[]> {
-        // console.log('server omtLinkProvider.provideDocumentLinks');
-
+    provideDocumentLinks(document: TextDocument): DocumentLink[] {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
-        const documentLinks: DocumentLink[] = findOMTUrl(document, (uri) => replaceStart(uri, shorthands), this.workspaceLookup);
-
-        // declared imports
-        /** TODO for declared imports
-         * when no apropriate module can be found give a tooltip
-         */
-        return Promise.resolve(documentLinks ? documentLinks : []);
+        return findOMTUrl(document, (uri) => replaceStart(uri, shorthands), this.workspaceLookup);
     }
 
     /**
@@ -36,7 +28,6 @@ export default class OMTLinkProvider {
      * @param data the data from a document link
      */
     public resolve(data?: any) {
-        // console.log(`omtLinkProvider.resolve ${data.isDeclaredImport} ${data.module}`)
         if (data && data.isDeclaredImport) {
             return this.workspaceLookup.getModulePath(data.module);
         }

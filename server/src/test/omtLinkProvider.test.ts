@@ -1,9 +1,8 @@
-import { fail } from 'assert';
 import { expect } from 'chai';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { assert, stub } from 'sinon';
-import { DocumentLink, Position, Range, RemoteWorkspace } from 'vscode-languageserver';
+import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import OMTLinkProvider from '../omtLinkProvider';
 import { WorkspaceLookup } from '../workspaceLookup';
@@ -25,16 +24,11 @@ describe('OMTLinkProvider', () => {
     describe('provideDocumentLinks', () => {
         let actualDocumentLinks: DocumentLink[];
 
-        beforeEach((done) => {
+        beforeEach(() => {
             const uri = 'testFixture/one/imports.omt';
             const textDocument = TextDocument.create(uri, 'omt', 1, readFileSync(resolve(uri)).toString());
 
-            linkProvider.provideDocumentLinks(textDocument).then((links) => {
-                actualDocumentLinks = links;
-                done();
-            }).catch((error) => {
-                fail(error);
-            });
+            actualDocumentLinks = linkProvider.provideDocumentLinks(textDocument);
         })
 
         // test uri links with and without shorthands
