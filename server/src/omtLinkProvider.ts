@@ -39,19 +39,17 @@ export default class OMTLinkProvider {
             .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
             .map(uri => {
                 const file = readFileSync(uri, 'utf8');
-                try {
-                    const json = JSON.parse(file);
-                    if (json.compilerOptions && json.compilerOptions.paths) {
-                        // now make a path from the config folder to the keys value and map that
-                        const paths: [string, string][] = [];
-                        for (let key in json.compilerOptions.paths) {
-                            const relPath = json.compilerOptions.paths[key].toString();
-                            const newPath = resolve(dirname(uri), relPath);
-                            paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);
-                        }
-                        return paths;
+                const json = JSON.parse(file);
+                if (json.compilerOptions && json.compilerOptions.paths) {
+                    // now make a path from the config folder to the keys value and map that
+                    const paths: [string, string][] = [];
+                    for (let key in json.compilerOptions.paths) {
+                        const relPath = json.compilerOptions.paths[key].toString();
+                        const newPath = resolve(dirname(uri), relPath);
+                        paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);
                     }
-                } catch (e) { console.error(); }
+                    return paths;
+                }
                 // all other paths return undefined
             }).filter(paths => paths != undefined) as {} as [string, string][];
         // make it typed

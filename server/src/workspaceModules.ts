@@ -1,3 +1,4 @@
+import { CheckFileResult, OMTModule } from "./types";
 
 export interface WorkspaceProcessor {
     readonly extention: string;
@@ -13,8 +14,8 @@ export class WorkspaceModules implements WorkspaceProcessor {
     public modules = new Map<string, OMTModule>();
 
     public checkForChanges(result: CheckFileResult) {
-        if (result.isModule) {
-            const module = this.modules.get(result.moduleName!);
+        if (result.module) {
+            const module = this.modules.get(result.module.name!);
             if (!module) {
                 this.modules.forEach((value, key) => {
                     if (value.uri == result.path) {
@@ -22,7 +23,10 @@ export class WorkspaceModules implements WorkspaceProcessor {
                     }
                 });
             }
-            this.processModule(result);
+            this.processModule({
+                ...result.module,
+                uri: result.path
+            });
         } else {
             // remove if this file was considered a module and now no longer matches
             this.modules.forEach(module => {
@@ -33,8 +37,8 @@ export class WorkspaceModules implements WorkspaceProcessor {
         }
     }
 
-    private processModule(fileResult: CheckFileResult) {
-        const { moduleName: name, path: uri } = fileResult;
+    private processModule(moduleResult: OMTModule) {
+        const { name, uri } = moduleResult;
         if (!name) {
             throw new Error('name is undefined');
         }

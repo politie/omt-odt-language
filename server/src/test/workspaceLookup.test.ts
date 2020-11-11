@@ -7,6 +7,7 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import { WorkspaceLookup } from "../workspaceLookup";
 import * as omtFileParser from '../omtFileParser';
 import * as globPromise from '../globPromise';
+import { CheckFileResult } from "../types";
 
 describe('WorkspaceLookup', () => {
     let workspaceLookup: WorkspaceLookup;
@@ -16,10 +17,9 @@ describe('WorkspaceLookup', () => {
     let globStub: SinonStub;
     const defaultGlobResult = `${defaultFolder}/fileresult.omt`;
     let parseOmtFileStub: SinonStub;
-    const originalParseResult = {
+    const originalParseResult: CheckFileResult = {
         path: defaultGlobResult,
-        moduleName: 'moduleTestName',
-        isModule: true
+        module: { name: 'moduleTestName' },
     };
 
     beforeEach(() => {
@@ -89,9 +89,9 @@ describe('WorkspaceLookup', () => {
                     assert.calledOnce(changedWatchedFilesStub);
                     // validate the starting state
                     expect(workspaceLookup.watchedModules).to.lengthOf(1);
-                    expect(workspaceLookup.watchedModules[0].name).to.eq(originalParseResult.moduleName);
+                    expect(workspaceLookup.watchedModules[0].name).to.eq(originalParseResult.module?.name);
                     expect(workspaceLookup.watchedModules[0].uri).to.eq(originalParseResult.path);
-                    done()
+                    done();
                 }, reason => { fail(reason); })
                 .catch((reason) => fail(reason));
         });
@@ -104,7 +104,7 @@ describe('WorkspaceLookup', () => {
             const uri = 'file://' + resolve('./myOmtFile.omt');
             const parseOmtFileResult = Promise.resolve({
                 ...originalParseResult,
-                moduleName: 'module1'
+                module: { name: 'module1' }
             });
             parseOmtFileStub.returns(parseOmtFileResult);
             parseOmtFileStub.resetHistory();
@@ -115,7 +115,7 @@ describe('WorkspaceLookup', () => {
                 ]
             });
 
-            parseOmtFileResult.then(() => {
+            delay(10).then(() => {
                 // the handling of the parseOmtResult is done asynchronously for multiple files
                 // because this then is added after the one in the code under test
                 // we can use it as trigger for when we assert the results
@@ -130,9 +130,8 @@ describe('WorkspaceLookup', () => {
         it('deletes watched files from the watcher when change type was Deleted', (done) => {
             const path = `${defaultFolder}/file1.omt`;
             const extraModule = Promise.resolve({
-                ...originalParseResult,
-                moduleName: 'module1',
-                path
+                path,
+                module: { name: 'module1' }
             });
 
             parseOmtFileStub.returns(extraModule);
@@ -146,7 +145,7 @@ describe('WorkspaceLookup', () => {
             extraModule.then(() => {
                 // the handling of the parseOmtResult is done asynchronously for multiple files
                 // because this then is added after the one in the code under test
-                expect(workspaceLookup.watchedModules).to.lengthOf(2);
+                expect(workspaceLookup.watchedModules).lengthOf(2);
                 changedWatchedFilesStub.callArgWith(0, {
                     changes: [
                         // this file is not added as a module but should not throw an error
@@ -154,11 +153,10 @@ describe('WorkspaceLookup', () => {
                         { uri: `file://${path}`, type: FileChangeType.Deleted },
                     ]
                 });
-
                 // we need to wait for the result
                 // the call to the workspaceModules is done within a promise but is synchronous
                 // and the callArgWith does not expose the returned promise
-                new Promise(resolve => setTimeout(resolve, 10)).then(() => {
+                delay(10).then(() => {
                     expect(workspaceLookup.watchedModules).to.lengthOf(1);
                     done();
                 });
@@ -170,7 +168,7 @@ describe('WorkspaceLookup', () => {
 
             const parseOmtFileResult = Promise.resolve({
                 ...originalParseResult,
-                moduleName: 'createdModule'
+                module: { name: 'createdModule' }
             });
             parseOmtFileStub.returns(parseOmtFileResult);
             // ACT - use the callback parameter
@@ -250,10 +248,8 @@ describe('WorkspaceLookup', () => {
             globStub.resetHistory();
             parseOmtFileStub.reset();
             parseOmtFileStub.returns(Promise.resolve({
-
                 path: `${defaultFolder}/newFile.omt`,
-                isModule: true,
-                moduleName: 'moduleNameTest3'
+                module: { name: 'moduleNameTest3' }
             }));
             expect(workspaceLookup.watchedModules.length).eq(1);
 
@@ -325,8 +321,12 @@ describe('WorkspaceLookup', () => {
         });
 
         it('returns the returnvalue of the workspaceModules', () => {
-            const path = workspaceLookup.getModulePath(originalParseResult.moduleName);
+            const path = workspaceLookup.getModulePath(originalParseResult.module?.name!);
             expect(path).to.eq(defaultGlobResult);
         });
     });
 });
+
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, 10));
+}

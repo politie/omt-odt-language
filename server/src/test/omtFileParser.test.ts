@@ -1,9 +1,10 @@
 import { expect } from "chai";
-import { resetHistory, SinonStub, stub } from "sinon";
+import { SinonStub, stub } from "sinon";
 import { parseOmtFile, parseOmtText } from "../omtFileParser";
 import * as fs from 'fs';
 import { fail } from "assert";
-import { resolve } from "path";
+import { types } from "util";
+import { CheckFileResult } from "../types";
 
 describe('omtFileParser', () => {
     describe('parseOmtText', () => {
@@ -23,11 +24,10 @@ describe('omtFileParser', () => {
             it(`checks rule: ${value.rule}`, () => {
                 const result = parseOmtText(value.text);
                 if (value.shouldMatch) {
-                    expect(result.isModule).to.eq(true);
-                    expect(result.moduleName).to.eq(value.name);
+                    expect(result.module).not.to.be.undefined;
+                    expect(result.module?.name).to.eq(value.name);
                 } else {
-                    expect(result.isModule).to.eq(false);
-                    expect(result.moduleName).undefined;
+                    expect(result.module).to.be.undefined;
                 }
             });
         });
@@ -63,11 +63,11 @@ describe('omtFileParser', () => {
             const uri = `/invalidPath.omt`
             parseOmtFile(uri)
                 .then((result: CheckFileResult) => {
-                    expect(result.isModule).to.be.true;
-                    expect(result.moduleName).to.eq('n');
+                    expect(result.module).not.to.be.undefined;
+                    expect(result.module?.name).to.eq('n');
                     expect(result.path).to.eq(uri);
                     done();
-                }, (reason) => {
+                }, () => {
                     fail();
                 });
             // act

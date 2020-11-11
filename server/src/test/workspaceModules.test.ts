@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { assert, stub } from "sinon";
+import { CheckFileResult, OMTModule } from "../types";
 import { WorkspaceModules } from "../workspaceModules";
 
 
@@ -10,8 +11,9 @@ describe('WorkspaceModule', () => {
         workspaceModules = new WorkspaceModules();
         defaultCheckFileResult = {
             path: 'folder/defaultPath.omt',
-            isModule: true,
-            moduleName: 'defaultModule',
+            module: {
+                name: 'defaultModule',
+            }
         };
     });
 
@@ -19,7 +21,7 @@ describe('WorkspaceModule', () => {
         it('should ignore it if the result is not a module', () => {
             workspaceModules.checkForChanges({
                 ...defaultCheckFileResult,
-                isModule: false
+                module: undefined
             });
             expect(workspaceModules.modules.size).to.eq(0);
         });
@@ -28,7 +30,7 @@ describe('WorkspaceModule', () => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
             expect(workspaceModules.modules.size).to.eq(1);
             const module = <OMTModule>workspaceModules.modules.values().next().value;
-            expect(module.name).to.eq(defaultCheckFileResult.moduleName);
+            expect(module.name).to.eq(defaultCheckFileResult.module?.name);
             expect(module.uri).to.eq(defaultCheckFileResult.path);
         });
 
@@ -39,7 +41,7 @@ describe('WorkspaceModule', () => {
             });
             expect(workspaceModules.modules.size).to.eq(1);
             const module = <OMTModule>workspaceModules.modules.values().next().value;
-            expect(module.name).to.eq(defaultCheckFileResult.moduleName);
+            expect(module.name).to.eq(defaultCheckFileResult.module?.name);
             expect(module.uri).to.eq('otherPath.omt');
         });
 
@@ -49,10 +51,10 @@ describe('WorkspaceModule', () => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
             expect(workspaceModules.modules.size).to.eq(1);
             const module = <OMTModule>workspaceModules.modules.values().next().value;
-            expect(module.name).to.eq(defaultCheckFileResult.moduleName);
+            expect(module.name).to.eq(defaultCheckFileResult.module?.name);
             expect(module.uri).to.eq(defaultCheckFileResult.path);
-            assert.calledOnceWithMatch(setStub, defaultCheckFileResult.moduleName!, {
-                name: defaultCheckFileResult.moduleName!,
+            assert.calledOnceWithMatch(setStub, defaultCheckFileResult.module?.name!, {
+                name: defaultCheckFileResult.module?.name!,
                 uri: defaultCheckFileResult.path
             });
         });
@@ -67,7 +69,7 @@ describe('WorkspaceModule', () => {
 
         it('should return the path of the module if it is in the workspace', () => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
-            const result = workspaceModules.getModulePath(defaultCheckFileResult.moduleName!);
+            const result = workspaceModules.getModulePath(defaultCheckFileResult.module?.name!);
             expect(result).to.eq(defaultCheckFileResult.path);
         });
     });
