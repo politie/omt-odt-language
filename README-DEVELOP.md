@@ -16,11 +16,11 @@
 ### The `client` folder
 
 This folder contains the extension code that will be run on the client. It will start and connect to the server defined in `/server`.
-The client features can be tested by running `npm run test` from the workspace root. Features provided by the client:
+The client features can be tested by running `npm run test` from the workspace root. It will use the  LSP server to provide these features:
 
-- Document link for OMT imports with:
-  - Relative paths
-  - Paths beginning with a @Shorthand
+- Document Link
+  - OMT imports with paths
+  - OMT declared imports
 
 ### The `configurations` folder
 
@@ -40,8 +40,15 @@ have a look at the [Language Configuration Guide](https://code.visualstudio.com/
 
 ## The `server` folder
 
-This folder contains all the code run as a node server. It provides the language server functionality to the client plugin and is started
-by the extension in `/client`. It currently provides no additional functionality.
+This folder contains all the code run as a node server. It provides the language server functionality using the LSP protocol for the client plugin and is started
+by the extension in `/client`. The features currently implemented are:
+
+- Document link for OMT imports with:
+  - Relative paths
+  - Paths beginning with a @Shorthand
+  - Declared OMT imports as empty paths with data to be resolved
+- Resolve Document link
+  - Declared OMT imports
 
 ### The `snippets` folder
 

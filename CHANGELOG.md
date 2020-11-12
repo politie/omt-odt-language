@@ -5,6 +5,17 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.2.4]
+
+### Added
+
+- OMT Declared import support
+- unittesting and nyc coverage for `server`
+
+### Changed
+
+- Moved the parsing of OMT files for document links to the server
+
 ## [2.2.3]
 
 ### Added
