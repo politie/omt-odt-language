@@ -2,7 +2,7 @@ import { fail } from "assert";
 import { expect } from "chai";
 import { resolve } from "path";
 import { assert, SinonStub, stub } from "sinon";
-import { DidChangeWatchedFilesParams, FileChangeType, NotificationHandler, RemoteWorkspace, TextDocumentChangeEvent } from "vscode-languageserver";
+import { FileChangeType, RemoteWorkspace } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { WorkspaceLookup } from "../workspaceLookup";
 import * as omtFileParser from '../omtFileParser';
@@ -23,12 +23,12 @@ describe('WorkspaceLookup', () => {
     };
 
     beforeEach(() => {
-        stubbedWorkspace = <RemoteWorkspace><any>{
-            getWorkspaceFolders: () => { then: () => [] },
-            onDidChangeWorkspaceFolders: () => { },
-            applyEdit: () => { },
+        stubbedWorkspace = <RemoteWorkspace><unknown>{
+            getWorkspaceFolders: () => { /** dummy */ },
+            onDidChangeWorkspaceFolders: () => { /** dummy */ },
+            applyEdit: () => { /** dummy */ },
             connection: {
-                onDidChangeWatchedFiles: (_handler: NotificationHandler<DidChangeWatchedFilesParams>) => { }
+                onDidChangeWatchedFiles: () => { /** dummy */ }
             }
         };
 
@@ -197,7 +197,7 @@ describe('WorkspaceLookup', () => {
             expect(workspaceLookup.watchedModules.length).to.eq(0);
 
             workspaceLookup.fileChanged({
-                document: <TextDocument><any>{
+                document: <TextDocument><unknown>{
                     uri: `file://${defaultGlobResult}`,
                     getText: () => `moduleName: ${newModule}`,
                 }
@@ -209,7 +209,7 @@ describe('WorkspaceLookup', () => {
 
         it('parses the new text and removes it when it is no longer a module', () => {
             workspaceLookup.fileChanged({
-                document: <TextDocument><any>{
+                document: <TextDocument><unknown>{
                     uri: `file://${defaultGlobResult}`,
                     getText: () => `moduleName: newModuleName`,
                 }
@@ -218,7 +218,7 @@ describe('WorkspaceLookup', () => {
             expect(workspaceLookup.watchedModules.length).to.eq(1);
 
             workspaceLookup.fileChanged({
-                document: <TextDocument><any>{
+                document: <TextDocument><unknown>{
                     uri: `file://${defaultGlobResult}`,
                     getText: () => `oduleName: newModuleName`,
                 }
@@ -328,5 +328,5 @@ describe('WorkspaceLookup', () => {
 });
 
 function delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, 10));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

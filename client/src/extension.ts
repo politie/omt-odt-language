@@ -5,27 +5,24 @@ import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
-    TransportKind, ClientCapabilities
+    TransportKind
 } from 'vscode-languageclient';
 import OMTLinkProvider from './omtLinkProvider';
-import { ENETRESET } from 'constants';
 
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-    const test: ClientCapabilities = {};
-
     // The server is implemented in node
-    let serverModule = context.asAbsolutePath(
+    const serverModule = context.asAbsolutePath(
         join('server', 'out', 'server.js')
     );
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
-    let debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+    const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
-    let serverOptions: ServerOptions = {
+    const serverOptions: ServerOptions = {
         run: { module: serverModule, transport: TransportKind.ipc },
         debug: {
             module: serverModule,
@@ -35,7 +32,7 @@ export function activate(context: ExtensionContext) {
     };
 
     // Options to control the language client
-    let clientOptions: LanguageClientOptions = {
+    const clientOptions: LanguageClientOptions = {
         // Register the server for OMT and ODT documents
         documentSelector: [
             { scheme: 'file', language: 'omt' },
@@ -62,7 +59,7 @@ export function activate(context: ExtensionContext) {
     client.start();
 
     // register document link provider for OMT files
-    const providerRegistrations = Disposable.from(
+    Disposable.from(
         languages.registerDocumentLinkProvider(
             { scheme: 'file', language: 'omt' }, new OMTLinkProvider(client))
     );

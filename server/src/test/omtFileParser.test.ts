@@ -3,7 +3,6 @@ import { SinonStub, stub } from "sinon";
 import { parseOmtFile, parseOmtText } from "../omtFileParser";
 import * as fs from 'fs';
 import { fail } from "assert";
-import { types } from "util";
 import { CheckFileResult } from "../types";
 
 describe('omtFileParser', () => {

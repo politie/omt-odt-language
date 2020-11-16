@@ -15,6 +15,7 @@ describe('OMTLinkProvider', () => {
 
     beforeEach(() => {
         lookupStub = <WorkspaceLookup>{
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             getModulePath: (module: string) => '',
         };
 
@@ -70,8 +71,9 @@ describe('OMTLinkProvider', () => {
             const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
 
             const result = linkProvider.resolve({
-                isDeclaredImport: true,
-                module: 'moduleName'
+                declaredImport: {
+                    module: 'moduleName'
+                }
             });
 
             assert.calledWith(functionStub, 'moduleName');
@@ -91,7 +93,7 @@ describe('OMTLinkProvider', () => {
             const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
 
             let result = linkProvider.resolve({
-                isDeclaredImport: false
+                declaredImport: {}
             });
 
             assert.notCalled(functionStub);

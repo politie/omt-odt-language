@@ -14,8 +14,8 @@ export class WorkspaceModules implements WorkspaceProcessor {
     public modules = new Map<string, OMTModule>();
 
     public checkForChanges(result: CheckFileResult) {
-        if (result.module) {
-            const module = this.modules.get(result.module.name!);
+        if (result.module && result.module.name) {
+            const module = this.modules.get(result.module.name);
             if (!module) {
                 this.modules.forEach((value, key) => {
                     if (value.uri == result.path) {

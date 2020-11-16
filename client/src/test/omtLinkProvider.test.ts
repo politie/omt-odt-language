@@ -1,13 +1,10 @@
-import { DocumentLink, commands, Position, Range } from 'vscode';
+import { DocumentLink, Position, Range } from 'vscode';
 import { getDocUri, activate } from './helper';
 import { stub } from 'sinon';
 import { DocumentLinkRequest, LanguageClient } from 'vscode-languageclient';
 
-type Case = { i: number, line: number, start: number, end: number, target: string | undefined, should: string };
-
 describe('OMTLinkProvider', () => {
     const docUri = getDocUri('one/imports.omt');
-    let actualDocumentLinks: DocumentLink[];
     let sendRequestStub;
 
     before(async () => {
@@ -17,11 +14,6 @@ describe('OMTLinkProvider', () => {
             ]));
 
         await activate(docUri);
-        const temp = (await commands.executeCommand(
-            'vscode.executeLinkProvider',
-            docUri,
-        ));
-        actualDocumentLinks = temp as DocumentLink[];
     });
 
     it('should request documentlinks from the server', () => {
