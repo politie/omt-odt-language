@@ -5,7 +5,9 @@ import {
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	TextDocumentSyncKind,
-	InitializeResult, DocumentLinkParams, DocumentLink
+	InitializeResult,
+	DocumentLinkParams,
+	DocumentLink
 } from 'vscode-languageserver';
 
 import {
@@ -39,8 +41,7 @@ connection.onInitialize((params: InitializeParams) => {
 	);
 
 	hasDocumentLinkCapabilities = !!(
-		capabilities.textDocument &&
-		capabilities.textDocument.documentLink
+		capabilities.textDocument && capabilities.textDocument.documentLink
 	);
 
 	const result: InitializeResult = {
@@ -75,7 +76,6 @@ connection.onInitialized(() => {
 	}
 });
 
-
 function shutdownCheck() {
 	if (isShuttingDown) {
 		throw new Error('LSP server is shutting down');
@@ -95,6 +95,7 @@ connection.onShutdown(() => {
 	// omtLinkProvider
 	// workspaceLookup
 });
+
 connection.onExit(() => {
 	if (!isShuttingDown) {
 		throw new Error('LSP server is not shutting down');
@@ -129,10 +130,8 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
-	// console.log('server.onDidChangeContent');
 	return workspaceLookup.fileChanged(change);
 });
-
 
 // scans for document links in a document usually when it is opened
 const documentLinksHandler = (params: DocumentLinkParams) => {
@@ -140,9 +139,6 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
 	const document = documents.get(params.textDocument.uri);
 	if (document) {
 		return omtLinkProvider.provideDocumentLinks(document)
-		// omtLinkProvider.provideDocumentLinks(document).then(result => {
-		// 	return result;
-		// });
 	} else {
 		return undefined;
 	}
@@ -151,7 +147,7 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
 const documentLinkResolve = (link: DocumentLink) => {
 	console.log(`server.documentLinkResolve`)
 	console.log(link.data);
-	link.target = omtLinkProvider.resolve(link.data);
+	link.target = omtLinkProvider.resolveLink(link.data);
 
 	return link;
 }

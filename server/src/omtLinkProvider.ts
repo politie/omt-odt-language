@@ -28,13 +28,13 @@ export default class OMTLinkProvider {
      * Resolve the target of a DocumentLink using its data. Returns undefined when unable to resolve
      * @param data the data from a document link
      */
-    public resolve(data?: DeclaredImportLinkData | unknown) {
+    resolveLink(data?: DeclaredImportLinkData | unknown) {
         if (data && isDeclaredImportLinkData(data)) {
             return this.workspaceLookup.getModulePath(data.declaredImport.module);
         }
     }
 
-    private contextPaths(document: TextDocument) {
+    contextPaths(document: TextDocument) {
         const pathPaths = glob.sync('**/tsconfig**.json')
             // we need to filter for same parent because another config may have some of the same paths
             .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
@@ -133,13 +133,7 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
                     // match[2] is the link text, including the @shorthands
                     const link = resolveShorthand(uriMatch[2].trim());
-
-                    let url: string;
-                    if (isAbsolute(link)) {
-                        url = resolve(document.uri, link);
-                    } else {
-                        url = toAbsolutePath(document, link);
-                    }
+                    const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
                     documentLinks.push(
                         createDocumentLink(l, uriMatch[1].length, uriMatch[2].length, url));
                 }

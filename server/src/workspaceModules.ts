@@ -7,13 +7,13 @@ export interface WorkspaceProcessor {
 }
 
 export class WorkspaceModules implements WorkspaceProcessor {
-    public readonly extention = '.omt';
+    readonly extention = '.omt';
     /**
      * modules, keyed by name
      */
-    public modules = new Map<string, OMTModule>();
+    modules = new Map<string, OMTModule>();
 
-    public checkForChanges(result: CheckFileResult) {
+    checkForChanges(result: CheckFileResult) {
         if (result.module && result.module.name) {
             const module = this.modules.get(result.module.name);
             if (!module) {

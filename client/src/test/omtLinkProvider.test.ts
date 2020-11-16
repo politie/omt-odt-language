@@ -1,11 +1,11 @@
 import { DocumentLink, Position, Range } from 'vscode';
 import { getDocUri, activate } from './helper';
-import { stub } from 'sinon';
-import { DocumentLinkRequest, LanguageClient } from 'vscode-languageclient';
+import { SinonStub, stub, assert } from 'sinon';
+import { LanguageClient } from 'vscode-languageclient';
 
 describe('OMTLinkProvider', () => {
     const docUri = getDocUri('one/imports.omt');
-    let sendRequestStub;
+    let sendRequestStub: SinonStub;
 
     before(async () => {
         sendRequestStub = stub(LanguageClient.prototype, 'sendRequest')
@@ -21,9 +21,8 @@ describe('OMTLinkProvider', () => {
         // and if it is called when the document is loaded
         // the making of the links should be tested for the server
         // and the rendering of the links is the responsibility of vscode
-        sendRequestStub.calledWith(
-            DocumentLinkRequest.method,
-            { textDocument: { uri: docUri.toString() } });
+        assert.calledWith(sendRequestStub,
+            { textDocument: { uri: '.' + docUri.toString() } });
     });
 });
 

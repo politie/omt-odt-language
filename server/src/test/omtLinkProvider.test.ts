@@ -66,11 +66,11 @@ describe('OMTLinkProvider', () => {
         }
     });
 
-    describe('resolve', () => {
+    describe('resolveLink', () => {
         it('should resolve declared imports', () => {
             const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
 
-            const result = linkProvider.resolve({
+            const result = linkProvider.resolveLink({
                 declaredImport: {
                     module: 'moduleName'
                 }
@@ -83,7 +83,7 @@ describe('OMTLinkProvider', () => {
         it('should return undefined when the data is undefined', () => {
             const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
 
-            const result = linkProvider.resolve(undefined);
+            const result = linkProvider.resolveLink(undefined);
 
             assert.notCalled(functionStub);
             expect(result).to.be.undefined;
@@ -92,14 +92,14 @@ describe('OMTLinkProvider', () => {
         it('should return undefined when the data is not for a declared import', () => {
             const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
 
-            let result = linkProvider.resolve({
+            let result = linkProvider.resolveLink({
                 declaredImport: {}
             });
 
             assert.notCalled(functionStub);
             expect(result).to.be.undefined;
 
-            result = linkProvider.resolve({});
+            result = linkProvider.resolveLink({});
 
             assert.notCalled(functionStub);
             expect(result).to.be.undefined;

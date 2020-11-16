@@ -1,7 +1,7 @@
 {
     "name": "omt-odt-language-server",
     "description": "Language server in node.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "license": "Apache-2.0",
     "publisher": "pvr",
     "engines": {

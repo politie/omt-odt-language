@@ -12,23 +12,24 @@ export class WorkspaceLookup {
     private workspaceModules = new WorkspaceModules();
     private readonly omtPattern = '**/*.omt';
 
-    public get watchedFolders() {
+    get watchedFolders() {
         return Array.from(this.folders.values());
     }
 
-    public get watchedModules() {
+    get watchedModules() {
         return Array.from(this.workspaceModules.modules.values());
     }
 
     /**
-     *
+     * Create a new workspaceLookup listening to workspace events.
+     * call init to start listening to these events.
      * @param workspace workspace of the client
      */
     constructor(private workspace: RemoteWorkspace) {
         this.workspaceModules = new WorkspaceModules();
     }
 
-    public init(): Promise<void> {
+    init(): Promise<void> {
         this.workspace.onDidChangeWorkspaceFolders(event => {
             this.collectionPromise(event.added, this.addFolder)
             // event.added.forEach(folder => this.addFolder(folder));
@@ -115,7 +116,7 @@ export class WorkspaceLookup {
      * Add a folder and its contents to the watchers
      * @param folder the folder that should be in the workspace
      */
-    public addFolder(folder: WorkspaceFolder) {
+    addFolder(folder: WorkspaceFolder) {
         if (this.folders.get(folder.uri)) {
             console.error('workspace folder was already added');
             throw new Error('workspace folder was already added');
@@ -130,7 +131,7 @@ export class WorkspaceLookup {
      * Remove a folder and all of its contents from the watchers
      * @param folder the folder that should no longer be in the workspace
      */
-    public removeFolder(folder: WorkspaceFolder) {
+    removeFolder(folder: WorkspaceFolder) {
         if (!this.folders.delete(folder.uri)) {
             throw new Error('folder was not added and being watched');
         }
@@ -142,7 +143,7 @@ export class WorkspaceLookup {
     /**
      * Check all omt files in the workspace for watchable files
      */
-    public scanAll(): Promise<void> {
+    scanAll(): Promise<void> {
         const scanResults: Promise<void>[] = [];
         this.folders.forEach((folder) => { scanResults.push(this.scanFolder(folder)) });
         return Promise.all(scanResults)
