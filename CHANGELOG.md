@@ -5,7 +5,7 @@ All notable changes to the "omt-odt-language" extension will be documented in th
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [2.4.0]
+## [2.3.0]
 
 ### Added
 
@@ -17,7 +17,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Moved the parsing of OMT files for document links to the server
 
-## [2.3.0]
+## [2.2.3]
 
 ### Added
 
