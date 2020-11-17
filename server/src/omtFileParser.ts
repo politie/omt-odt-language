@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { CheckFileResult, CheckTextResult } from "./types";
 
 // pattern capturing only the name of the declaration
-const moduleNamePattern = /^moduleName: (\w+)\s?$/;
+const moduleNamePattern = /^moduleName: (\w+)(?:\s#.*)?$/;
 
 export function parseOmtText(text: string): CheckTextResult {
     const match = new RegExp(moduleNamePattern, 'gm').exec(text);
