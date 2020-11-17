@@ -35,34 +35,28 @@ export default class OMTLinkProvider {
     }
 
     contextPaths(document: TextDocument) {
-        const pathPaths = glob.sync('**/tsconfig**.json')
+        return new Map<string, string>(glob.sync('**/tsconfig**.json')
             // we need to filter for same parent because another config may have some of the same paths
             .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
-            .map(uri => {
+            .reduce((paths: [string, string][], uri: string) => {
                 try {
                     const file = readFileSync(uri, 'utf8');
                     const json = JSON.parse(file);
                     if (json.compilerOptions && json.compilerOptions.paths) {
                         // now make a path from the config folder to the keys value and map that
-                        const paths: [string, string][] = [];
                         for (const key in json.compilerOptions.paths) {
                             const relPath = json.compilerOptions.paths[key].toString();
                             const newPath = resolve(dirname(uri), relPath);
                             paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);
                         }
-                        return paths;
                     }
                 } catch (e) {
                     // need to catch this error for when there is a JSON parsing error for example
                     // we can still continue with other files
                     console.error(e);
                 }
-                // all other paths return undefined
-            }).filter(paths => paths != undefined) as unknown as [string, string][];
-        // make it typed
-        const sourceType: [string, string][] = [];
-        const mapSource = sourceType.concat.apply([], pathPaths);
-        return new Map<string, string>(mapSource);
+                return paths;
+            }, []));
     }
 }
 
@@ -114,7 +108,6 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
  * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
  */
 function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => string): DocumentLink[] {
-    // console.log('server omtLinkProvider.findOMTUrl');
     const documentLinks: DocumentLink[] = [];
     // so match after import: until we need any other (\w+): without any preceding spaces
     let isScanning = false;

@@ -16,7 +16,7 @@ describe('OMTLinkProvider', () => {
     beforeEach(() => {
         lookupStub = <WorkspaceLookup>{
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            getModulePath: (module: string) => '',
+            getModulePath: (_module: string) => '',
         };
 
         linkProvider = new OMTLinkProvider(lookupStub);
@@ -47,16 +47,16 @@ describe('OMTLinkProvider', () => {
         cases.forEach((value: Case) => {
             it(value.should, () => {
                 testLinkProvider(
-                    value.i, {
-                    range: toRange(value.line, value.start, value.line, value.end),
-                    target: value.target,
-                });
+                    value.i,
+                    {
+                        range: toRange(value.line, value.start, value.line, value.end),
+                        target: value.target,
+                    });
             })
         });
 
         function testLinkProvider(index: number, expectedDocumentLink: DocumentLink) {
             const actualDocumentLink = actualDocumentLinks[index];
-            // console.log(actualDocumentLink);
             if (expectedDocumentLink.target) {
                 expect(actualDocumentLink.target).to.equal(expectedDocumentLink.target, 'target path');
                 expect(actualDocumentLink.range).to.deep.equal(expectedDocumentLink.range, 'range');

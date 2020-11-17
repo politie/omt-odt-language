@@ -16,6 +16,10 @@ describe('OMTLinkProvider', () => {
         await activate(docUri);
     });
 
+    after(() => {
+        sendRequestStub.restore();
+    });
+
     it('should request documentlinks from the server', () => {
         // only test if the omtLinkProvider calls the right server functions
         // and if it is called when the document is loaded

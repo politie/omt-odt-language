@@ -6,12 +6,12 @@ const moduleNamePattern = /^moduleName: (\w+)(?:\s#.*)?$/;
 
 export function parseOmtText(text: string): CheckTextResult {
     const match = new RegExp(moduleNamePattern, 'gm').exec(text);
-    return match ? 
-         {
+    return match ?
+        {
             module: {
                 name: match[1]
             }
-        } : { };
+        } : {};
 }
 
 /**

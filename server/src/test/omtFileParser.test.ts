@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { SinonStub, stub } from "sinon";
 import { parseOmtFile, parseOmtText } from "../omtFileParser";
 import * as fs from 'fs';
-import { fail } from "assert";
 import { CheckFileResult } from "../types";
 
 describe('omtFileParser', () => {
@@ -48,12 +47,13 @@ describe('omtFileParser', () => {
             const uri = `file:///validPath.omt`
             parseOmtFile(uri)
                 .then(() => {
-                    fail();
+                    expect.fail();
                 }, (reason) => {
+                    // test if the error results in a rejection
                     expect(reason).to.eq('error message');
                     done();
                 });
-            // act
+            // act - have the filesystem return an error
             readFileStub.callArgWith(2, 'error message');
 
         });
@@ -67,9 +67,9 @@ describe('omtFileParser', () => {
                     expect(result.path).to.eq(uri);
                     done();
                 }, () => {
-                    fail();
+                    expect.fail();
                 });
-            // act
+            // act - have the filesystem return a valid module defenition text
             readFileStub.callArgWith(2, undefined, 'moduleName: n');
         });
     });

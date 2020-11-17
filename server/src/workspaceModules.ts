@@ -33,7 +33,7 @@ export class WorkspaceModules implements WorkspaceProcessor {
                 if (module.uri === result.path) {
                     this.modules.delete(module.name);
                 }
-            })
+            });
         }
     }
 
@@ -45,18 +45,12 @@ export class WorkspaceModules implements WorkspaceProcessor {
         const existing = this.modules.get(name);
         if (existing && existing.uri != uri) {
             console.warn(`WARN: There is another module named '${existing.name}' found at ${existing.uri}. Will now replace with ${uri}`);
-            this.modules.set(name,
-                {
-                    name,
-                    uri,
-                });
-        } else {
-            this.modules.set(name,
-                {
-                    name,
-                    uri,
-                });
         }
+        this.modules.set(name,
+            {
+                name,
+                uri,
+            });
     }
 
     getModulePath(name: string): string | undefined {

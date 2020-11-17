@@ -32,7 +32,6 @@ export class WorkspaceLookup {
     init(): Promise<void> {
         this.workspace.onDidChangeWorkspaceFolders(event => {
             this.collectionPromise(event.added, this.addFolder)
-            // event.added.forEach(folder => this.addFolder(folder));
             event.removed.forEach(folder => this.removeFolder(folder));
         });
         this.workspace.connection.onDidChangeWatchedFiles((params) => this.watchedFilesChanged(params));
@@ -68,7 +67,6 @@ export class WorkspaceLookup {
     }
 
     private watchedFilesChanged(event: DidChangeWatchedFilesParams) {
-        // console.log(`workspaceLookup.watchedFilesChanged ${event.changes.length}`);
         // when a file watched by the client is changed even when it isn't open in the editor (by version control for example)
         // this only happens with saved files and the changes should be read from the filesystem
         return new Promise<void>((resolve, reject) => {

@@ -1,4 +1,3 @@
-import { fail } from "assert";
 import { expect } from "chai";
 import { resolve } from "path";
 import { assert, SinonStub, stub } from "sinon";
@@ -92,8 +91,8 @@ describe('WorkspaceLookup', () => {
                     expect(workspaceLookup.watchedModules[0].name).to.eq(originalParseResult.module?.name);
                     expect(workspaceLookup.watchedModules[0].uri).to.eq(originalParseResult.path);
                     done();
-                }, reason => { fail(reason); })
-                .catch((reason) => fail(reason));
+                }, reason => { expect.fail(reason); })
+                .catch((reason) => expect.fail(reason));
         });
 
         afterEach(() => {
@@ -310,7 +309,7 @@ describe('WorkspaceLookup', () => {
                     assert.calledTwice(globStub);
                     done();
                 }).catch(reason => {
-                    fail(reason);
+                    expect.fail(reason);
                 });
         });
     });

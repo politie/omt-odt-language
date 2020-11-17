@@ -1,17 +1,17 @@
 import {
-	createConnection,
-	TextDocuments,
-	ProposedFeatures,
-	InitializeParams,
-	DidChangeConfigurationNotification,
-	TextDocumentSyncKind,
-	InitializeResult,
-	DocumentLinkParams,
-	DocumentLink
+    createConnection,
+    TextDocuments,
+    ProposedFeatures,
+    InitializeParams,
+    DidChangeConfigurationNotification,
+    TextDocumentSyncKind,
+    InitializeResult,
+    DocumentLinkParams,
+    DocumentLink
 } from 'vscode-languageserver';
 
 import {
-	TextDocument
+    TextDocument
 } from 'vscode-languageserver-textdocument';
 import OMTLinkProvider from './omtLinkProvider';
 import { WorkspaceLookup } from './workspaceLookup';
@@ -30,56 +30,56 @@ let omtLinkProvider: OMTLinkProvider;
 let workspaceLookup: WorkspaceLookup;
 
 connection.onInitialize((params: InitializeParams) => {
-	const capabilities = params.capabilities;
-	// Does the client support the `workspace/configuration` request?
-	// If not, we fall back using global settings.
-	hasConfigurationCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.configuration
-	);
-	hasWorkspaceFolderCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.workspaceFolders
-	);
+    const capabilities = params.capabilities;
+    // Does the client support the `workspace/configuration` request?
+    // If not, we fall back using global settings.
+    hasConfigurationCapability = !!(
+        capabilities.workspace && !!capabilities.workspace.configuration
+    );
+    hasWorkspaceFolderCapability = !!(
+        capabilities.workspace && !!capabilities.workspace.workspaceFolders
+    );
 
-	hasDocumentLinkCapabilities = !!(
-		capabilities.textDocument && capabilities.textDocument.documentLink
-	);
+    hasDocumentLinkCapabilities = !!(
+        capabilities.textDocument && capabilities.textDocument.documentLink
+    );
 
-	const result: InitializeResult = {
-		capabilities: {
-			textDocumentSync: TextDocumentSyncKind.Incremental,
-		}
-	};
-	if (hasWorkspaceFolderCapability) {
-		result.capabilities.workspace = {
-			workspaceFolders: {
-				supported: true
-			}
-		};
-	}
-	return result;
+    const result: InitializeResult = {
+        capabilities: {
+            textDocumentSync: TextDocumentSyncKind.Incremental,
+        }
+    };
+    if (hasWorkspaceFolderCapability) {
+        result.capabilities.workspace = {
+            workspaceFolders: {
+                supported: true
+            }
+        };
+    }
+    return result;
 });
 
 connection.onInitialized(() => {
-	workspaceLookup = new WorkspaceLookup(connection.workspace);
-	omtLinkProvider = new OMTLinkProvider(workspaceLookup);
-	workspaceLookup.init().then(() => {
-		workspaceLookup.scanAll();
-	});
+    workspaceLookup = new WorkspaceLookup(connection.workspace);
+    omtLinkProvider = new OMTLinkProvider(workspaceLookup);
+    workspaceLookup.init().then(() => {
+        workspaceLookup.scanAll();
+    });
 
-	if (hasConfigurationCapability) {
-		// Register for all configuration changes.
-		connection.client.register(DidChangeConfigurationNotification.type, undefined);
-	}
-	if (hasDocumentLinkCapabilities) {
-		connection.onDocumentLinks(documentLinksHandler);
-		connection.onDocumentLinkResolve(documentLinkResolve);
-	}
+    if (hasConfigurationCapability) {
+        // Register for all configuration changes.
+        connection.client.register(DidChangeConfigurationNotification.type, undefined);
+    }
+    if (hasDocumentLinkCapabilities) {
+        connection.onDocumentLinks(documentLinksHandler);
+        connection.onDocumentLinkResolve(documentLinkResolve);
+    }
 });
 
 function shutdownCheck() {
-	if (isShuttingDown) {
-		throw new Error('LSP server is shutting down');
-	}
+    if (isShuttingDown) {
+        throw new Error('LSP server is shutting down');
+    }
 }
 
 /* TODO implement shutdown protocol
@@ -89,23 +89,23 @@ function shutdownCheck() {
  */
 let isShuttingDown = false;
 connection.onShutdown(() => {
-	shutdownCheck();
-	isShuttingDown = true;
-	// TODO: destroy anything we need to, like:
-	// omtLinkProvider
-	// workspaceLookup
+    shutdownCheck();
+    isShuttingDown = true;
+    // TODO: destroy anything we need to, like:
+    // omtLinkProvider
+    // workspaceLookup
 });
 
 connection.onExit(() => {
-	if (!isShuttingDown) {
-		throw new Error('LSP server is not shutting down');
-	}
-	// TODO: finish the server process
+    if (!isShuttingDown) {
+        throw new Error('LSP server is not shutting down');
+    }
+    // TODO: finish the server process
 });
 
 // The example settings
 interface ExampleSettings {
-	maxNumberOfProblems: number;
+    maxNumberOfProblems: number;
 }
 
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -116,45 +116,45 @@ interface ExampleSettings {
 const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
 connection.onDidChangeConfiguration(() => {
-	if (hasConfigurationCapability) {
-		// Reset all cached document settings
-		documentSettings.clear();
-	}
+    if (hasConfigurationCapability) {
+        // Reset all cached document settings
+        documentSettings.clear();
+    }
 });
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri);
+    documentSettings.delete(e.document.uri);
 });
 
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
-	return workspaceLookup.fileChanged(change);
+    return workspaceLookup.fileChanged(change);
 });
 
 // scans for document links in a document usually when it is opened
 const documentLinksHandler = (params: DocumentLinkParams) => {
-	console.log('server.documentLinksHandler');
-	const document = documents.get(params.textDocument.uri);
-	if (document) {
-		return omtLinkProvider.provideDocumentLinks(document)
-	} else {
-		return undefined;
-	}
+    console.log('server.documentLinksHandler');
+    const document = documents.get(params.textDocument.uri);
+    if (document) {
+        return omtLinkProvider.provideDocumentLinks(document)
+    } else {
+        return undefined;
+    }
 }
 
 const documentLinkResolve = (link: DocumentLink) => {
-	console.log(`server.documentLinkResolve`)
-	console.log(link.data);
-	link.target = omtLinkProvider.resolveLink(link.data);
+    console.log(`server.documentLinkResolve`)
+    console.log(link.data);
+    link.target = omtLinkProvider.resolveLink(link.data);
 
-	return link;
+    return link;
 }
 
 // to debug that no other request is being sent instead of what we expect
 connection.onRequest((method: string) => {
-	console.log('server.onRequest: ' + method);
+    console.log('server.onRequest: ' + method);
 });
 
 // Make the text document manager listen on the connection
