@@ -2,7 +2,9 @@ import { DocumentLink, Position, Range } from 'vscode';
 import { getDocUri, activate } from './helper';
 import { SinonStub, stub } from 'sinon';
 import { LanguageClient } from 'vscode-languageclient';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import * as sinonChai from 'sinon-chai';
+use(sinonChai);
 
 describe('OMTLinkProvider', () => {
     const docUri = getDocUri('one/imports.omt');
@@ -26,7 +28,8 @@ describe('OMTLinkProvider', () => {
         // and if it is called when the document is loaded
         // the making of the links should be tested for the server
         // and the rendering of the links is the responsibility of vscode
-        expect(sendRequestStub).to.be.calledWith({ textDocument: { uri: '.' + docUri.toString() } });
+        const requestMethod = "textDocument/documentLink";
+        expect(sendRequestStub).to.be.calledWith(requestMethod, { textDocument: { uri: docUri.toString() } });
     });
 });
 
