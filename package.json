@@ -105,7 +105,7 @@
         "watch": "tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "test": "sh ./scripts/e2e.sh",
-        "linting": "npx eslint . --ext .js,.jsx,.ts,.tsx"
+        "linting": "npx eslint . --ext .js,.jsx,.ts,.tsx,.md"
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
@@ -117,6 +117,7 @@
         "@typescript-eslint/parser": "^4.0.0",
         "chai": "^4.2.0",
         "eslint": "^6.8.0",
+        "eslint-plugin-md": "^1.0.19",
         "mocha": "^7.2.0",
         "sinon": "^9.2.0",
         "sinon-chai": "^3.5.0",
