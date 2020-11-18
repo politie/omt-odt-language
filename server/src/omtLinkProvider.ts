@@ -7,7 +7,7 @@ import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData } from './types';
 
 const omtUriMatch = /( +["']?)(.*\.omt)/;
-const declaredImportMatch = /( +)(module:)(.*):/;
+const declaredImportMatch = /( +)(?:module:)(.*):/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
@@ -135,7 +135,7 @@ function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => s
                     // match[1] is the whitespace prepending the import
                     // match[2] is the text 'module:'
                     // match[3] is the module name
-                    const declaredImportModule = '' + diMatch[3];
+                    const declaredImportModule = '' + diMatch[2];
                     // because the server may not be done scanning the workspace when this is called
                     // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
                     // the url will be undefined and we pass the declared import information as data with the link

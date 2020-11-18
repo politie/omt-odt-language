@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { assert, stub } from "sinon";
+import { stub } from "sinon";
 import { CheckFileResult, OMTModule } from "../types";
 import { WorkspaceModules } from "../workspaceModules";
 
@@ -53,7 +53,7 @@ describe('WorkspaceModule', () => {
             const module = <OMTModule>workspaceModules.modules.values().next().value;
             expect(module.name).to.eq(defaultCheckFileResult.module?.name);
             expect(module.uri).to.eq(defaultCheckFileResult.path);
-            assert.calledOnceWithMatch(setStub, defaultCheckFileResult.module?.name!, {
+            expect(setStub).to.be.calledOnceWith(defaultCheckFileResult.module?.name!, {
                 name: defaultCheckFileResult.module?.name!,
                 uri: defaultCheckFileResult.path
             });

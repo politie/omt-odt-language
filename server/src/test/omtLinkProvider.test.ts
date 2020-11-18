@@ -1,13 +1,23 @@
-import { expect } from 'chai';
+import { expect, use } from 'chai';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { assert, stub } from 'sinon';
+import { stub } from 'sinon';
 import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import OMTLinkProvider from '../omtLinkProvider';
 import { WorkspaceLookup } from '../workspaceLookup';
+import * as sinonChai from 'sinon-chai';
+use(sinonChai);
 
-type Case = { i: number, line: number, start: number, end: number, target: string | undefined, should: string };
+type Case = {
+    i: number,
+    line: number,
+    start: number,
+    end: number,
+    should: string,
+    target: string | undefined,
+    module?: string,
+};
 
 describe('OMTLinkProvider', () => {
     let linkProvider: OMTLinkProvider;
@@ -34,7 +44,7 @@ describe('OMTLinkProvider', () => {
 
         // test uri links with and without shorthands
         const cases: Case[] = [
-            { i: 0, line: 1, start: 1, end: 18, target: undefined, should: 'should make a link for a declared import' },
+            { i: 0, line: 1, start: 1, end: 18, target: undefined, should: 'should make a link for a declared import', module: 'Declared' },
             { i: 1, line: 3, start: 5, end: 20, target: resolve('testFixture/relative.omt'), should: 'should make a link for a relative path' },
             { i: 2, line: 5, start: 4, end: 24, target: resolve('testFixture/one/shorthanded.omt'), should: 'should recognize a shorthand from the tsconfig in current project folder' },
             { i: 3, line: 7, start: 5, end: 29, target: resolve('testFixture/one/quotedShorthand.omt'), should: 'should ignore quotes 1' },
@@ -46,11 +56,13 @@ describe('OMTLinkProvider', () => {
         // test all cases
         cases.forEach((value: Case) => {
             it(value.should, () => {
+                const { module } = value;
                 testLinkProvider(
                     value.i,
                     {
                         range: toRange(value.line, value.start, value.line, value.end),
                         target: value.target,
+                        data: module ? { declaredImport: { module } } : undefined,
                     });
             })
         });
@@ -60,8 +72,11 @@ describe('OMTLinkProvider', () => {
             if (expectedDocumentLink.target) {
                 expect(actualDocumentLink.target).to.equal(expectedDocumentLink.target, 'target path');
                 expect(actualDocumentLink.range).to.deep.equal(expectedDocumentLink.range, 'range');
+                expect(actualDocumentLink.data).to.be.undefined;
             } else {
                 expect(actualDocumentLink.target).to.equal(undefined, 'target');
+                expect(actualDocumentLink.data).not.to.be.undefined;
+                expect(actualDocumentLink.data.declaredImport.module).to.eq(expectedDocumentLink.data.declaredImport.module);
             }
         }
     });
@@ -76,7 +91,7 @@ describe('OMTLinkProvider', () => {
                 }
             });
 
-            assert.calledWith(functionStub, 'moduleName');
+            expect(functionStub).to.be.calledWith('moduleName');
             expect(result).to.eq('modulePath');
         });
 
@@ -85,7 +100,7 @@ describe('OMTLinkProvider', () => {
 
             const result = linkProvider.resolveLink(undefined);
 
-            assert.notCalled(functionStub);
+            expect(functionStub).not.to.be.called;
             expect(result).to.be.undefined;
         });
 
@@ -96,12 +111,12 @@ describe('OMTLinkProvider', () => {
                 declaredImport: {}
             });
 
-            assert.notCalled(functionStub);
+            expect(functionStub).not.to.be.called;
             expect(result).to.be.undefined;
 
             result = linkProvider.resolveLink({});
 
-            assert.notCalled(functionStub);
+            expect(functionStub).not.to.be.called;
             expect(result).to.be.undefined;
         });
     });

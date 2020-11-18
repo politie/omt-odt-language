@@ -16,6 +16,7 @@ describe('omtFileParser', () => {
             { text: 'moduleName: n ', rule: 'a single trailing whitespace is allowed', shouldMatch: true, name: 'n' },
             { text: 'moduleName: n  ', rule: 'multiple trailing whitespaces are not allowed', shouldMatch: false },
             { text: 'moduleName: aB_1', rule: 'valid characters', shouldMatch: true, name: 'aB_1' },
+            { text: 'moduleName: n #comment', rule: 'comments after a module defenition are allowed', shouldMatch: true, name: 'n' },
         ]
 
         cases.forEach((value) => {

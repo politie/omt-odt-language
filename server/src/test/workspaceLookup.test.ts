@@ -1,12 +1,14 @@
-import { expect } from "chai";
+import { expect, use } from "chai";
 import { resolve } from "path";
-import { assert, SinonStub, stub } from "sinon";
+import { SinonStub, stub } from "sinon";
 import { FileChangeType, RemoteWorkspace } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { WorkspaceLookup } from "../workspaceLookup";
 import * as omtFileParser from '../omtFileParser';
 import * as globPromise from '../globPromise';
 import { CheckFileResult } from "../types";
+import * as sinonChai from 'sinon-chai';
+use(sinonChai);
 
 describe('WorkspaceLookup', () => {
     let workspaceLookup: WorkspaceLookup;
@@ -64,14 +66,14 @@ describe('WorkspaceLookup', () => {
         it('starts listening to workspace folder changes', (done) => {
             const functionStub = stub(stubbedWorkspace, 'onDidChangeWorkspaceFolders');
             workspaceLookup.init().then(() => {
-                assert.calledOnce(functionStub);
+                expect(functionStub).to.be.calledOnce;
                 done();
             });
         });
         it('starts listening to changed files', (done) => {
             const changedWatchedFilesStub = stub(stubbedWorkspace.connection, 'onDidChangeWatchedFiles');
             workspaceLookup.init().then(() => {
-                assert.calledOnce(changedWatchedFilesStub);
+                expect(changedWatchedFilesStub).to.be.calledOnce;
                 done();
             });
         });
@@ -85,7 +87,7 @@ describe('WorkspaceLookup', () => {
             // initialize and attach the stub listener
             workspaceLookup.init()
                 .then(() => {
-                    assert.calledOnce(changedWatchedFilesStub);
+                    expect(changedWatchedFilesStub).to.be.calledOnce;
                     // validate the starting state
                     expect(workspaceLookup.watchedModules).to.lengthOf(1);
                     expect(workspaceLookup.watchedModules[0].name).to.eq(originalParseResult.module?.name);
@@ -118,7 +120,7 @@ describe('WorkspaceLookup', () => {
                 // the handling of the parseOmtResult is done asynchronously for multiple files
                 // because this then is added after the one in the code under test
                 // we can use it as trigger for when we assert the results
-                assert.calledWith(parseOmtFileStub, resolve('./myOmtFile.omt'));
+                expect(parseOmtFileStub).to.be.calledWith(resolve('./myOmtFile.omt'));
                 expect(workspaceLookup.watchedModules).to.lengthOf(1);
                 expect(workspaceLookup.watchedModules[0].name).to.eq('module1');
                 expect(workspaceLookup.watchedModules[0].uri).to.eq(originalParseResult.path);
@@ -181,7 +183,7 @@ describe('WorkspaceLookup', () => {
                 // the handling of the parseOmtResult is done asynchronously for multiple files
                 // because this then is added after the one in the code under test
                 // we can use it as trigger for when we assert the results
-                assert.calledWith(parseOmtFileStub, resolve('./myOmtFile.omt'));
+                expect(parseOmtFileStub).to.be.calledWith(resolve('./myOmtFile.omt'));
                 expect(workspaceLookup.watchedModules).to.lengthOf(1);
                 expect(workspaceLookup.watchedModules[0].name).to.eq('createdModule');
                 expect(workspaceLookup.watchedModules[0].uri).to.eq(originalParseResult.path);
@@ -257,7 +259,7 @@ describe('WorkspaceLookup', () => {
                 uri: `file://${newFolder}`,
                 name: 'one'
             }).then(() => {
-                assert.calledWith(globStub, `${newFolder}/**/*.omt`);
+                expect(globStub).to.be.calledWith(`${newFolder}/**/*.omt`);
                 expect(workspaceLookup.watchedModules.length).eq(2);
                 expect(workspaceLookup.watchedModules[1].name).eq('moduleNameTest3');
                 done();
@@ -297,7 +299,7 @@ describe('WorkspaceLookup', () => {
     describe('scanAll', () => {
         beforeEach((done) => {
             workspaceLookup.init().then(() => {
-                assert.calledTwice(globStub);
+                expect(globStub).to.be.calledTwice;
                 done();
             });
         });
@@ -306,7 +308,7 @@ describe('WorkspaceLookup', () => {
             globStub.resetHistory();
             workspaceLookup.scanAll()
                 .then(() => {
-                    assert.calledTwice(globStub);
+                    expect(globStub).to.be.calledTwice;
                     done();
                 }).catch(reason => {
                     expect.fail(reason);
