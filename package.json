@@ -105,7 +105,9 @@
         "watch": "tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "test": "sh ./scripts/e2e.sh",
-        "linting": "npx eslint . --ext .js,.jsx,.ts,.tsx,.md"
+        "linting": "npx eslint . --ext .js,.jsx,.ts,.tsx,.md",
+        "test-server": "cd server && npm run test",
+        "coverage-server": "cd server && npm run coverage"
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
