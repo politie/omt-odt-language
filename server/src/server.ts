@@ -21,7 +21,7 @@ import { WorkspaceLookup } from './workspaceLookup';
 const connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager.
-const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+const documents = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -30,6 +30,7 @@ let omtLinkProvider: OMTLinkProvider;
 let workspaceLookup: WorkspaceLookup;
 
 connection.onInitialize((params: InitializeParams) => {
+    shutdownCheck();
     const capabilities = params.capabilities;
     // Does the client support the `workspace/configuration` request?
     // If not, we fall back using global settings.
@@ -60,6 +61,7 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 connection.onInitialized(() => {
+    shutdownCheck();
     workspaceLookup = new WorkspaceLookup(connection.workspace);
     omtLinkProvider = new OMTLinkProvider(workspaceLookup);
     workspaceLookup.init().then(() => {
@@ -91,16 +93,14 @@ let isShuttingDown = false;
 connection.onShutdown(() => {
     shutdownCheck();
     isShuttingDown = true;
-    // TODO: destroy anything we need to, like:
-    // omtLinkProvider
-    // workspaceLookup
+    connection.dispose();
 });
 
 connection.onExit(() => {
     if (!isShuttingDown) {
         throw new Error('LSP server is not shutting down');
     }
-    // TODO: finish the server process
+    process.exit();
 });
 
 // The example settings
@@ -111,11 +111,11 @@ interface ExampleSettings {
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
 // Please note that this is not the case when using this server with the client provided in this example
 // but could happen with other clients.
-
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
 connection.onDidChangeConfiguration(() => {
+    shutdownCheck();
     if (hasConfigurationCapability) {
         // Reset all cached document settings
         documentSettings.clear();
@@ -124,18 +124,20 @@ connection.onDidChangeConfiguration(() => {
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
+    shutdownCheck();
     documentSettings.delete(e.document.uri);
 });
 
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
+    shutdownCheck();
     return workspaceLookup.fileChanged(change);
 });
 
 // scans for document links in a document usually when it is opened
 const documentLinksHandler = (params: DocumentLinkParams) => {
-    console.log('server.documentLinksHandler');
+    shutdownCheck();
     const document = documents.get(params.textDocument.uri);
     if (document) {
         return omtLinkProvider.provideDocumentLinks(document)
@@ -145,17 +147,11 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
 }
 
 const documentLinkResolve = (link: DocumentLink) => {
-    console.log(`server.documentLinkResolve`)
-    console.log(link.data);
+    shutdownCheck();
     link.target = omtLinkProvider.resolveLink(link.data);
 
     return link;
 }
-
-// to debug that no other request is being sent instead of what we expect
-connection.onRequest((method: string) => {
-    console.log('server.onRequest: ' + method);
-});
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
