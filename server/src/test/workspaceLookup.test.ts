@@ -1,7 +1,7 @@
 import { expect, use } from "chai";
 import { resolve } from "path";
 import { SinonStub, stub } from "sinon";
-import { FileChangeType, RemoteWorkspace } from "vscode-languageserver";
+import { FileChangeType, RemoteWorkspace, WorkspaceFoldersChangeEvent } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { WorkspaceLookup } from "../workspaceLookup";
 import * as omtFileParser from '../omtFileParser';
@@ -22,6 +22,7 @@ describe('WorkspaceLookup', () => {
         path: defaultGlobResult,
         module: { name: 'moduleTestName' },
     };
+    let getWorkspaceFoldersStub: SinonStub;
 
     beforeEach(() => {
         stubbedWorkspace = <RemoteWorkspace><unknown>{
@@ -33,7 +34,7 @@ describe('WorkspaceLookup', () => {
             }
         };
 
-        stub(stubbedWorkspace, 'getWorkspaceFolders')
+        getWorkspaceFoldersStub = stub(stubbedWorkspace, 'getWorkspaceFolders')
             .returns(Promise.resolve([
                 { uri: 'file:///folder/one', name: 'one' },
                 { uri: 'file:///folder/two', name: 'two' }]));
@@ -51,7 +52,8 @@ describe('WorkspaceLookup', () => {
     afterEach(() => {
         parseOmtFileStub.restore();
         globStub.restore();
-    })
+        getWorkspaceFoldersStub.restore();
+    });
 
     describe('init', () => {
         it('adds all workspace folders', () => {
@@ -70,6 +72,7 @@ describe('WorkspaceLookup', () => {
                 done();
             });
         });
+
         it('starts listening to changed files', (done) => {
             const changedWatchedFilesStub = stub(stubbedWorkspace.connection, 'onDidChangeWatchedFiles');
             workspaceLookup.init().then(() => {
@@ -77,9 +80,35 @@ describe('WorkspaceLookup', () => {
                 done();
             });
         });
-    })
 
-    describe('watchedFilesChanged handler', () => {
+        it('should reject when there is a duplicate in the workspace folders', (done) => {
+            const folders = [
+                { uri: 'file:///folder/one', name: 'one' },
+                { uri: 'file:///folder/one', name: 'one' }];
+            getWorkspaceFoldersStub.returns(Promise.resolve(folders));
+            const errorStub = stub(console, 'error');
+            workspaceLookup.init().then(() => {
+                expect.fail();
+            }, reason => {
+                expect(reason).to.contain(folders[1].uri);
+                expect(errorStub).to.been.calledOnce;
+                expect(errorStub.firstCall.args[0]).to.contain(folders[1].uri);
+                done();
+            }).finally(() => {
+                errorStub.restore();
+            });
+        });
+
+        it('should resolve when there are no folders on init', (done) => {
+            getWorkspaceFoldersStub.returns(Promise.resolve(undefined));
+            workspaceLookup.init().then(() => {
+                expect(workspaceLookup.watchedFolders.length).to.eq(0);
+                done();
+            });
+        });
+    });
+
+    describe('workspace.onDidChangeWatchedFiles handler', () => {
         let changedWatchedFilesStub: SinonStub;
 
         beforeEach((done) => {
@@ -192,6 +221,52 @@ describe('WorkspaceLookup', () => {
         });
     });
 
+    describe('workspace.onDidChangeWorkspaceFolders handler', () => {
+        let workspaceFolderChangeStub: SinonStub;
+
+        beforeEach((done) => {
+            workspaceFolderChangeStub = stub(stubbedWorkspace, 'onDidChangeWorkspaceFolders');
+            workspaceLookup.init().then(() => done());
+        });
+
+        afterEach(() => {
+            workspaceFolderChangeStub.restore();
+        });
+
+        it('should use addFolder for each added WorkspaceFolder', (done) => {
+            const addFolderPromise = Promise.resolve();
+            const addFolderStub = stub(workspaceLookup, 'addFolder')
+                .returns(addFolderPromise);
+            const added = [
+                { uri: '/root/folderOne', name: 'folderOne' },
+                { uri: '/root/folderTwo', name: 'folderTwo' }];
+            workspaceFolderChangeStub.callArgWith(0, {
+                added,
+                removed: [],
+            } as WorkspaceFoldersChangeEvent);
+            addFolderPromise.then(() => {
+                expect(addFolderStub).to.be.calledTwice;
+                expect(addFolderStub.firstCall.args[0]).to.deep.eq(added[0]);
+                expect(addFolderStub.secondCall.args[0]).to.deep.eq(added[1]);
+                done();
+            });
+        });
+
+        it('should use removeFolder for each removed WorkspaceFolder', () => {
+            const removeFolderStub = stub(workspaceLookup, 'removeFolder')
+            const removed = [
+                { uri: '/root/folderOne', name: 'folderOne' },
+                { uri: '/root/folderTwo', name: 'folderTwo' }];
+            workspaceFolderChangeStub.callArgWith(0, {
+                added: [],
+                removed,
+            } as WorkspaceFoldersChangeEvent);
+            expect(removeFolderStub).to.be.calledTwice;
+            expect(removeFolderStub.firstCall.args[0]).to.deep.eq(removed[0]);
+            expect(removeFolderStub.secondCall.args[0]).to.deep.eq(removed[1]);
+        });
+    });
+
     describe('fileChanged', () => {
         it('parses the new text from the change', () => {
             const newModule = 'newModuleName';
@@ -236,13 +311,17 @@ describe('WorkspaceLookup', () => {
             })
         });
 
-        it('throws an error when a folder is added for a second time', () => {
-            expect(() => {
-                workspaceLookup.addFolder({
-                    uri: `file://${defaultFolder}`,
-                    name: 'one'
+        it('rejects when a folder is added for a second time', (done) => {
+            const uri = `file://${defaultFolder}`;
+            workspaceLookup.addFolder({
+                uri,
+                name: 'one'
+            }).then(
+                () => expect.fail(),
+                (reason) => {
+                    expect(reason).to.contain(uri);
+                    done();
                 });
-            }).to.throw();
         });
 
         it('scans the added folder', (done) => {

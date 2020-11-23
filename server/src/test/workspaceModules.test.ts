@@ -58,6 +58,44 @@ describe('WorkspaceModule', () => {
                 uri: defaultCheckFileResult.path
             });
         });
+
+        it('should warn when there is another module with the same name in a different file', () => {
+            workspaceModules.checkForChanges(defaultCheckFileResult);
+            const warnStub = stub(console, 'warn');
+            const differentPath = 'folder/differentPath.omt';
+            workspaceModules.checkForChanges({
+                ...defaultCheckFileResult,
+                path: differentPath,
+            });
+            expect(warnStub).to.be.calledOnce;
+            expect(warnStub.firstCall.firstArg).to.contain(defaultCheckFileResult.module?.name);
+            expect(warnStub.firstCall.firstArg).to.contain(defaultCheckFileResult.path);
+            expect(warnStub.firstCall.firstArg).to.contain(differentPath);
+            warnStub.restore();
+            expect(workspaceModules.modules.size).to.eq(1);
+            const module = <OMTModule>workspaceModules.modules.values().next().value;
+            expect(module.name).to.eq(defaultCheckFileResult.module?.name);
+            expect(module.uri).to.eq(differentPath);
+        });
+
+        it('should remove a module when the contents have no longer a module defenition', () => {
+            workspaceModules.checkForChanges(defaultCheckFileResult);
+            expect(workspaceModules.modules.size).to.eq(1);
+            workspaceModules.checkForChanges({
+                ...defaultCheckFileResult,
+                module: undefined
+            });
+            expect(workspaceModules.modules.size).to.eq(0);
+        });
+
+        it('should not remove a module when another omt is checked', () => {
+            workspaceModules.checkForChanges(defaultCheckFileResult);
+            expect(workspaceModules.modules.size).to.eq(1);
+            workspaceModules.checkForChanges({
+                path: 'some/otherPath.omt'
+            });
+            expect(workspaceModules.modules.size).to.eq(1);
+        })
     });
 
     describe('getModulePath', () => {
@@ -107,4 +145,5 @@ describe('WorkspaceModule', () => {
             expect(workspaceModules.modules.size).to.eq(1);
         });
     });
+
 });

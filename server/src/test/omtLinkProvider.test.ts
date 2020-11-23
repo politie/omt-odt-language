@@ -38,8 +38,11 @@ describe('OMTLinkProvider', () => {
         beforeEach(() => {
             const uri = 'testFixture/one/imports.omt';
             const textDocument = TextDocument.create(uri, 'omt', 1, readFileSync(resolve(uri)).toString());
-
+            const errorStub = stub(console, 'error');
             actualDocumentLinks = linkProvider.provideDocumentLinks(textDocument);
+            //- called in the catch clause for reading tsconfig-invalid
+            expect(errorStub).to.be.calledOnce;
+            errorStub.restore();
         })
 
         // test uri links with and without shorthands

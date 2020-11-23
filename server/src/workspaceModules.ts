@@ -39,9 +39,6 @@ export class WorkspaceModules implements WorkspaceProcessor {
 
     private processModule(moduleResult: OMTModule) {
         const { name, uri } = moduleResult;
-        if (!name) {
-            throw new Error('name is undefined');
-        }
         const existing = this.modules.get(name);
         if (existing && existing.uri != uri) {
             console.warn(`WARN: There is another module named '${existing.name}' found at ${existing.uri}. Will now replace with ${uri}`);

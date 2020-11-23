@@ -41,12 +41,8 @@ export class WorkspaceLookup {
                 .then((folders) => {
                     if (folders) {
                         Promise.all(folders.map(folder => this.addFolder(folder)))
-                            .then(() => {
-                                resolve()
-                            })
-                            .catch(reason => {
-                                reject(reason)
-                            });
+                            .then(() => resolve())
+                            .catch(reason => reject(reason));
                     } else {
                         resolve();
                     }
@@ -116,8 +112,9 @@ export class WorkspaceLookup {
      */
     addFolder(folder: WorkspaceFolder) {
         if (this.folders.get(folder.uri)) {
-            console.error('workspace folder was already added');
-            throw new Error('workspace folder was already added');
+            const message = `folder '${folder.uri}' was already added`;
+            console.error(message);
+            return Promise.reject(message);
         }
         else {
             this.folders.set(folder.uri, folder);
