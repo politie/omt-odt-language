@@ -4,6 +4,10 @@ import { CheckFileResult, CheckTextResult } from "./types";
 // pattern capturing only the name of the declaration
 const moduleNamePattern = /^moduleName: (\w+)(?:\s|\s#.*)?$/;
 
+/**
+ * parse an OMT text and look for sertain properties, like if it contains a module defenition.
+ * @param text The text of an OMT file
+ */
 export function parseOmtText(text: string): CheckTextResult {
     const match = new RegExp(moduleNamePattern, 'gm').exec(text);
     return match ?
@@ -15,7 +19,8 @@ export function parseOmtText(text: string): CheckTextResult {
 }
 
 /**
- * Reads a file from the filesystem and returns a information about the omt
+ * Reads a file from the filesystem and returns a information about the omt.
+ * @returns A promise that resolves with a `CheckFileResult` or rejects when an error occurred.
  * @param uri the path to the file
  */
 export function parseOmtFile(uri: string): Promise<CheckFileResult> {

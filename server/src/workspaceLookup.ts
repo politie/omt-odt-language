@@ -12,29 +12,43 @@ export class WorkspaceLookup {
     private workspaceModules = new WorkspaceModules();
     private readonly omtPattern = '**/*.omt';
 
+    /**
+     * The folders being watched for changes.
+     */
     get watchedFolders() {
         return Array.from(this.folders.values());
     }
 
+    /**
+     * All the OMT modules in the watched folders
+     */
     get watchedModules() {
         return Array.from(this.workspaceModules.modules.values());
     }
 
     /**
      * Create a new workspaceLookup listening to workspace events.
-     * call init to start listening to these events.
+     * call `init()` to start listening to these events.
      * @param workspace workspace of the client
      */
     constructor(private workspace: RemoteWorkspace) {
         this.workspaceModules = new WorkspaceModules();
     }
 
+    /**
+     * Attach change handlers to workspace folders and open files.
+     * Then do a first scan of all the folders and files for recognized OMT content
+     */
     init(): Promise<void> {
         this.workspace.onDidChangeWorkspaceFolders(event => {
+            // This event is fired when the user adds or removes a folder to/from their workspace
             this.collectionPromise(event.added, this.addFolder)
             event.removed.forEach(folder => this.removeFolder(folder));
         });
+        // `onDidChangeWatchedFiles` changes are not fired by editing a file
+        // but when a file changes outside of the clients control (a git pull for example)
         this.workspace.connection.onDidChangeWatchedFiles((params) => this.watchedFilesChanged(params));
+
         return new Promise<void>((resolve, reject) => {
 
             this.workspace.getWorkspaceFolders()
@@ -96,10 +110,15 @@ export class WorkspaceLookup {
         });
     }
 
+    /**
+     * update the changed document content to the lookup before it is saved.
+     * This way we can use the created OMT functionality in other features of the server
+     * @param change The document being changed with it's changes applied.
+     */
     fileChanged(change: TextDocumentChangeEvent<TextDocument>) {
         // these changes will be called for each little edit in the document
         // the event will fire before the change has been saved to file.
-        // Therefore we need the text from the change.document
+        // Therefore we need the text from the change.document instead of a FileSystem call
         this.workspaceModules.checkForChanges({
             path: change.document.uri.substr(7),
             ...parseOmtText(change.document.getText())

@@ -9,7 +9,6 @@ import {
     DocumentLinkParams,
     DocumentLink
 } from 'vscode-languageserver';
-
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
@@ -29,6 +28,7 @@ let hasDocumentLinkCapabilities = false;
 let omtLinkProvider: OMTLinkProvider;
 let workspaceLookup: WorkspaceLookup;
 
+// tell the client what functionality is supported in this LSP  when it initializes.
 connection.onInitialize((params: InitializeParams) => {
     shutdownCheck();
     const capabilities = params.capabilities;
@@ -60,6 +60,7 @@ connection.onInitialize((params: InitializeParams) => {
     return result;
 });
 
+// really start all functionality, like watching the workspace, after the client has initialized.
 connection.onInitialized(() => {
     shutdownCheck();
     workspaceLookup = new WorkspaceLookup(connection.workspace);
@@ -78,13 +79,7 @@ connection.onInitialized(() => {
     }
 });
 
-function shutdownCheck() {
-    if (isShuttingDown) {
-        throw new Error('LSP server is shutting down');
-    }
-}
-
-/* TODO implement shutdown protocol
+/* shutdown protocol
  * The protocol can be found here: https://microsoft.github.io/language-server-protocol/specification#shutdown
  * It states that after this request has been received all other requests should return an error response
  * except for the exit notification. That should return an error when it has not been called.
@@ -96,36 +91,21 @@ connection.onShutdown(() => {
     connection.dispose();
 });
 
+/**
+ * throws an error when the server is shutting down.
+ */
+function shutdownCheck() {
+    if (isShuttingDown) {
+        throw new Error('LSP server is shutting down');
+    }
+}
+
+// called after `onShutdown`
 connection.onExit(() => {
     if (!isShuttingDown) {
         throw new Error('LSP server is not shutting down');
     }
     process.exit();
-});
-
-// The example settings
-interface ExampleSettings {
-    maxNumberOfProblems: number;
-}
-
-// The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-// Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
-
-connection.onDidChangeConfiguration(() => {
-    shutdownCheck();
-    if (hasConfigurationCapability) {
-        // Reset all cached document settings
-        documentSettings.clear();
-    }
-});
-
-// Only keep settings for open documents
-documents.onDidClose(e => {
-    shutdownCheck();
-    documentSettings.delete(e.document.uri);
 });
 
 // The content of a text document has changed. This event is emitted
@@ -135,7 +115,14 @@ documents.onDidChangeContent((change) => {
     return workspaceLookup.fileChanged(change);
 });
 
-// scans for document links in a document usually when it is opened
+/**
+ * find all document links in the document.
+ * @returns undefined when the document is not in the current open documents.
+ * otherwise `DocumentLink[]`.
+ * If a link could not be resolved it's target will be left empty and data will be attached
+ * so that it can be resolved in the `documentLinkResolve` handler
+ * @param params DocumentLinkParams with set textDocument and uri
+ */
 const documentLinksHandler = (params: DocumentLinkParams) => {
     shutdownCheck();
     const document = documents.get(params.textDocument.uri);
@@ -146,10 +133,16 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
     }
 }
 
+/**
+ * called by the client when a link target was empty.
+ * it will try and resolve it using the data on the link.
+ * @param link a documenet link without a target
+ */
 const documentLinkResolve = (link: DocumentLink) => {
     shutdownCheck();
+    // the data would have been set during a call to `documentLinksHandler` when the document was opened
+    // usually because it would be less efficient to resolve the link at that time.
     link.target = omtLinkProvider.resolveLink(link.data);
-
     return link;
 }
 

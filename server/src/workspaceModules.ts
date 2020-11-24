@@ -1,18 +1,14 @@
 import { CheckFileResult, OMTModule } from "./types";
-
-export interface WorkspaceProcessor {
-    readonly extention: string;
-    checkForChanges: (result: CheckFileResult) => void;
-    removeFolder: (uri: string) => void;
-}
-
-export class WorkspaceModules implements WorkspaceProcessor {
-    readonly extention = '.omt';
+export class WorkspaceModules {
     /**
      * modules, keyed by name
      */
     modules = new Map<string, OMTModule>();
-
+    /**
+     * Use a `CheckFileResult` to determine if a module should be
+     * updated, added or removed, or if the result can be ignored.
+     * @param result Description of what OMT properties could be found in a file at a specied path.
+     */
     checkForChanges(result: CheckFileResult) {
         if (result.module && result.module.name) {
             const module = this.modules.get(result.module.name);
@@ -37,6 +33,10 @@ export class WorkspaceModules implements WorkspaceProcessor {
         }
     }
 
+    /**
+     * Add or update a module. If there was another module with the same name it will be overwritten.
+     * @param moduleResult All the useful information about an OMT module.
+     */
     private processModule(moduleResult: OMTModule) {
         const { name, uri } = moduleResult;
         const existing = this.modules.get(name);
@@ -50,11 +50,20 @@ export class WorkspaceModules implements WorkspaceProcessor {
             });
     }
 
+    /**
+     * Find the absolute path to the module.
+     * @returns the absolute path, or undefined when the module could not be found.
+     * @param name name of the module
+     */
     getModulePath(name: string): string | undefined {
         const module = this.modules.get(name);
         return module?.uri;
     }
 
+    /**
+     * Remove the folder and all it's modules.
+     * @param uri path of the folder
+     */
     removeFolder(uri: string) {
         this.modules.forEach(module => {
             if (module.uri.startsWith(uri)) {
@@ -63,6 +72,10 @@ export class WorkspaceModules implements WorkspaceProcessor {
         });
     }
 
+    /**
+     * Check if the file contained a module and remove it from the know modules
+     * @param uri absolute path of the file
+     */
     removeFile(uri: string) {
         this.modules.forEach(module => {
             if (module.uri == uri) {

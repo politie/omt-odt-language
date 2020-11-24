@@ -18,6 +18,15 @@ export default class OMTLinkProvider {
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
+    /**
+     * scan the document for imports and return DocumentLinks for
+     * absolute paths,
+     * relative paths,
+     * paths starting with a shorthand ('@shorthand/relativePath'),
+     * declared imports ('module: moduleName'). For declared imports the target will be undefined.
+     * The declared import links can be resolved using the data and the `resolveLink` function.
+     * @param document the document containing OMT
+     */
     provideDocumentLinks(document: TextDocument): DocumentLink[] {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
@@ -25,7 +34,9 @@ export default class OMTLinkProvider {
     }
 
     /**
-     * Resolve the target of a DocumentLink using its data. Returns undefined when unable to resolve
+     * Resolve the target of a DocumentLink using its data.
+     * @returns A string if the data could be related to a watched link target, such as a module declaration.
+     * Returns undefined when unable to resolve the link with the specified data.
      * @param data the data from a document link
      */
     resolveLink(data?: DeclaredImportLinkData | unknown) {
@@ -34,7 +45,12 @@ export default class OMTLinkProvider {
         }
     }
 
-    contextPaths(document: TextDocument) {
+    /**
+     * Find all tsconfig files that apply to a given document
+     * and compile a list of paths annotations defined in those configurations.
+     * @param document the document that needs context.
+     */
+    private contextPaths(document: TextDocument) {
         return new Map<string, string>(glob.sync('**/tsconfig**.json')
             // we need to filter for same parent because another config may have some of the same paths
             .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
@@ -79,7 +95,7 @@ function toAbsolutePath(document: TextDocument, link: string): string {
 }
 
 /**
- * Convert the uri to a path to a directory and make sure it does not start with file:
+ * Convert the uri to a path to a directory and make sure it does not start with `file://`
  * @param uri path to be made into a dirpath
  */
 function dirpath(uri: string): string {
@@ -103,7 +119,12 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
 }
 
 /**
- * Find links to other imported OMT files
+ * scan the document for imports and return DocumentLinks for
+ * absolute paths,
+ * relative paths,
+ * paths starting with a shorthand ('@shorthand/relativePath'),
+ * declared imports ('module: moduleName'). For declared imports the target will be undefined.
+ * The declared import links can be resolved using the data and the `resolveLink` function.
  * @param document the OMT file we are scanning
  * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
  */
