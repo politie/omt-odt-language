@@ -112,10 +112,19 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
     shorthands.forEach((value, key) => {
         if (uri.startsWith(key)) {
             uri = uri.substr(key.length);
-            uri = resolve(value.substr(0, value.lastIndexOf('/*')), '.' + uri);
+            uri = resolve(value.substr(0, osNeutralLastSlashIndex(value)), '.' + uri);
         }
     });
     return uri;
+}
+
+/**
+ * Find the last index of the slash*.
+ * @param path path we want to find the last slash of
+ */
+function osNeutralLastSlashIndex(path: string): number {
+    const unixIndex = path.lastIndexOf('/*');
+    return unixIndex >= 0 ? unixIndex : path.lastIndexOf('\\*');
 }
 
 /**
