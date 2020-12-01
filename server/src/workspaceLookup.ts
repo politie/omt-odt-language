@@ -31,9 +31,7 @@ export class WorkspaceLookup {
      * call `init()` to start listening to these events.
      * @param workspace workspace of the client
      */
-    constructor(private workspace: RemoteWorkspace) {
-        this.workspaceModules = new WorkspaceModules();
-    }
+    constructor(private workspace: RemoteWorkspace) { }
 
     /**
      * Attach change handlers to workspace folders and open files.
@@ -42,7 +40,7 @@ export class WorkspaceLookup {
     init(): Promise<void> {
         this.workspace.onDidChangeWorkspaceFolders(event => {
             // This event is fired when the user adds or removes a folder to/from their workspace
-            this.collectionPromise(event.added, this.addFolder)
+            event.added.map(this.addFolder);
             event.removed.forEach(folder => this.removeFolder(folder));
         });
         // `onDidChangeWatchedFiles` changes are not fired by editing a file
@@ -64,49 +62,30 @@ export class WorkspaceLookup {
         })
     }
 
-    private collectionPromise<T>(array: T[], func: (param: T) => Promise<void>): Promise<void> {
-        const results: Promise<void>[] = [];
-        array.forEach(item => {
-            results.push(func(item));
-        });
-        return new Promise<void>((resolve, reject) => {
-            Promise.all(results)
-                .then(() => resolve())
-                .catch(reason => reject(reason));
-        });
-    }
-
     private watchedFilesChanged(event: DidChangeWatchedFilesParams) {
         // when a file watched by the client is changed even when it isn't open in the editor (by version control for example)
         // this only happens with saved files and the changes should be read from the filesystem
-        return new Promise<void>((resolve, reject) => {
-            const parseResults: Promise<void>[] = [];
-
-            event.changes.forEach(change => {
-                if (change.uri.endsWith('.omt')) {
-                    switch (change.type) {
-                        case FileChangeType.Changed:
-                        case FileChangeType.Created:
-                            parseResults.push(parseOmtFile(change.uri.substr(7))
-                                .then(
-                                    (result) => this.workspaceModules.checkForChanges(result),
-                                    (reason) => { reject(reason) })
-                                .catch(reason => {
-                                    console.error(`while parsingOmtFile ${change.uri} something went wrong: ${reason}`);
-                                    reject(reason);
-                                }));
-                            break;
-                        case FileChangeType.Deleted:
-                            this.workspaceModules.removeFile(change.uri.substr(7));
-                            break;
-                        default:
-                            console.warn(`unsupported FileChangeType '${change.type}'`);
-                            break;
-                    }
+        event.changes.forEach(change => {
+            if (change.uri.endsWith('.omt')) {
+                switch (change.type) {
+                    case FileChangeType.Changed:
+                    case FileChangeType.Created:
+                        parseOmtFile(change.uri.substr(7))
+                            .then(
+                                (result) => this.workspaceModules.checkForChanges(result),
+                                (reason) => console.error(`something went wrong while parsing ${change.uri}: ${reason}`))
+                            .catch(reason => {
+                                console.error(`something went wrong while parsing ${change.uri}: ${reason}`);
+                            });
+                        break;
+                    case FileChangeType.Deleted:
+                        this.workspaceModules.removeFile(change.uri.substr(7));
+                        break;
+                    default:
+                        console.warn(`unsupported FileChangeType '${change.type}'`);
+                        break;
                 }
-            });
-
-            Promise.all(parseResults).then(() => resolve());
+            }
         });
     }
 

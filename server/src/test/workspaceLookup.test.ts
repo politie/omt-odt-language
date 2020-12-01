@@ -35,18 +35,18 @@ describe('WorkspaceLookup', () => {
         };
 
         getWorkspaceFoldersStub = stub(stubbedWorkspace, 'getWorkspaceFolders')
-            .returns(Promise.resolve([
+            .resolves([
                 { uri: 'file:///folder/one', name: 'one' },
-                { uri: 'file:///folder/two', name: 'two' }]));
+                { uri: 'file:///folder/two', name: 'two' }]);
 
         workspaceLookup = new WorkspaceLookup(stubbedWorkspace);
 
         parseOmtFileStub = stub(omtFileParser, 'parseOmtFile')
-            .returns(Promise.resolve(originalParseResult));
+            .resolves(originalParseResult);
         globStub = stub(globPromise, 'globPromise')
-            .returns(Promise.resolve([
+            .resolves([
                 defaultGlobResult
-            ]));
+            ]);
     });
 
     afterEach(() => {
@@ -85,7 +85,7 @@ describe('WorkspaceLookup', () => {
             const folders = [
                 { uri: 'file:///folder/one', name: 'one' },
                 { uri: 'file:///folder/one', name: 'one' }];
-            getWorkspaceFoldersStub.returns(Promise.resolve(folders));
+            getWorkspaceFoldersStub.resolves(folders);
             const errorStub = stub(console, 'error');
             workspaceLookup.init().then(() => {
                 expect.fail();
@@ -100,7 +100,7 @@ describe('WorkspaceLookup', () => {
         });
 
         it('should resolve when there are no folders on init', (done) => {
-            getWorkspaceFoldersStub.returns(Promise.resolve(undefined));
+            getWorkspaceFoldersStub.resolves(undefined);
             workspaceLookup.init().then(() => {
                 expect(workspaceLookup.watchedFolders.length).to.eq(0);
                 done();
@@ -327,10 +327,10 @@ describe('WorkspaceLookup', () => {
         it('scans the added folder', (done) => {
             globStub.resetHistory();
             parseOmtFileStub.reset();
-            parseOmtFileStub.returns(Promise.resolve({
+            parseOmtFileStub.resolves({
                 path: `${defaultFolder}/newFile.omt`,
                 module: { name: 'moduleNameTest3' }
-            }));
+            });
             expect(workspaceLookup.watchedModules.length).eq(1);
 
             const newFolder = '/newFolder'

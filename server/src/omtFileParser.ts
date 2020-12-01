@@ -5,7 +5,7 @@ import { CheckFileResult, CheckTextResult } from "./types";
 const moduleNamePattern = /^moduleName: (\w+)(?:\s|\s#.*)?$/;
 
 /**
- * parse an OMT text and look for sertain properties, like if it contains a module defenition.
+ * Parse an OMT text and look for certain properties, like if it contains a module definition.
  * @param text The text of an OMT file
  */
 export function parseOmtText(text: string): CheckTextResult {
@@ -19,7 +19,7 @@ export function parseOmtText(text: string): CheckTextResult {
 }
 
 /**
- * Reads a file from the filesystem and returns a information about the omt.
+ * Reads a file from the filesystem and returns an information object about the OMT.
  * @returns A promise that resolves with a `CheckFileResult` or rejects when an error occurred.
  * @param uri the path to the file
  */

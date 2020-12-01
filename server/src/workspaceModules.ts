@@ -10,7 +10,7 @@ export class WorkspaceModules {
      * @param result Description of what OMT properties could be found in a file at a specied path.
      */
     checkForChanges(result: CheckFileResult) {
-        if (result.module && result.module.name) {
+        if (result.module?.name) {
             const module = this.modules.get(result.module.name);
             if (!module) {
                 this.modules.forEach((value, key) => {

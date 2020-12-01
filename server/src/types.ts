@@ -7,7 +7,7 @@ export type OMTModule = {
 };
 
 /**
- * Description of what OMT properties could be found in a file at a specied path.
+ * Description of what OMT properties could be found in a file at a specified path.
  */
 export type CheckFileResult = {
     path: string,
@@ -28,7 +28,7 @@ export type CheckTextResult = {
  */
 export function isDeclaredImportLinkData(data: unknown): data is DeclaredImportLinkData {
     const linkData = data as DeclaredImportLinkData;
-    return linkData.declaredImport !== undefined && linkData.declaredImport.module !== undefined;
+    return linkData.declaredImport?.module !== undefined;
 }
 
 /**

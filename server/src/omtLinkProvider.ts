@@ -19,18 +19,19 @@ export default class OMTLinkProvider {
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
     /**
-     * scan the document for imports and return DocumentLinks for
-     * absolute paths,
-     * relative paths,
-     * paths starting with a shorthand ('@shorthand/relativePath'),
-     * declared imports ('module: moduleName'). For declared imports the target will be undefined.
+     * Scan the document for imports and return DocumentLinks for:
+     *  - absolute paths
+     *  - relative paths
+     *  - paths starting with a shorthand ('@shorthand/relativePath')
+     *  - declared imports ('module: moduleName')
+     * For declared imports the target will be undefined.
      * The declared import links can be resolved using the data and the `resolveLink` function.
      * @param document the document containing OMT
      */
     provideDocumentLinks(document: TextDocument): DocumentLink[] {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
-        return findOMTUrl(document, (uri) => replaceStart(uri, shorthands));
+        return this.findOMTUrl(document, shorthands);
     }
 
     /**
@@ -74,6 +75,62 @@ export default class OMTLinkProvider {
                 return paths;
             }, []));
     }
+
+    /**
+     * scan the document for imports and return DocumentLinks for
+     * absolute paths,
+     * relative paths,
+     * paths starting with a shorthand ('@shorthand/relativePath'),
+     * declared imports ('module: moduleName'). For declared imports the target will be undefined.
+     * The declared import links can be resolved using the data and the `resolveLink` function.
+     * @param document the OMT file we are scanning
+     * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
+     */
+    private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): DocumentLink[] {
+        const documentLinks: DocumentLink[] = [];
+        // so match after import: until we need any other (\w+): without any preceding spaces
+        let isScanning = false;
+        for (let l = 0; l <= document.lineCount - 1; l++) {
+            const line = getLine(document, l);
+            if (importMatch.exec(line)) {
+                isScanning = true; // start scannning lines for import paths after we enter an import block
+            } else if (isScanning) {
+                if (otherDeclareMatch.exec(line)) {
+                    break; // we can stop matching after the import block
+                } else {
+                    const uriMatch = omtUriMatch.exec(line);
+                    const diMatch = declaredImportMatch.exec(line);
+                    if (uriMatch) {
+                        // match[0] is the full match inluding the whitespace of match[1]
+                        // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
+                        // match[2] is the link text, including the @shorthands
+                        const link = replaceStart(uriMatch[2].trim(), shorthands);
+                        const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
+                        documentLinks.push(
+                            createDocumentLink(l, uriMatch[1].length, uriMatch[2].length, url));
+                    }
+                    else if (diMatch) {
+                        // match[0] is the full line match including the trailing colon
+                        // match[1] is the whitespace prepending the import
+                        // match[2] is the text 'module:'
+                        // match[3] is the module name
+                        const declaredImportModule = '' + diMatch[2];
+                        // because the server may not be done scanning the workspace when this is called
+                        // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
+                        // the url will be undefined and we pass the declared import information as data with the link
+                        documentLinks.push(
+                            createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, undefined, {
+                                declaredImport: {
+                                    module: declaredImportModule,
+                                }
+                            }));
+                    }
+                }
+            }
+        }
+        return documentLinks;
+    }
+
 }
 
 /**
@@ -125,61 +182,6 @@ function replaceStart(uri: string, shorthands: Map<string, string>): string {
 function osNeutralLastSlashIndex(path: string): number {
     const unixIndex = path.lastIndexOf('/*');
     return unixIndex >= 0 ? unixIndex : path.lastIndexOf('\\*');
-}
-
-/**
- * scan the document for imports and return DocumentLinks for
- * absolute paths,
- * relative paths,
- * paths starting with a shorthand ('@shorthand/relativePath'),
- * declared imports ('module: moduleName'). For declared imports the target will be undefined.
- * The declared import links can be resolved using the data and the `resolveLink` function.
- * @param document the OMT file we are scanning
- * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
- */
-function findOMTUrl(document: TextDocument, resolveShorthand: (uri: string) => string): DocumentLink[] {
-    const documentLinks: DocumentLink[] = [];
-    // so match after import: until we need any other (\w+): without any preceding spaces
-    let isScanning = false;
-    for (let l = 0; l <= document.lineCount - 1; l++) {
-        const line = getLine(document, l);
-        if (importMatch.exec(line)) {
-            isScanning = true; // start scannning lines for import paths after we enter an import block
-        } else if (isScanning) {
-            if (otherDeclareMatch.exec(line)) {
-                break; // we can stop matching after the import block
-            } else {
-                const uriMatch = omtUriMatch.exec(line);
-                const diMatch = declaredImportMatch.exec(line);
-                if (uriMatch) {
-                    // match[0] is the full match inluding the whitespace of match[1]
-                    // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
-                    // match[2] is the link text, including the @shorthands
-                    const link = resolveShorthand(uriMatch[2].trim());
-                    const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
-                    documentLinks.push(
-                        createDocumentLink(l, uriMatch[1].length, uriMatch[2].length, url));
-                }
-                else if (diMatch) {
-                    // match[0] is the full line match including the trailing colon
-                    // match[1] is the whitespace prepending the import
-                    // match[2] is the text 'module:'
-                    // match[3] is the module name
-                    const declaredImportModule = '' + diMatch[2];
-                    // because the server may not be done scanning the workspace when this is called
-                    // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
-                    // the url will be undefined and we pass the declared import information as data with the link
-                    documentLinks.push(
-                        createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, undefined, {
-                            declaredImport: {
-                                module: declaredImportModule,
-                            }
-                        }));
-                }
-            }
-        }
-    }
-    return documentLinks;
 }
 
 /**

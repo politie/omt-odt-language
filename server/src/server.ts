@@ -28,7 +28,7 @@ let hasDocumentLinkCapabilities = false;
 let omtLinkProvider: OMTLinkProvider;
 let workspaceLookup: WorkspaceLookup;
 
-// tell the client what functionality is supported in this LSP  when it initializes.
+// tell the client what functionality is supported in this LSP when it initializes.
 connection.onInitialize((params: InitializeParams) => {
     shutdownCheck();
     const capabilities = params.capabilities;
@@ -41,9 +41,7 @@ connection.onInitialize((params: InitializeParams) => {
         capabilities.workspace && !!capabilities.workspace.workspaceFolders
     );
 
-    hasDocumentLinkCapabilities = !!(
-        capabilities.textDocument && capabilities.textDocument.documentLink
-    );
+    hasDocumentLinkCapabilities = !!capabilities.textDocument?.documentLink;
 
     const result: InitializeResult = {
         capabilities: {
@@ -79,7 +77,8 @@ connection.onInitialized(() => {
     }
 });
 
-/* shutdown protocol
+/**
+ * shutdown protocol
  * The protocol can be found here: https://microsoft.github.io/language-server-protocol/specification#shutdown
  * It states that after this request has been received all other requests should return an error response
  * except for the exit notification. That should return an error when it has not been called.
@@ -119,7 +118,7 @@ documents.onDidChangeContent((change) => {
  * find all document links in the document.
  * @returns undefined when the document is not in the current open documents.
  * otherwise `DocumentLink[]`.
- * If a link could not be resolved it's target will be left empty and data will be attached
+ * If a link could not be resolved its target will be left empty and data will be attached
  * so that it can be resolved in the `documentLinkResolve` handler
  * @param params DocumentLinkParams with set textDocument and uri
  */

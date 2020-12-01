@@ -12,9 +12,9 @@ describe('OMTLinkProvider', () => {
 
     before(async () => {
         sendRequestStub = stub(LanguageClient.prototype, 'sendRequest')
-            .returns(Promise.resolve([
+            .resolves([
                 new DocumentLink(toRange(1, 4, 1, 19))
-            ]));
+            ]);
 
         await activate(docUri);
     });

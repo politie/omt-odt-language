@@ -70,7 +70,7 @@ describe('omtFileParser', () => {
                 }, () => {
                     expect.fail();
                 });
-            // act - have the filesystem return a valid module defenition text
+            // act - have the filesystem return a valid module definition text
             readFileStub.callArgWith(2, undefined, 'moduleName: n');
         });
     });

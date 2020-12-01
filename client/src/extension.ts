@@ -10,7 +10,12 @@ import {
 import OMTLinkProvider from './omtLinkProvider';
 
 let client: LanguageClient;
-
+/**
+ * Primary function called by vscode to activate the extenion.
+ * It creates a new instance of the `LanguageClient` for OMT.
+ * That client will in turn start the server with the configuration defined in this function.
+ * @param context The `ExtensionContext` instance created by vscode
+ */
 export function activate(context: ExtensionContext) {
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(
@@ -65,6 +70,9 @@ export function activate(context: ExtensionContext) {
     );
 }
 
+/**
+ * Called by vscode when the extension should stop.
+ */
 export function deactivate(): Thenable<void> | undefined {
     if (!client) {
         return undefined;
