@@ -88,7 +88,7 @@ export default class OMTLinkProvider {
      */
     private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): DocumentLink[] {
         const documentLinks: DocumentLink[] = [];
-        // so match after import: until we need any other (\w+): without any preceding spaces
+        // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
         for (let l = 0; l <= document.lineCount - 1; l++) {
             const line = getLine(document, l);
@@ -112,8 +112,7 @@ export default class OMTLinkProvider {
                     else if (diMatch) {
                         // match[0] is the full line match including the trailing colon
                         // match[1] is the whitespace prepending the import
-                        // match[2] is the text 'module:'
-                        // match[3] is the module name
+                        // match[2] is the module name
                         const declaredImportModule = '' + diMatch[2];
                         // because the server may not be done scanning the workspace when this is called
                         // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality

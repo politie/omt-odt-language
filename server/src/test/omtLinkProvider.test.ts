@@ -1,7 +1,7 @@
 import { expect, use } from 'chai';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { stub } from 'sinon';
+import { SinonStub, stub } from 'sinon';
 import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import OMTLinkProvider from '../omtLinkProvider';
@@ -57,7 +57,7 @@ describe('OMTLinkProvider', () => {
         ];
 
         // test all cases
-        cases.forEach((value: Case) => {
+        cases.forEach((value) => {
             it(value.should, () => {
                 const { module } = value;
                 testLinkProvider(
@@ -85,9 +85,17 @@ describe('OMTLinkProvider', () => {
     });
 
     describe('resolveLink', () => {
-        it('should resolve declared imports', () => {
-            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
+        let functionStub: SinonStub;
 
+        beforeEach(() => {
+            functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
+        });
+
+        afterEach(() => {
+            functionStub.restore();
+        });
+
+        it('should resolve declared imports', () => {
             const result = linkProvider.resolveLink({
                 declaredImport: {
                     module: 'moduleName'
@@ -99,8 +107,6 @@ describe('OMTLinkProvider', () => {
         });
 
         it('should return undefined when the data is undefined', () => {
-            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
-
             const result = linkProvider.resolveLink(undefined);
 
             expect(functionStub).not.to.be.called;
@@ -108,8 +114,6 @@ describe('OMTLinkProvider', () => {
         });
 
         it('should return undefined when the data is not for a declared import', () => {
-            const functionStub = stub(lookupStub, 'getModulePath').returns('modulePath');
-
             let result = linkProvider.resolveLink({
                 declaredImport: {}
             });

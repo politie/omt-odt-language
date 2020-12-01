@@ -23,10 +23,6 @@ export async function activate(docUri: vscode.Uri) {
     }
 }
 
-async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export const getDocPath = (p: string) => {
     return path.resolve(__dirname, '../../testFixture', p);
 };

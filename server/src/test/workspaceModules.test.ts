@@ -18,7 +18,7 @@ describe('WorkspaceModule', () => {
     });
 
     describe('checkForChanges', () => {
-        it('should ignore it if the result is not a module', () => {
+        it('should ignore a result that is not a module', () => {
             workspaceModules.checkForChanges({
                 ...defaultCheckFileResult,
                 module: undefined
@@ -35,6 +35,8 @@ describe('WorkspaceModule', () => {
         });
 
         it('should replace an existing module with the same name but a different path', () => {
+            workspaceModules.checkForChanges(defaultCheckFileResult);
+            expect(workspaceModules.modules.size).to.eq(1);
             workspaceModules.checkForChanges({
                 ...defaultCheckFileResult,
                 path: 'otherPath.omt'
@@ -78,7 +80,7 @@ describe('WorkspaceModule', () => {
             expect(module.uri).to.eq(differentPath);
         });
 
-        it('should remove a module when the contents have no longer a module defenition', () => {
+        it('should remove a module when the contents no longer have a module definition', () => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
             expect(workspaceModules.modules.size).to.eq(1);
             workspaceModules.checkForChanges({
@@ -99,14 +101,16 @@ describe('WorkspaceModule', () => {
     });
 
     describe('getModulePath', () => {
-        it('should return undefined when there is no module with that name', () => {
+        beforeEach(() => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
+        });
+
+        it('should return undefined when there is no module with that name', () => {
             const result = workspaceModules.getModulePath('otherName');
-            expect(result).to.undefined
+            expect(result).to.be.undefined
         });
 
         it('should return the path of the module if it is in the workspace', () => {
-            workspaceModules.checkForChanges(defaultCheckFileResult);
             const result = workspaceModules.getModulePath(defaultCheckFileResult.module?.name!);
             expect(result).to.eq(defaultCheckFileResult.path);
         });
@@ -133,13 +137,13 @@ describe('WorkspaceModule', () => {
             workspaceModules.checkForChanges(defaultCheckFileResult);
         });
 
-        it('removes added a module with matching uri', () => {
+        it('removes a module with matching uri', () => {
             expect(workspaceModules.modules.size).to.eq(1);
             workspaceModules.removeFile(defaultCheckFileResult.path);
             expect(workspaceModules.modules.size).to.eq(0);
         });
 
-        it('ignores uri without module', () => {
+        it('ignores a module without matching uri', () => {
             expect(workspaceModules.modules.size).to.eq(1);
             workspaceModules.removeFile('./some/other/path.omt');
             expect(workspaceModules.modules.size).to.eq(1);

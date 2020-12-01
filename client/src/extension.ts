@@ -47,7 +47,7 @@ export function activate(context: ExtensionContext) {
             // Notify the server about changes to files conforming to these patterns:
             fileEvents: [
                 workspace.createFileSystemWatcher('**/*.omt'),
-                workspace.createFileSystemWatcher('**/package.json'),
+                workspace.createFileSystemWatcher('**/tsconfig.json'),
             ],
         },
     };
