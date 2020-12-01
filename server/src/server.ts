@@ -34,13 +34,8 @@ connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;
     // Does the client support the `workspace/configuration` request?
     // If not, we fall back using global settings.
-    hasConfigurationCapability = !!(
-        capabilities.workspace && !!capabilities.workspace.configuration
-    );
-    hasWorkspaceFolderCapability = !!(
-        capabilities.workspace && !!capabilities.workspace.workspaceFolders
-    );
-
+    hasConfigurationCapability = !!capabilities.workspace?.configuration;
+    hasWorkspaceFolderCapability = !!capabilities.workspace?.workspaceFolders;
     hasDocumentLinkCapabilities = !!capabilities.textDocument?.documentLink;
 
     const result: InitializeResult = {
