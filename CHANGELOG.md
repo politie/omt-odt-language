@@ -1,9 +1,23 @@
 <!-- markdownlint-disable no-duplicate-header -->
 # Change Log
 
-All notable changes to the "omt-odt-language" extension will be documented in this file.
+This is a record of all notable changes to the "omt-odt-language" extension.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on
+how to structure this file.
+
+## [2.3.0]
+
+### Added
+
+- OMT Declared import support
+- unittesting and nyc coverage for `server`
+- typescript and markdown linting.
+  use `npm run linting` from the workspace root to check the entire project
+
+### Changed
+
+- Moved the parsing of OMT files for document links to the server
 
 ## [2.2.3]
 
@@ -31,7 +45,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
-- OMT highlighting for fully specified bindings and binding shortcuts is now the same
+- OMT highlighting for fully specified bindings and
+  binding shortcuts is now the same
 
 ## [2.2.0]
 
@@ -50,7 +65,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
-- OMT snippet and highlighting for menu with icon and newly added promoteSubMenuItemToMainMenu
+- OMT snippet and highlighting for menu with icon and
+  newly added promoteSubMenuItemToMainMenu
 
 ## [2.1.0]
 
@@ -109,9 +125,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
-- Support is added for some of the newer commands like `TRIM`, `FIND_SUBJECTS`, `HAS` and `BLANK_NODE`
-- `watchers`, `query`, `base` and other less used keywords are added to the keyword list.
-  List is now sorted alphabetically for easier maintenance.
+- Support is added for some of the newer commands like
+  `TRIM`, `FIND_SUBJECTS`, `HAS` and `BLANK_NODE`
+- `watchers`, `query`, `base` and other less used keywords are added
+  to the keyword list. List is now sorted alphabetically for easier maintenance.
 
 ## [1.0.3]
 
@@ -121,8 +138,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
-- Changed the order of the ODT commands so that they are displayed the right way.
-  This occurred because shorter commands where picked up sooner than the long ones.
+- Changed the order of the ODT commands so that they are displayed correctly.
+  This occurred because shorter commands where picked up sooner than long ones.
   So only `MIN` was highlighted even though `MINUS` was used.
 
 ## [1.0.2]

@@ -35,3 +35,9 @@ jobs:
       
       - name: Test
         run: npm run test
+
+      - name: Test-Server
+        run: npm run test-server
+
+      - name: Linting
+        run: npm run linting

@@ -1,7 +1,7 @@
 {
     "name": "omt-odt-language-server",
     "description": "Language server in node.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "license": "Apache-2.0",
     "publisher": "pvr",
     "engines": {
@@ -12,8 +12,20 @@
         "url": "https://github.com/emielb/omt-odt-language.git"
     },
     "dependencies": {
+        "glob": "^7.1.6",
         "vscode-languageserver": "^6.1.1",
         "vscode-languageserver-textdocument": "^1.0.1"
     },
-    "scripts": {}
+    "devDependencies": {
+        "@types/glob": "^7.1.3",
+        "mocha": "^8.2.1",
+        "nyc": "^15.1.0",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.5"
+    },
+    "scripts": {
+        "test": "mocha -r ts-node/register **/*.test.ts",
+        "watch": "mocha -r ts-node/register **/*.test.ts --watch --watch-extensions ts",
+        "coverage": "nyc --reporter=html mocha -r ts-node/register **/*.test.ts"
+    }
 }

@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.2.3",
+    "version": "2.3.0",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
@@ -104,18 +104,26 @@
         "compile": "tsc -b",
         "watch": "tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-        "test": "sh ./scripts/e2e.sh"
+        "test": "sh ./scripts/e2e.sh",
+        "linting": "npx eslint . --ext .js,.jsx,.ts,.tsx,.md",
+        "test-server": "cd server && npm run test",
+        "coverage-server": "cd server && npm run coverage"
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
         "@types/mocha": "^7.0.2",
         "@types/node": "^12.12.0",
-        "@typescript-eslint/parser": "^2.3.0",
-        "@types/vscode": "^1.43.0",
-        "eslint": "^6.4.0",
+        "@types/sinon": "^9.0.8",
+        "@types/sinon-chai": "^3.2.5",
+        "@typescript-eslint/eslint-plugin": "^4.7.0",
+        "@typescript-eslint/parser": "^4.0.0",
         "chai": "^4.2.0",
+        "eslint": "^6.8.0",
+        "eslint-plugin-md": "^1.0.19",
         "mocha": "^7.2.0",
+        "sinon": "^9.2.0",
+        "sinon-chai": "^3.5.0",
         "ts-node": "^9.0.0",
-        "typescript": "^3.9.4"
+        "typescript": "^3.9.7"
     }
 }
