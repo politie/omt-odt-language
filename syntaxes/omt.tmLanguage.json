@@ -75,7 +75,8 @@
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 },
-                { "include": "#_params" }
+                { "include": "#_params" },
+                { "include": "#_ref" }
             ]
         },
         "_activity-def": {
@@ -500,6 +501,14 @@
                     "contentName": "meta.embedded.inline.odt",
                     "patterns": [{ "include": "source.odt" }]
                 },
+                {
+                    "match": "(?:\\G|^) +(readonly): +(\\w+) *(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
                 { "include": "#_on-change" }
             ]
         },
@@ -615,7 +624,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^( +)(bestandstatus|bottomNavigation|dashboard(?:Actions)?|dossier|fixed|notifications):(.*)$",
+                    "begin": "^( +)(bestandstatus|bottomNavigation|dashboard(?:Actions)?|dossier|entitybar|fixed|notifications):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
@@ -681,6 +690,19 @@
             "patterns": [
                 { "include": "#comments" },
                 { "include": "source.odt#_interpolated" }
+            ]
+        },
+        "_ref": {
+            "patterns": [
+                { "include": "#comments"},
+                {
+                    "match": "(?:\\G|^) +(!Ref) +(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "entity.name.type.omt" },
+                        "2": { "patterns": [{ "include": "#_types" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
             ]
         },
         "_kv-action": {
@@ -854,7 +876,10 @@
                     "begin": "^( +)-",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.param.omt",
-                    "patterns": [{ "include": "#_param-def" }]
+                    "patterns": [
+                        { "include": "#_param-def" },
+                        { "include": "#_ref"}
+                    ]
                 }
             ]
         },
@@ -917,6 +942,9 @@
                     "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
                     "contentName": "meta.list.menu.omt",
                     "patterns": [{ "include": "#_li-action" }]
+                },
+                {
+                    "include": "#_ref"
                 }
             ]
         },
@@ -1048,7 +1076,10 @@
             },
             "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
             "contentName": "meta.list.params.omt",
-            "patterns": [{ "include": "#_li-param" }]
+            "patterns": [
+                { "include": "#_li-param" },
+                { "include": "#_ref" }
+            ]
         },
         "_payload": {
             "begin": "^( +)(payload):(.*)$",
