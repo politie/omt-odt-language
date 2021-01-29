@@ -15,8 +15,6 @@ how to structure this file.
   - `!Ref` support for variable references
   - `entitybar` support in global actions
 
-- Moved the parsing of OMT files for document links to the server
-
 ## [2.3.0]
 
 ### Added
