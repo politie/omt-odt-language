@@ -5,18 +5,18 @@ This is a record of all notable changes to the "omt-odt-language" extension.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on
 how to structure this file.
+
 ## [2.4.0]
 
 ### Added
 
 - OMT highlighting support for:
-  - `Readonly` property for `variable` declarations
+  - `readonly` property for `variable` declarations
   - `!Ref` support for variable references
-  - `entitybar` support in global-actions
-
-### Changed
+  - `entitybar` support in global actions
 
 - Moved the parsing of OMT files for document links to the server
+
 ## [2.3.0]
 
 ### Added
