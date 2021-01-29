@@ -949,7 +949,8 @@
                     "contentName": "meta.list.menu.omt",
                     "patterns": [
                         { "include": "#_li-action" },
-                        { "include": "#_ref"}]
+                        { "include": "#_ref"}
+                    ]
                 }
             ]
         },
