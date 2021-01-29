@@ -75,8 +75,7 @@
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 },
-                { "include": "#_params" },
-                { "include": "#_ref" }
+                { "include": "#_params" }
             ]
         },
         "_activity-def": {
@@ -611,7 +610,7 @@
             },
             "end": "(?=^[^#\\s-])",
             "contentName": "meta.list.exposes.omt",
-            "patterns": [{ "include": "#_li-ref" }]
+            "patterns": [{ "include": "#_li-runnable" }]
         },
         "global-actions": {
             "begin": "^(actions):(.*)$",
@@ -682,7 +681,7 @@
                     },
                     "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
                     "contentName": "meta.list.imports.omt",
-                    "patterns": [{ "include": "#_li-ref" }]
+                    "patterns": [{ "include": "#_li-runnable" }]
                 }
             ]
         },
@@ -692,22 +691,10 @@
                 { "include": "source.odt#_interpolated" }
             ]
         },
-        "_ref": {
-            "patterns": [
-                { "include": "#comments"},
-                {
-                    "match": "\\s(!Ref) +(\\S+)(.*)$",
-                    "captures": {
-                        "1": { "name": "entity.name.type.omt" },
-                        "2": { "name": "variable.other.constant.omt" },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    }
-                }
-            ]
-        },
         "_kv-action": {
             "patterns": [
                 { "include": "#comments" },
+                { "include": "#_kv-ref" },
                 {
                     "begin": "^( +)(\\w+):(?: +(!Action?)?(?!!Ref).)*$",
                     "beginCaptures": {
@@ -718,13 +705,6 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.action.omt",
                     "patterns": [{ "include": "#_action-def" }]
-                },
-                {
-                    "match": "^( +)(\\w+):(\\s(!Ref) (\\w+)\\s(.*))$",
-                    "captures": {
-                        "2": { "name": "variable.other.constant.omt" },
-                        "3": { "patterns": [{ "include": "#_ref"}]}
-                    }
                 }
             ]
         },
@@ -843,11 +823,23 @@
                 }
             ]
         },
+        "_kv-ref": {
+            "patterns": [
+                {
+                    "match": "^ +(\\w+): +(!Ref.*)$",
+                    "captures": {
+                        "1": { "name": "variable.other.constant.omt" },
+                        "2": { "patterns": [{ "include": "#_ref"}]}
+                    }
+                }
+            ]
+        },
         "_li-action": {
             "patterns": [
                 { "include": "#_list-comment" },
+                { "include": "#_li-ref" },
                 {
-                    "begin": "^( +)-",
+                    "begin": "^( +)-(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.action.omt",
                     "patterns": [{ "include": "#_action-def" }]
@@ -879,18 +871,26 @@
         "_li-param": {
             "patterns": [
                 { "include": "#_list-comment" },
+                { "include": "#_li-ref" },
                 {
-                    "begin": "^( +)-",
+                    "begin": "^( +)-(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.param.omt",
-                    "patterns": [
-                        { "include": "#_param-def" },
-                        { "include": "#_ref"}
-                    ]
+                    "patterns": [{ "include": "#_param-def" }]
                 }
             ]
         },
         "_li-ref": {
+            "patterns": [
+                {
+                    "match": "^ +- +(!Ref.*)$",
+                    "captures": {
+                        "1": { "patterns": [{ "include": "#_ref" }] }
+                    }
+                }
+            ]
+        },
+        "_li-runnable": {
             "patterns": [
                 { "include": "#_list-comment" },
                 {
@@ -948,9 +948,7 @@
                     },
                     "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
                     "contentName": "meta.list.menu.omt",
-                    "patterns": [
-                        { "include": "#_li-action" },
-                        { "include": "#_ref"}]
+                    "patterns": [{ "include": "#_li-action" }]
                 }
             ]
         },
@@ -1082,10 +1080,7 @@
             },
             "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
             "contentName": "meta.list.params.omt",
-            "patterns": [
-                { "include": "#_li-param" },
-                { "include": "#_ref" }
-            ]
+            "patterns": [{ "include": "#_li-param" }]
         },
         "_payload": {
             "begin": "^( +)(payload):(.*)$",
@@ -1106,6 +1101,30 @@
             "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
             "contentName": "meta.kv.prefixes.omt",
             "patterns": [{ "include": "#_kv-iri-literal" }]
+        },
+        "_reason": {
+            "match": "(?:\\G|^) +(reason): *([\\w ]*)(.*)$",
+            "captures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": {
+                    "name": "string.unquoted.omt",
+                    "patterns": [{ "include": "#_escape" }]
+                },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            }
+        },
+        "_ref": {
+            "patterns": [
+                {
+                    "match": "(!Ref) +(\\w+)(.*)",
+                    "name": "meta.reference.omt",
+                    "captures": {
+                        "1": { "name": "entity.name.type.omt" },
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
         },
         "_rules": {
             "begin": "^( +)(rules):(.*)$",
@@ -1150,17 +1169,6 @@
             "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
             "contentName": "meta.list.watchers.omt",
             "patterns": [{ "include": "#_li-watcher" }]
-        },
-        "_reason": {
-            "match": "(?:\\G|^) +(reason): *([\\w ]*)(.*)$",
-            "captures": {
-                "1": { "name": "keyword.control.omt" },
-                "2": {
-                    "name": "string.unquoted.omt",
-                    "patterns": [{ "include": "#_escape" }]
-                },
-                "3": { "patterns": [{ "include": "#_comments-only" }] }
-            }
         }
     }
 }

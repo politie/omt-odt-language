@@ -11,7 +11,7 @@ how to structure this file.
 
 - OMT highlighting support for:
   - `Readonly` property for `variable` declarations
-  - `!Ref` support for variable references
+  - `!Ref` support for action and parameter references
   - `entitybar` support in global-actions
 
 ### Changed
