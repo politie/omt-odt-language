@@ -1,12 +1,27 @@
-<!-- markdownlint-disable no-duplicate-header -->
-# Change Log
+<!-- markdownlint-configure-file { "no-duplicate-header": { "siblings_only": true } } -->
+# Changelog
 
 This is a record of all notable changes to the "omt-odt-language" extension.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on
-how to structure this file.
+Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+This plugin uses [Semantic versioning](https://semver.org).
 
-## [2.4.0]
+## [2.5.0] - 2021-03-08
+
+### Added
+
+- OMT highlighting support for:
+  - `handlers` section of an `Activity` or `Procedure`
+  - `!MergePredicates` definition for the `handlers` section
+
+### Changed
+
+- link semver in changelog and include release dates
+- ODT highlighting support for:
+  - interpolated strings
+    variables and interpolation braces are now also highlighted
+
+## [2.4.0] - 2021-02-01
 
 ### Added
 
@@ -15,7 +30,7 @@ how to structure this file.
   - `!Ref` support for action and parameter references
   - `entitybar` support in global actions
 
-## [2.3.0]
+## [2.3.0] - 2020-12-02
 
 ### Added
 
@@ -28,21 +43,21 @@ how to structure this file.
 
 - Moved the parsing of OMT files for document links to the server
 
-## [2.2.3]
+## [2.2.3] - 2020-10-28
 
 ### Added
 
 - OMT highlighting support for:
   - the `reason` property for a `Procedure`
 
-## [2.2.2]
+## [2.2.2] - 2020-10-27
 
 ### Added
 
 - OMT highlighting support for:
   - the `reason` property for an `Activity`
 
-## [2.2.1]
+## [2.2.1] - 2020-10-15
 
 ### Added
 
@@ -57,27 +72,27 @@ how to structure this file.
 - OMT highlighting for fully specified bindings and
   binding shortcuts is now the same
 
-## [2.2.0]
+## [2.2.0] - 2020-09-08
 
 ### Added
 
 - Document link support for OMT imports with filepaths
 - Startup configuration for the language server for OMT and ODT
 
-## [2.1.2]
+## [2.1.2] - 2020-03-23
 
 ### Added
 
 - OMT highlighting for newly added global action type "bottomNavigation"
 
-## [2.1.1]
+## [2.1.1] - 2020-01-16
 
 ### Changed
 
 - OMT snippet and highlighting for menu with icon and
   newly added promoteSubMenuItemToMainMenu
 
-## [2.1.0]
+## [2.1.0] - 2019-10-24
 
 ### Added
 
@@ -88,7 +103,7 @@ how to structure this file.
 
 - Updated `README.md` and `README-DEVELOP.md`
 
-## [2.0.0]
+## [2.0.0] - 2019-10-01
 
 ### Added
 
