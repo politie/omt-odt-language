@@ -75,9 +75,13 @@
         "_interpolated": {
             "patterns": [
                 { "include": "#_escape" },
+                { "include": "#_variable" },
                 {
-                    "begin": "\\$\\{",
-                    "end": "\\}",
+                    "begin": "(\\$\\{)",
+                    "beginCaptures": { "1": { "name": "punctuation.definition.template-expression.begin.odt" } },
+                    "end": "(\\})",
+                    "endCaptures": { "1": { "name": "punctuation.definition.template-expression.end.odt" } },
+                    "name": "meta.interpolation.odt",
                     "contentName": "meta.embedded.odt",
                     "patterns": [{
                         "include": "$self"
