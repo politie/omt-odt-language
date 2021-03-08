@@ -113,6 +113,7 @@
                 { "include": "#_actions" },
                 { "include": "#commands-&-queries" },
                 { "include": "#graphs" },
+                { "include": "#_handlers" },
                 { "include": "#_params" },
                 { "include": "#_payload" },
                 { "include": "#prefixes" },
@@ -220,6 +221,36 @@
                             }
                         }
                     ]
+                }
+            ]
+        },
+        "_merge-predicates-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(subjects|predicates|when): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(from): *(parent)?(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.language.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "(?:\\G|^) +(type): *(create|update|delete)?(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.language.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
                 }
             ]
         },
@@ -391,6 +422,7 @@
                 },
                 { "include": "#_reason" },
                 { "include": "#graphs" },
+                { "include": "#_handlers" },
                 { "include": "#_params" },
                 { "include": "#prefixes" },
                 { "include": "#_variables" }
@@ -656,6 +688,16 @@
                 }
             ]
         },
+        "_handlers": {
+            "begin": "^( +)(handlers):(.*)$",
+            "beginCaptures": {
+                "2": { "name": "keyword.control.omt" },
+                "3": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
+            "contentName": "meta.list.handlers.omt",
+            "patterns": [{ "include": "#_li-handler" }]
+        },
         "import": {
             "begin": "^(import):(.*)$",
             "beginCaptures": {
@@ -843,6 +885,20 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.action.omt",
                     "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+        },
+        "_li-handler": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "begin": "^( +)- +(!MergePredicates)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt" }
+                    },
+                    "contentName": "meta.handler.predicates.omt",
+                    "patterns": [{ "include": "#_merge-predicates-def" }]
                 }
             ]
         },
