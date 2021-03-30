@@ -237,7 +237,15 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(from): *(parent)?(.*)$",
+                    "match": "(?:\\G|^) +(from): *(parent|both)?(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.language.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "match": "(?:\\G|^) +(use): *(parent|current)?(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "name": "constant.language.omt" },
@@ -738,7 +746,7 @@
                 { "include": "#comments" },
                 { "include": "#_kv-ref" },
                 {
-                    "begin": "^( +)(\\w+):(?: +(!Action?)?(?!!Ref).)*$",
+                    "begin": "^( +)(\\w+):(?: +(!Action)?(?!!Ref).)*$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
                         "3": { "name": "entity.name.type.omt" },

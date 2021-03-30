@@ -7,6 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.6.0] - 2021-03-30
+
+### Added
+
+- OMT highlighting support for `!MergePredicate` with `from: both`
+- OMT snippet for `!MergePredicates` type handler
+
 ## [2.5.0] - 2021-03-08
 
 ### Added
