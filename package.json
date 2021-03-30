@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.6.0",
+    "version": "2.6.1",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
@@ -111,7 +111,7 @@
     },
     "devDependencies": {
         "@types/chai": "^4.2.12",
-        "@types/mocha": "^7.0.2",
+        "@types/mocha": "^8.2.2",
         "@types/node": "^12.12.0",
         "@types/sinon": "^9.0.8",
         "@types/sinon-chai": "^3.2.5",
@@ -120,7 +120,7 @@
         "chai": "^4.2.0",
         "eslint": "^6.8.0",
         "eslint-plugin-md": "^1.0.19",
-        "mocha": "^7.2.0",
+        "mocha": "^8.3.2",
         "sinon": "^9.2.0",
         "sinon-chai": "^3.5.0",
         "ts-node": "^9.0.0",
