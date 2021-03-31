@@ -102,12 +102,13 @@
     "scripts": {
         "vscode:prepublish": "npm run webpack",
         "webpack": "npm run clean && webpack --mode production --config ./client/webpack.config.js && webpack --mode production --config ./server/webpack.config.js",
-        "webpack:dev": "npm run clean && webpack --config ./client/webpack.config.js && webpack --config ./server/webpack.config.js",
+        "webpack:dev": "webpack --config ./client/webpack.config.js && webpack --config ./server/webpack.config.js",
         "compile": "tsc -b",
         "watch": "tsc -b -w",
         "lint": "npx eslint . --ext .js,.jsx,.ts,.tsx,.md",
-        "clean": "rimraf client/out && rimraf server/out",
+        "clean": "rimraf client/dist client/out server/dist server/out",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "pretest": "npm run compile",
         "test": "sh ./scripts/e2e.sh",
         "test-server": "cd server && npm run test",
         "coverage-server": "cd server && npm run coverage"

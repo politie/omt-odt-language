@@ -1,4 +1,3 @@
-// @ts-check
 // adapted from vscode-extension-samples/lsp-user-input-sample/shared.webpack.config.js
 /** @typedef {import('webpack').Configuration} WebpackConfig */
 
@@ -38,7 +37,7 @@ module.exports = function withDefaults(/** @type WebpackConfig */extConfig) {
         },
         output: {
             filename: '[name].js',
-            path: path.join(extConfig.context, 'out'),
+            path: path.join(extConfig.context, 'dist'),
             libraryTarget: 'commonjs',
         },
         devtool: 'source-map',

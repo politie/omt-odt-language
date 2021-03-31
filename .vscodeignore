@@ -12,6 +12,7 @@ README-DEVELOP.md
 
 **/node_modules/
 **/*.map
+**/out/**
 **/src/**
-**/testFixture/
+**/testFixture/**
 **/tsconfig.json
