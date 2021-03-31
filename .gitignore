@@ -1,11 +1,7 @@
-
-**/target
-**/dist
-**/bin
-**/node_modules/
-**/.vscode-test/
+**/node_modules
+**/.vscode-test
 **/.nyc_output
 **/coverage
+**/out
 
 *.vsix
-out
