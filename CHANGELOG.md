@@ -7,7 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
-## [2.6.1] - 2021-03-31
+## [2.6.2] - 2021-04-01
+
+## Added
+
+- webpack bundling of the plugin to reduce its size (from ~26 MB to ~300 KB)
+
+## [2.6.1] - Unreleased
 
 ### Changed
 

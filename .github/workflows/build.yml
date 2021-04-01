@@ -30,14 +30,14 @@ jobs:
         if: steps.cache-modules.output.cache-hit != 'true'
         run: npm install
 
-      - name: Build
-        run: npm run vscode:prepublish
-      
       - name: Test
         run: npm run test
 
       - name: Test-Server
         run: npm run test-server
-
+      
       - name: Linting
-        run: npm run linting
+        run: npm run lint
+
+      - name: Build
+        run: npm run vscode:prepublish

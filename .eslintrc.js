@@ -31,6 +31,13 @@ module.exports = {
             }
         },
         {
+            files: "**/*webpack.config.js",
+            rules: {
+                "@typescript-eslint/no-var-requires": "off",
+                "no-undef": "off"
+            }
+        },
+        {
             files: ['*.md'],
             parser: 'markdown-eslint-parser',
         },
