@@ -1,18 +1,29 @@
+# VSCode configuration
 .vscode/**
 .vscode-test/**
+
+# Git(Hub) configuration
 .github/**
-scripts/**
+.gitattributes
+.gitignore
+
+# dependencies
+**/node_modules/
+
+# General IDE and linting config
 .editorconfig
 .eslintignore
 .eslintrc.js
-.gitattributes
-.gitignore
 .markdownlint.json
+**/tsconfig.json
+**/*.js
+
+# unpackaged source and development
+client
+server
+scripts/**
 README-DEVELOP.md
 
-**/node_modules/
-**/*.map
-**/out/**
-**/src/**
-**/testFixture/**
-**/tsconfig.json
+# packaged source
+!client/out/*.js
+!server/out/*.js
