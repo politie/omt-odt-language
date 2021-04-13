@@ -2,7 +2,6 @@
 **/.vscode-test
 **/.nyc_output
 **/coverage
-**/dist
 **/out
 
 *.vsix

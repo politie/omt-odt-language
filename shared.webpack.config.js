@@ -37,7 +37,7 @@ module.exports = function withDefaults(/** @type WebpackConfig */extConfig) {
         },
         output: {
             filename: '[name].js',
-            path: path.join(extConfig.context, 'dist'),
+            path: path.join(extConfig.context, 'out'),
             libraryTarget: 'commonjs',
         },
         devtool: 'source-map',

@@ -7,6 +7,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.6.3] - 2021-04-13
+
+### Changed
+
+- fixed bundling to include LSP client and server again
+
 ## [2.6.2] - 2021-04-01
 
 ## Added
