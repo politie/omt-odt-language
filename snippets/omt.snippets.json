@@ -110,5 +110,14 @@
             "    ${4:# ONLY FOR from: both --> }use: ${5|parent,current|}",
             "    type: ${6|create,update,delete|}$0"
         ]
+    },
+    "!MergeValidation handler": {
+        "prefix": "merge-validation",
+        "description": "Handler that can validate a query and fails the merge if it returns false.\n\nUse within an Activity's or Procedure's `handlers:` section.",
+        "body": [
+            "!MergeValidation",
+            "    context: ${1|current|}",
+            "    query: ${0:validation query goes here...}"
+        ]
     }
 }

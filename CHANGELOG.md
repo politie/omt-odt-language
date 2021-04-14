@@ -3,9 +3,15 @@
 
 This is a record of all notable changes to the "omt-odt-language" extension.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
-on how to structure this file.
+Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
+
+## [2.7.0] - 2021-04-19
+
+### Added
+
+- OMT highlighting support for `!MergeValidation` type handlers
+- OMT snippet for `!MergeValidation`
 
 ## [2.6.3] - 2021-04-13
 
