@@ -7,6 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.7.0] - 2021-04-20
+
+### Added
+
+- OMT highlighting support for `!MergeValidation` type handlers
+- OMT snippet for `!MergeValidation`
+
 ## [2.6.3] - 2021-04-13
 
 ### Changed
