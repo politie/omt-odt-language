@@ -12,7 +12,6 @@
     //         "$2"
     //     ]
     // }
-
     // MODULE ENTRY POINT / DOCUMENT CONSTRUCTS
     "Menu definition": {
         "prefix": "menu",
@@ -62,7 +61,6 @@
             "    -   ${0:ThingToImport}"
         ]
     },
-
     // MODEL TEMPLATES
     "Activity model": {
         "prefix": "model-act",
@@ -97,7 +95,6 @@
             "        RETURN 'snippet';"
         ]
     },
-
     // HANDLERS
     "!MergePredicates handler": {
         "prefix": "merge-predicates",
@@ -118,6 +115,16 @@
             "!MergeValidation",
             "    context: ${1|current|}",
             "    query: ${0:validation query goes here...}"
+        ]
+    },
+    "!MergeLists handler": {
+        "prefix": "merge-lists",
+        "description": "Handler that can merge lists conforming to the subjects and predicates.\n\nUse within an Activity's or Procedure's `handlers:` section.",
+        "body": [
+            "!MergeLists",
+            "    subjects: $1",
+            "    predicates: $2",
+            "    from: ${0|parent,both|}"
         ]
     }
 }

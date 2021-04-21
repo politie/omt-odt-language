@@ -283,6 +283,28 @@
                 }
             ]
         },
+        "_merge-lists-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(subjects|predicates|when): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(from): *(parent|both)?(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.language.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
         "_ontology-class-def": {
             "patterns": [
                 { "include": "#comments" },
@@ -937,6 +959,15 @@
                     },
                     "contentName": "meta.handler.validation.omt",
                     "patterns": [{ "include": "#_merge-validation-def" }]
+                },
+                {
+                    "begin": "^( +)- +(!MergeLists)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt" }
+                    },
+                    "contentName": "meta.handler.lists.omt",
+                    "patterns": [{ "include": "#_merge-lists-def" }]
                 }
             ]
         },
