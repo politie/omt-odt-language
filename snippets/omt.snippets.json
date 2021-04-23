@@ -96,6 +96,25 @@
         ]
     },
     // HANDLERS
+    "!ForbiddenPredicates handler": {
+        "prefix": "forbidden-predicates",
+        "description": "Handler that fails the merge when a forbidden predicate has changed.\n\nUse within an Activity's or Procedure's `handlers:` section.",
+        "body": [
+            "!ForbiddenPredicates",
+            "    context: ${1|current,parent,both|}",
+            "    predicates: $0"
+        ]
+    },
+    "!MergeLists handler": {
+        "prefix": "merge-lists",
+        "description": "Handler that can merge lists conforming to the subjects and predicates.\n\nUse within an Activity's or Procedure's `handlers:` section.",
+        "body": [
+            "!MergeLists",
+            "    subjects: $1",
+            "    predicates: $2",
+            "    from: ${0|parent,both|}"
+        ]
+    },
     "!MergePredicates handler": {
         "prefix": "merge-predicates",
         "description": "Handler that can merge single value predicates.\n\nUse within an Activity's or Procedure's `handlers:` section.",
@@ -115,16 +134,6 @@
             "!MergeValidation",
             "    context: ${1|current|}",
             "    query: ${0:validation query goes here...}"
-        ]
-    },
-    "!MergeLists handler": {
-        "prefix": "merge-lists",
-        "description": "Handler that can merge lists conforming to the subjects and predicates.\n\nUse within an Activity's or Procedure's `handlers:` section.",
-        "body": [
-            "!MergeLists",
-            "    subjects: $1",
-            "    predicates: $2",
-            "    from: ${0|parent,both|}"
         ]
     }
 }
