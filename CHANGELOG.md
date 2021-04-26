@@ -11,7 +11,8 @@ This plugin uses [Semantic versioning](https://semver.org).
 
 ### Added
 
-- OMT highlighting support for `!ForbiddenPredicates` and `!MergeLists` type handlers
+- OMT highlighting support for `!ForbiddenPredicates`
+  and `!MergeLists` type handlers
 - OMT snippets for `!ForbiddenPredicates` and `!MergeLists`
 
 ## [2.7.0] - 2021-04-20
