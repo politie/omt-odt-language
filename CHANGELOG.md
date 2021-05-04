@@ -7,6 +7,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.8.0] - 2021-05-04
+
+### Added
+
+- OMT highlighting support for `!ForbiddenPredicates`
+  and `!MergeLists` type handlers
+- OMT snippets for `!ForbiddenPredicates` and `!MergeLists`
+
 ## [2.7.0] - 2021-04-20
 
 ### Added
