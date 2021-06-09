@@ -7,6 +7,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.8.1] - Unreleased
+
+### Changed
+
+- renamed default branch to main
+- added badges to README.md
+- updated dependencies
+
 ## [2.8.0] - 2021-05-04
 
 ### Added
