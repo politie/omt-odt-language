@@ -1,4 +1,4 @@
-import { WorkspaceFolder, RemoteWorkspace, FileChangeType, TextDocumentChangeEvent, DidChangeWatchedFilesParams } from 'vscode-languageserver';
+import { WorkspaceFolder, RemoteWorkspace, FileChangeType, TextDocumentChangeEvent, DidChangeWatchedFilesParams } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { parseOmtFile, parseOmtText } from './omtFileParser';
 import { globPromise } from './globPromise';

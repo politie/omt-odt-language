@@ -1,5 +1,5 @@
 import { dirname, isAbsolute, resolve } from 'path';
-import { DocumentLink, Position, Range } from 'vscode-languageserver';
+import { DocumentLink, Position, Range } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';

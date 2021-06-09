@@ -1,12 +1,6 @@
 import { join } from 'path';
 import { workspace, ExtensionContext, languages, Disposable } from 'vscode';
-
-import {
-    LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
-    TransportKind
-} from 'vscode-languageclient';
+import { LanguageClientOptions, LanguageClient, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import OMTLinkProvider from './omtLinkProvider';
 
 let client: LanguageClient;

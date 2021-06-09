@@ -1,7 +1,7 @@
 import { DocumentLink, Position, Range } from 'vscode';
 import { getDocUri, activate } from './helper';
 import { SinonStub, stub } from 'sinon';
-import { LanguageClient } from 'vscode-languageclient';
+import { LanguageClient } from 'vscode-languageclient/node';
 import { expect, use } from 'chai';
 import * as sinonChai from 'sinon-chai';
 use(sinonChai);
