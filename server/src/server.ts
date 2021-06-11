@@ -8,7 +8,7 @@ import {
     InitializeResult,
     DocumentLinkParams,
     DocumentLink
-} from 'vscode-languageserver';
+} from 'vscode-languageserver/node';
 import {
     TextDocument
 } from 'vscode-languageserver-textdocument';

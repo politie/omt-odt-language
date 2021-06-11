@@ -1,6 +1,9 @@
 # OMT & ODT Language Support README
 
-![Build and Test](https://github.com/emielb/omt-odt-language/workflows/Build%20and%20Test/badge.svg)
+![CI](https://github.com/emielb/omt-odt-language/workflows/Build%20and%20Test/badge.svg)
+[![Known Vulnerabilities](https://snyk.io/test/github/politie/omt-odt-language/badge.svg)](https://snyk.io/test/github/politie/omt-odt-language)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/pvr.omt-odt-language?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=pvr.omt-odt-language)
+[![GitHub](https://img.shields.io/github/license/politie/omt-odt-language?color=blue)](https://github.com/politie/omt-odt-language/blob/main/LICENSE)
 
 > Developers, developers, developers!
 > *Steve Ballmer*
