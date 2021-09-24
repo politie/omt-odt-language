@@ -1,0 +1,60 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: 14.x
+  # This is a public_repo Github personal access token.
+  GITHUB_TOKEN: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
+
+jobs:
+  check-version:
+    name: Check package.json Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.current-version }}
+      old-version: ${{ steps.tag.outputs.previous-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Check version
+        id: tag
+        uses: salsify/action-detect-and-tag-new-version@v2
+        with:
+          create-tag: false
+
+  release:
+    name: Release on Github
+    needs: check-version
+    if: needs.check-version.outputs.version != needs.check-version.outputs.old-version
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Use node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install
+        # vsce is needed to publish the plugin
+        run: npm ci && npm i vsce
+
+      - name: Test
+        run: npm run test && npm run test-server && npm run lint
+
+      - name: Release on Marketplace
+        # This is a Marketplace (Manage) Azure DevOps personal access token.
+        run: vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.check-version.outputs.version }}
+
+      - name: Release on Github
+        uses: softprops/action-gh-release@v1
+        with:
+          files: '*.vsix'
+          tag_name: ${{ format('v{0}', needs.check-version.outputs.version) }}
