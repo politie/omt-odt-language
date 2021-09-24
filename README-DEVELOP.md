@@ -102,6 +102,8 @@ More about language extensions in the [Language Extensions Overview](https://cod
   for more information about publishing an extension.
 
 > As of 2.8.5, the CD workflow is in place on Github.
-> This workflow automatically publishes new versions of the plugin as they are merged into `main`.
+> This workflow automatically publishes new versions of the plugin,
+> as they are merged into `main`.
 > The package.json version is checked to see whether an update is necessary.
-> Remember to update the package.json and package-lock.json versions and add to the CHANGELOG.md.
+> Remember to update the package.json and package-lock.json versions,
+> and add to the CHANGELOG.md.
