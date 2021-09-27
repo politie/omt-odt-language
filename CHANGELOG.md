@@ -7,6 +7,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.8.6] - 2021-09-28
+
+### Added
+
+- syntax highlighting for reusable merge handlers in OMT
+
 ## [2.8.1] - 2021-06-14
 
 ### Changed
