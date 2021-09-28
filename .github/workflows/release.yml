@@ -6,37 +6,39 @@ on:
 
 env:
   NODE_VERSION: 14.x
-  # This is a public_repo Github personal access token.
-  GITHUB_TOKEN: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
 
 jobs:
-  check-version:
-    name: Check package.json Version
+  bump-version:
+    name: Bump package.json Version
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, '[CI/CD]') }}
     outputs:
-      version: ${{ steps.tag.outputs.current-version }}
-      old-version: ${{ steps.tag.outputs.previous-version }}
+      tag-name: ${{ steps.lib-bump.outputs.newTag }}
 
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 2
+          # This is a public_repo Github personal access token.
+          token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
 
-      - name: Check version
-        id: tag
-        uses: salsify/action-detect-and-tag-new-version@v2
+      - name: Bump version
+        id: lib-bump
+        uses: phips28/gh-action-bump-version@v9.0.1
         with:
-          create-tag: false
+          tag-prefix: 'v'
+          commit-message: '[CI/CD]: bump to {{version}}'
 
   release:
-    name: Release on Github
-    needs: check-version
-    if: needs.check-version.outputs.version != needs.check-version.outputs.old-version
+    name: Release
+    needs: bump-version
+    if: startsWith(needs.bump-version.outputs.tag-name, 'v')
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      
+        with:
+          ref: ${{ needs.bump-version.outputs.tag-name }}
+
       - name: Use node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v1
         with:
@@ -51,10 +53,10 @@ jobs:
 
       - name: Release on Marketplace
         # This is a Marketplace (Manage) Azure DevOps personal access token.
-        run: vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.check-version.outputs.version }}
+        run: vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.bump-version.outputs.tag-name }}
 
       - name: Release on Github
         uses: softprops/action-gh-release@v1
         with:
           files: '*.vsix'
-          tag_name: ${{ format('v{0}', needs.check-version.outputs.version) }}
+          tag_name: ${{ needs.bump-version.outputs.tag-name }}
