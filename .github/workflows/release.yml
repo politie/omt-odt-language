@@ -1,0 +1,62 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: 14.x
+
+jobs:
+  bump-version:
+    name: Bump package.json Version
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, '[CI/CD]') }}
+    outputs:
+      tag-name: ${{ steps.lib-bump.outputs.newTag }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # This is a public_repo Github personal access token.
+          token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
+
+      - name: Bump version
+        id: lib-bump
+        uses: phips28/gh-action-bump-version@v9.0.1
+        with:
+          tag-prefix: 'v'
+          commit-message: '[CI/CD]: bump to {{version}}'
+
+  release:
+    name: Release
+    needs: bump-version
+    if: startsWith(needs.bump-version.outputs.tag-name, 'v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.bump-version.outputs.tag-name }}
+
+      - name: Use node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install
+        # vsce is needed to publish the plugin
+        run: npm ci && npm i vsce
+
+      - name: Test
+        run: npm run test && npm run test-server && npm run lint
+
+      - name: Release on Marketplace
+        # This is a Marketplace (Manage) Azure DevOps personal access token.
+        run: vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.bump-version.outputs.tag-name }}
+
+      - name: Release on Github
+        uses: softprops/action-gh-release@v1
+        with:
+          files: '*.vsix'
+          tag_name: ${{ needs.bump-version.outputs.tag-name }}
