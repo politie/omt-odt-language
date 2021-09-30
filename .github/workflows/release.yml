@@ -52,7 +52,7 @@ jobs:
 
       - name: Release on Marketplace
         # This is a Marketplace (Manage) Azure DevOps personal access token.
-        run: npx vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.bump-version.outputs.tag-name }}
+        run: npx vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version
 
       - name: Release on Github
         uses: softprops/action-gh-release@v1
