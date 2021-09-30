@@ -45,15 +45,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Install
-        # vsce is needed to publish the plugin
-        run: npm ci && npm i vsce
+        run: npm ci
 
       - name: Test
         run: npm run test && npm run test-server && npm run lint
 
       - name: Release on Marketplace
         # This is a Marketplace (Manage) Azure DevOps personal access token.
-        run: vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.bump-version.outputs.tag-name }}
+        run: npx vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version ${{ needs.bump-version.outputs.tag-name }}
 
       - name: Release on Github
         uses: softprops/action-gh-release@v1
