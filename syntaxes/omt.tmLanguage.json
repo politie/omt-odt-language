@@ -1153,6 +1153,50 @@
                     "patterns": [{ "include": "#_component-def" }]
                 },
                 {
+                    "begin": "^( +)(\\w+): +(!ForbiddenPredicates)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.handler.forbidden.omt",
+                    "patterns": [{ "include": "#_forbidden-predicates-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!MergeLists)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.handler.lists.omt",
+                    "patterns": [{ "include": "#_merge-lists-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!MergePredicates)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.handler.predicates.omt",
+                    "patterns": [{ "include": "#_merge-predicates-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!MergeValidation)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.handler.validation.omt",
+                    "patterns": [{ "include": "#_merge-validation-def" }]
+                },
+                {
                     "begin": "^( +)(\\w+): +(!Ontology)(.*)$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
