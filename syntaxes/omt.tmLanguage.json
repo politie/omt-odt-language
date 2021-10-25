@@ -122,21 +122,6 @@
                 { "include": "#_watchers" }
             ]
         },
-        "_graph-shape-handlers-def": {
-            "patterns": [
-                { "include": "#comments" },
-                {
-                    "begin": "(?:\\G|^) +(shape): +",
-                    "beginCaptures": {
-                        "1": { "name": "keyword.control.omt" }
-                    },
-                    "end": "$",
-                    "contentName": "meta.embedded.inline.odt",
-                    "patterns": [{ "include": "source.odt" }]
-                },
-                { "include": "#_handlers" }
-            ]
-        },
         "_binding-def": {
             "patterns": [
                 { "include": "#comments" },
@@ -259,6 +244,21 @@
                     "contentName": "meta.embedded.inline.odt",
                     "patterns": [{ "include": "source.odt" }]
                 }
+            ]
+        },
+        "_graph-shape-handlers-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(shape): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_handlers" }
             ]
         },
         "_merge-lists-def": {
@@ -724,7 +724,7 @@
             "match": "\\\\."
         },
         "expose": {
-            "begin": "^(export|procedures|services|handlers):(.*)$",
+            "begin": "^(export|procedures|services):(.*)$",
             "beginCaptures": {
                 "1": { "name": "keyword.control.omt" },
                 "2": { "patterns": [{ "include": "#_comments-only" }] }
@@ -1179,6 +1179,17 @@
                     "patterns": [{ "include": "#_forbidden-predicates-def" }]
                 },
                 {
+                    "begin": "^( +)(\\w+): +(!GraphShapeHandlers)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.graph-shape-handlers.omt",
+                    "patterns": [{ "include": "#_graph-shape-handlers-def" }]
+                },
+                {
                     "begin": "^( +)(\\w+): +(!MergeLists)(.*)$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
@@ -1254,17 +1265,6 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.standalone-query.omt",
                     "patterns": [{ "include": "#_standalone-query-def" }]
-                },
-                {
-                    "begin": "^( +)(\\w+): +(!GraphShapeHandlers)(.*)$",
-                    "beginCaptures": {
-                        "2": { "name": "variable.other.constant.omt" },
-                        "3": { "name": "entity.name.type.omt" },
-                        "4": { "patterns": [{ "include": "#_comments-only" }] }
-                    },
-                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.graph-shape-handlers.omt",
-                    "patterns": [{ "include": "#_graph-shape-handlers-def" }]
                 }
             ]
         },
