@@ -9,6 +9,8 @@ This plugin uses [Semantic versioning](https://semver.org).
 
 ## [2.8.7] - 2021-10-28
 
+### Added
+
 - syntax highlighting for graph shape handlers at document and model levels
 
 ## [2.8.6] - 2021-10-04
