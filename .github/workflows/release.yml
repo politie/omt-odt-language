@@ -47,8 +47,11 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Test
-        run: npm run test && npm run test-server && npm run lint
+      - name: Test E2E
+        run: xvfb-run -a npm run test
+      
+      - name: Test Server and Lint
+        npm run test-server && npm run lint
 
       - name: Release on Marketplace
         # This is a Marketplace (Manage) Azure DevOps personal access token.

@@ -9,6 +9,7 @@
         { "include": "#expose" },
         { "include": "#global-actions" },
         { "include": "#graphs" },
+        { "include": "#handlers" },
         { "include": "#import" },
         { "include": "#menu" },
         { "include": "#model" },
@@ -244,6 +245,21 @@
                     "contentName": "meta.embedded.inline.odt",
                     "patterns": [{ "include": "source.odt" }]
                 }
+            ]
+        },
+        "_graph-shape-handlers-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "begin": "(?:\\G|^) +(shape): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                { "include": "#_handlers" }
             ]
         },
         "_merge-lists-def": {
@@ -762,6 +778,16 @@
                 }
             ]
         },
+        "handlers": {
+            "begin": "^(handlers):(.*)$",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.omt" },
+                "2": { "patterns": [{ "include": "#_comments-only" }] }
+            },
+            "end": "(?=^[^#\\s-])",
+            "contentName": "meta.handlers.omt",
+            "patterns": [{ "include": "#_li-handler-ref" }]
+        },
         "_handlers": {
             "begin": "^( +)(handlers):(.*)$",
             "beginCaptures": {
@@ -1003,6 +1029,18 @@
                 }
             ]
         },
+        "_li-handler-ref": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                {
+                    "match": "^ *- +([\\w\\u0100-\\u017f-]+)(.*)$",
+                    "captures": {
+                        "1": { "name": "support.function.omt" },
+                        "2": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
         "_li-odt": {
             "patterns": [
                 { "include": "#_list-comment" },
@@ -1162,6 +1200,17 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.handler.forbidden.omt",
                     "patterns": [{ "include": "#_forbidden-predicates-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!GraphShapeHandlers)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.graph-shape-handlers.omt",
+                    "patterns": [{ "include": "#_graph-shape-handlers-def" }]
                 },
                 {
                     "begin": "^( +)(\\w+): +(!MergeLists)(.*)$",
