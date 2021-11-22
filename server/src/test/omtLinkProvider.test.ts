@@ -39,7 +39,7 @@ describe('OMTLinkProvider', () => {
             const uri = 'testFixture/one/imports.omt';
             const textDocument = TextDocument.create(uri, 'omt', 1, readFileSync(resolve(uri)).toString());
             const errorStub = stub(console, 'error');
-            actualDocumentLinks = linkProvider.provideDocumentLinks(textDocument);
+            actualDocumentLinks = linkProvider.provideDocumentLinks(textDocument).documentLinks;
             //- called in the catch clause for reading tsconfig-invalid
             expect(errorStub).to.be.calledOnce;
             errorStub.restore();

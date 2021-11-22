@@ -7,13 +7,19 @@ import {
     TextDocumentSyncKind,
     InitializeResult,
     DocumentLinkParams,
-    DocumentLink
+    DocumentLink,
+    DefinitionParams,
+    Location,
+    Range,
 } from 'vscode-languageserver/node';
 import {
+    Position,
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import OMTLinkProvider from './omtLinkProvider';
+import OMTLinkProvider, { getImportsFromDocument } from './omtLinkProvider';
 import { WorkspaceLookup } from './workspaceLookup';
+import * as fs from "fs";
+import { OmtDocumentResult, OmtLocalObject } from './types';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -21,6 +27,7 @@ const connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager.
 const documents = new TextDocuments(TextDocument);
+const documentResults: Map<string, OmtDocumentResult> = new Map();
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
@@ -41,6 +48,8 @@ connection.onInitialize((params: InitializeParams) => {
     const result: InitializeResult = {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
+            definitionProvider: true,
+            documentLinkProvider: {resolveProvider: true},
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -71,6 +80,58 @@ connection.onInitialized(() => {
         connection.onDocumentLinkResolve(documentLinkResolve);
     }
 });
+
+function comparePositions(pos1: Position, pos2: Position) {
+    if(pos1.line !== pos2.line) {
+        return pos1.line > pos2.line ? 1 : -1;
+    }
+    if(pos1.character !== pos2.character) {
+        return pos1.character > pos2.character ? 1 : -1;
+    }
+    return 0;
+}
+
+function positionInRange(position: Position, range: Range) {
+    return comparePositions(range.start, position) <= 0 && comparePositions(position, range.end) <= 0;
+}
+
+
+
+connection.onDefinition((params) => {
+    let locations: Location[] = [];
+    const document = documents.get(params.textDocument.uri);
+    if(document) {
+        const links = getOmtDocumentResult(document);
+        
+        links.calledObjects.forEach(link => {
+            if(positionInRange(params.position, link.range)) {  
+                locations.push(...getLocationsForLink(params, links, link));
+            }
+        });
+    }
+    
+    return locations;
+});
+
+function getLocationsForLink(params: DefinitionParams, links: OmtDocumentResult, link: OmtLocalObject): Location[] {
+    const locations: Location[] = []
+    links.definedObjects.filter(x => x.name === link.name).forEach(t => {
+        locations.push(Location.create(params.textDocument.uri, t.range));
+    });
+    links.availableImports.filter(x => x.name === link.name).forEach(i => {
+        const linkUrl = `${i.fullUrl}`;
+        
+        const otherDocument = TextDocument.create(linkUrl, 'omt', 1, fs.readFileSync(linkUrl).toString());
+        if(otherDocument) {
+            const result = getImportsFromDocument(otherDocument);
+            const definedObject = result.localDefinedObject.find(x => x.name == link.name);
+            if(definedObject) {
+                locations.push(Location.create(i.fullUrl, definedObject.range));
+            }
+        }
+    });
+    return locations;
+}
 
 /**
  * shutdown protocol
@@ -106,8 +167,18 @@ connection.onExit(() => {
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
     shutdownCheck();
+    documentResults.set(change.document.uri, omtLinkProvider.provideDocumentLinks(change.document));
     return workspaceLookup.fileChanged(change);
 });
+
+function getOmtDocumentResult(document: TextDocument): OmtDocumentResult {
+    let result = documentResults.get(document.uri);
+    if(!result) {
+        result = omtLinkProvider.provideDocumentLinks(document);
+        documentResults.set(document.uri, result);
+    }
+    return result;
+}
 
 /**
  * find all document links in the document.
@@ -121,7 +192,7 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
     shutdownCheck();
     const document = documents.get(params.textDocument.uri);
     if (document) {
-        return omtLinkProvider.provideDocumentLinks(document)
+        return getOmtDocumentResult(document).documentLinks;
     } else {
         return undefined;
     }

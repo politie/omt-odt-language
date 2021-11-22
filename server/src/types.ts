@@ -1,3 +1,5 @@
+import { DocumentLink, Range } from "vscode-languageserver/node";
+
 /**
  * All the useful information about an OMT module
  */
@@ -38,4 +40,35 @@ export type DeclaredImportLinkData = {
     declaredImport: {
         module: string
     }
+}
+
+/**
+ * Object containing the information for an OMT file:
+ * - documentLinks, paths used in imports that link to another file
+ * - definedObjects, a list of defined objects in the file
+ * - calledObjects, a list of used objects
+ * - availableImports, a list of imported objects
+ */
+export interface OmtDocumentResult {
+    documentLinks: DocumentLink[];
+    definedObjects: OmtLocalObject[];
+    calledObjects: OmtLocalObject[];
+    availableImports: OmtImport[];
+}
+
+/**
+ * Used for declared objects in files, like Activities, Commands etc., and for used objects
+ */
+ export interface OmtLocalObject {
+    name: string;
+    range: Range;
+}
+
+/**
+ * Used to define the imports within an OMT file
+ */
+ export interface OmtImport {
+    name: string;
+    url: string;
+    fullUrl: string;
 }

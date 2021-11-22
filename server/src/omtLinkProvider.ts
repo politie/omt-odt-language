@@ -4,7 +4,8 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
-import { DeclaredImportLinkData, isDeclaredImportLinkData } from './types';
+import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtDocumentResult, OmtImport, OmtLocalObject } from './types';
+import { parse } from 'yaml';
 
 const omtUriMatch = /( +["']?)(.*\.omt)/;
 const declaredImportMatch = /( +)(?:module:)(.*):/;
@@ -28,7 +29,7 @@ export default class OMTLinkProvider {
      * The declared import links can be resolved using the data and the `resolveLink` function.
      * @param document the document containing OMT
      */
-    provideDocumentLinks(document: TextDocument): DocumentLink[] {
+    provideDocumentLinks(document: TextDocument): OmtDocumentResult {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
         return this.findOMTUrl(document, shorthands);
@@ -86,59 +87,222 @@ export default class OMTLinkProvider {
      * @param document the OMT file we are scanning
      * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
      */
-    private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): DocumentLink[] {
+    private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): OmtDocumentResult {
+        console.time('findOMTUrl for ' + document.uri);
         const documentLinks: DocumentLink[] = [];
+        const calledObjects: any[] = [];
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
-        for (let l = 0; l <= document.lineCount - 1; l++) {
-            const line = getLine(document, l);
+        const documentText = document.getText();
+        let fileImportsResult = getImportsFromDocument(document, shorthands);
+        let fileImports = fileImportsResult.omtImports;
+        const lines = documentText.split(/\r?\n/);
+        for (let l = 0; l <= lines.length - 1; l++) {
+            const line = lines[l];
             if (importMatch.exec(line)) {
                 isScanning = true; // start scannning lines for import paths after we enter an import block
             } else if (isScanning) {
                 if (otherDeclareMatch.exec(line)) {
-                    break; // we can stop matching after the import block
+                    isScanning = false;
+                    //break; // we can stop matching after the import block
+                    
                 } else {
-                    const uriMatch = omtUriMatch.exec(line);
-                    const diMatch = declaredImportMatch.exec(line);
-                    if (uriMatch) {
+                    const uriMatchResult = getUriMatch(line, document, shorthands);
+                    const diMatchResult = getDiMatch(line);
+                    if (uriMatchResult) {
                         // match[0] is the full match inluding the whitespace of match[1]
                         // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
                         // match[2] is the link text, including the @shorthands
-                        const link = replaceStart(uriMatch[2].trim(), shorthands);
-                        const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
                         documentLinks.push(
-                            createDocumentLink(l, uriMatch[1].length, uriMatch[2].length, url));
+                            createDocumentLink(l, uriMatchResult.uriMatch[1].length, uriMatchResult.uriMatch[2].length, uriMatchResult.url));
                     }
-                    else if (diMatch) {
+                    else if (diMatchResult) {
                         // match[0] is the full line match including the trailing colon
                         // match[1] is the whitespace prepending the import
                         // match[2] is the module name
-                        const declaredImportModule = '' + diMatch[2];
                         // because the server may not be done scanning the workspace when this is called
                         // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
                         // the url will be undefined and we pass the declared import information as data with the link
                         documentLinks.push(
-                            createDocumentLink(l, diMatch[1].length, diMatch[0].length - diMatch[1].length, undefined, {
+                            createDocumentLink(l, diMatchResult.diMatch[1].length, diMatchResult.diMatch[0].length - diMatchResult.diMatch[1].length, undefined, {
                                 declaredImport: {
-                                    module: declaredImportModule,
+                                    module: diMatchResult.declaredImportModule,
                                 }
                             }));
                     }
+                    else {
+                        calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
+                    }
                 }
             }
+            else {
+                calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
+                calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line, document));
+            }
         }
-        return documentLinks;
+        console.timeEnd('findOMTUrl for ' + document.uri);
+        return {documentLinks, definedObjects: fileImportsResult.localDefinedObject, calledObjects, availableImports: fileImportsResult.omtImports};
     }
-
 }
 
-/**
- * returns all the text of a line in the provided document
- * @param document A text document with at least [line] amount of lines
- * @param line the line to be returned
- */
-function getLine(document: TextDocument, line: number): string {
-    return document.getText(Range.create(Position.create(line, 0), Position.create(line, Number.MAX_VALUE)));
+function getUriMatch(line: string, document: TextDocument, shorthands: Map<string, string>) {
+    const uriMatch = omtUriMatch.exec(line);
+    if (uriMatch) {
+        // match[0] is the full match inluding the whitespace of match[1]
+        // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
+        // match[2] is the link text, including the @shorthands
+        const link = replaceStart(uriMatch[2].trim(), shorthands);
+        const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
+        return { uriMatch, url };
+    }
+}
+
+function getDiMatch(line: string) {
+    const diMatch = declaredImportMatch.exec(line);
+    if (diMatch) {
+        // match[0] is the full line match including the trailing colon
+        // match[1] is the whitespace prepending the import
+        // match[2] is the module name
+        const declaredImportModule = '' + diMatch[2];
+        return { diMatch, declaredImportModule }
+    }
+}
+
+function getReferencesToOtherFilesForCode(fileImports: OmtImport[], l: number, line: string): OmtLocalObject[] {
+    let usages: OmtLocalObject[] = [];
+    fileImports.forEach(t => {
+        if(line.includes(t.name)) {
+            const characterStart = line.indexOf(t.name);
+            usages.push({name: t.name, range: Range.create({line: l, character: characterStart}, {line: l, character: characterStart + t.name.length})});
+        }
+    });
+    return usages;
+}
+
+function getLocalLocationsForCode(declaredObjects: any[], l: number, line: string, document: TextDocument): OmtLocalObject[] {
+    let documentLinks: OmtLocalObject[] = [];
+
+    declaredObjects.forEach(declaredObject => {
+        if(line.includes(declaredObject.name)) {
+            const characterIndex = line.search(new RegExp(`${declaredObject.name}(?=[^a-zA-Z]|^)`)) ?? line.indexOf(declaredObject.name);
+            try {
+                documentLinks.push({
+                    name: declaredObject.name, 
+                    range: Range.create({line: l, character: characterIndex}, {line: l, character: characterIndex + declaredObject.name.length})
+                });
+            }
+            catch(Error) {
+                const test = "";
+            }
+            
+        }
+    });
+    return documentLinks;
+}
+
+export function getImportsFromDocument(document: TextDocument, shorthands?: Map<string, string>) {
+    const documentText = document.getText();
+    const yamlDocument = parse(document.getText());
+    let omtImports: OmtImport[] = [];
+    let localDefinedObject: OmtLocalObject[] = [];
+    if("import" in yamlDocument && shorthands) {
+        const documentImports = yamlDocument["import"];
+        const importUrls = Object.keys(documentImports);
+        importUrls.forEach(importUrl => {
+            const imports: string[] = documentImports[importUrl];
+            
+            imports.forEach(importName => {
+                const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
+                if (uriMatchResult) {
+                        omtImports.push({name: importName, url: importUrl, fullUrl: uriMatchResult.url});
+                }
+            });
+        });
+    }
+    if("queries" in yamlDocument) {
+        localDefinedObject.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
+    }
+    if("commands" in yamlDocument) {
+        localDefinedObject.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
+    }
+    if("model" in yamlDocument) {
+        const modelEntries = yamlDocument["model"];
+        localDefinedObject.push(...findModelEntries(modelEntries, documentText));
+        const keys = Object.keys(modelEntries);
+        keys.forEach(key => {
+            const entry = modelEntries[key];
+
+            if("commands" in entry) {
+                localDefinedObject.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
+            }
+
+            if("queries" in entry) {
+                localDefinedObject.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
+            }
+        });
+    }
+    return {omtImports, localDefinedObject};
+}
+
+function findModelEntries(modelEntries: any, documentText: string): OmtLocalObject[] {
+    const localDefinedObjects: OmtLocalObject[] = [];
+    const keys = Object.keys(modelEntries);
+    keys.forEach(key => {
+        const range = findRange(documentText, key, undefined, ": !");
+        localDefinedObjects.push({name: key, range});
+    });
+    return localDefinedObjects;
+}
+
+function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
+    const localDefinedObjects: OmtLocalObject[] = [];
+    const queriesString: any = value;
+    const queriesRegex = new RegExp(`(?<=DEFINE\ ${define}\ )([a-zA-Z]+)`, "gm");
+    const definedQueries: string[] = queriesString.match(queriesRegex);
+    definedQueries.forEach(q => {
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE\ ${define}\ )(${q})(?=[^a-zA-Z])`, "gm"))
+        localDefinedObjects.push({name: q, range: rangeForQuery})
+    });
+
+    return localDefinedObjects;
+}
+
+function findRangeWithRegex(documentText: string, regex: RegExp): Range {
+    const lines = documentText.split(/\r?\n/);
+    let ranges: Range[] = [];
+    
+    lines.forEach((line, i) => {
+        const result = line.match(regex);
+        if(result) {
+            const name = result[0];
+            const index = line.indexOf(name);
+            ranges.push(Range.create({line: i, character: index}, {line: i, character: index + name.length}));
+        }
+    });
+
+    if(ranges.length !== 1) {
+        throw new Error(`${ranges.length} results found for ${regex}, expected only one.`);
+    }
+
+    return ranges[0];
+}
+
+function findRange(documentText: string, text: string, prefix?: string, postfix?: string): Range {
+    const lines = documentText.split(/\r?\n/);
+    let ranges: Range[] = [];
+    
+    lines.forEach((line, i) => {
+        const index = line.indexOf((prefix ?? '') + text + (postfix ?? ''));
+        if(index > 0) {
+            ranges.push(Range.create({line: i, character: index + (prefix?.length ?? 0)}, {line: i, character: index + text.length + (prefix?.length ?? 0)}));
+        }
+    });
+
+    if(ranges.length !== 1) {
+        throw new Error(`${ranges.length} results found for ${prefix + text}, expected only one.`);
+    }
+
+    return ranges[0];
 }
 
 /**
