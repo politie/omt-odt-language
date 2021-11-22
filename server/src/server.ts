@@ -41,6 +41,7 @@ connection.onInitialize((params: InitializeParams) => {
     const result: InitializeResult = {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
+            documentLinkProvider: {resolveProvider: true},
         }
     };
     if (hasWorkspaceFolderCapability) {
