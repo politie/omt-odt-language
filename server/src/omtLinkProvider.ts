@@ -6,6 +6,7 @@ import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtDocumentResult, OmtImport, OmtLocalObject } from './types';
 import { parse } from 'yaml';
+import { YAMLError } from 'yaml/util';
 
 const omtUriMatch = /( +["']?)(.*\.omt)/;
 const declaredImportMatch = /( +)(?:module:)(.*):/;
@@ -94,8 +95,19 @@ export default class OMTLinkProvider {
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
         const documentText = document.getText();
-        let fileImportsResult = getImportsFromDocument(document, shorthands);
-        let fileImports = fileImportsResult.omtImports;
+        let fileImportsResult = undefined;
+        try {
+            fileImportsResult = getImportsFromDocument(document, shorthands);
+        }
+        catch (error) {
+            if(error instanceof YAMLError) {
+                console.log(error);
+            }
+            else {
+                throw error;
+            }
+        }
+        let fileImports = fileImportsResult?.omtImports;
         const lines = documentText.split(/\r?\n/);
         for (let l = 0; l <= lines.length - 1; l++) {
             const line = lines[l];
@@ -131,17 +143,22 @@ export default class OMTLinkProvider {
                             }));
                     }
                     else {
-                        calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
+                        fileImports && calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
                     }
                 }
             }
             else {
-                calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
-                calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line, document));
+                fileImports && calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
+                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line, document));
             }
         }
         console.timeEnd('findOMTUrl for ' + document.uri);
-        return {documentLinks, definedObjects: fileImportsResult.localDefinedObject, calledObjects, availableImports: fileImportsResult.omtImports};
+        return {
+            documentLinks, 
+            definedObjects: fileImportsResult?.localDefinedObject ?? [], 
+            calledObjects, 
+            availableImports: fileImportsResult?.omtImports ?? []
+        };
     }
 }
 
@@ -359,4 +376,10 @@ function createDocumentLink(line: number, start: number, length: number, uri: st
     const from = Position.create(line, start);
     const to = Position.create(line, start + length);
     return DocumentLink.create(Range.create(from, to), uri, data);
+}
+
+export const exportedForTesting = {
+    getUriMatch,
+    findDefinedObjects,
+    findRangeWithRegex,
 }

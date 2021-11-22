@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { SinonStub, stub } from 'sinon';
 import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import OMTLinkProvider from '../omtLinkProvider';
+import OMTLinkProvider, { exportedForTesting } from '../omtLinkProvider';
 import { WorkspaceLookup } from '../workspaceLookup';
 import * as sinonChai from 'sinon-chai';
 use(sinonChai);
@@ -127,6 +127,66 @@ describe('OMTLinkProvider', () => {
             expect(result).to.be.undefined;
         });
     });
+
+    const document = [
+        "DEFINE QUERY test => 'Hello world';", 
+        "DEFINE COMMAND cmd(param) => param;",
+    ].join("\n");
+    const queryRegex = /(?<=DEFINE\ QUERY\ )(test)(?=[^a-zA-Z])/gm;
+    const commandRegex = /(?<=DEFINE\ COMMAND\ )(cmd)(?=[^a-zA-Z])/gm;
+
+    describe('findDefinedObjects', () => {
+        it('should return correct object for query', () => {
+            // ACT
+            const results = exportedForTesting.findDefinedObjects(document, document, "QUERY");
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal('test');
+            expect(result.range).to.deep.equal(Range.create({line: 0, character: 13}, {line: 0, character: 17}));
+        });
+    });
+
+    describe('findRangeWithRegex', () => {
+        it('should return correct range for simple query', () => {
+            // ACT
+            const result = exportedForTesting.findRangeWithRegex(document, queryRegex);
+
+            // ASSERT
+            expect(result).to.deep.equal(Range.create({line: 0, character: 13}, {line: 0, character: 17}));
+        });
+
+        it('should return correct range for simple command', () => {
+            // ACT
+            const result = exportedForTesting.findRangeWithRegex(document, commandRegex);
+
+            // ASSERT
+            expect(result).to.deep.equal(Range.create({line: 1, character: 15}, {line: 1, character: 18}));
+        });
+
+        it('should throw error when definition found multiple times', () => {
+            // ARRANGE
+            const wrong_document = [
+                "DEFINE QUERY test => 'Hello world';",
+                "DEFINE QUERY test => 'Hello world 2';",
+            ].join("\n");
+
+            // ACT / ASSERT
+            expect(() => exportedForTesting.findRangeWithRegex(wrong_document, queryRegex)).throw("2 results found for")
+        });
+
+        it('should throw error when definition found zero times', () => {
+            // ARRANGE
+            const wrong_document = [
+                "DEFINE QUERY testTwo => 'Hello world';",
+                "DEFINE QUERY testTwo => 'Hello world 2';",
+            ].join("\n");
+
+            // ACT / ASSERT
+            expect(() => exportedForTesting.findRangeWithRegex(wrong_document, queryRegex)).throw("0 results found for")
+        });
+    })
 });
 
 function toRange(sLine: number, sChar: number, eLine: number, eChar: number) {
