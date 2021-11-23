@@ -163,11 +163,18 @@ connection.onExit(() => {
     process.exit();
 });
 
+let timerId: NodeJS.Timeout;
+let currentChangingDocumentUri: string;
+
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
     shutdownCheck();
-    documentResults.set(change.document.uri, omtLinkProvider.provideDocumentLinks(change.document));
+    if(currentChangingDocumentUri === change.document.uri) {
+        timerId && clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => documentResults.set(change.document.uri, omtLinkProvider.provideDocumentLinks(change.document)), 1000);
+    currentChangingDocumentUri = change.document.uri;
     return workspaceLookup.fileChanged(change);
 });
 
