@@ -49,7 +49,7 @@ export type DeclaredImportLinkData = {
  * - calledObjects, a list of used objects
  * - availableImports, a list of imported objects
  */
-export interface OmtDocumentResult {
+export interface OmtDocumentInformation {
     documentLinks: DocumentLink[];
     definedObjects: OmtLocalObject[];
     calledObjects: OmtLocalObject[];

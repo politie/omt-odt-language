@@ -16,10 +16,10 @@ import {
     Position,
     TextDocument
 } from 'vscode-languageserver-textdocument';
-import OMTLinkProvider, { getImportsFromDocument } from './omtLinkProvider';
+import OmtDocumentInformationProvider, { getImportsFromDocument } from './omtDocumentInformationProvider';
 import { WorkspaceLookup } from './workspaceLookup';
 import * as fs from "fs";
-import { OmtDocumentResult, OmtLocalObject } from './types';
+import { OmtDocumentInformation, OmtLocalObject } from './types';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -27,12 +27,12 @@ const connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager.
 const documents = new TextDocuments(TextDocument);
-const documentResults: Map<string, OmtDocumentResult> = new Map();
+const documentResults: Map<string, OmtDocumentInformation> = new Map();
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDocumentLinkCapabilities = false;
-let omtLinkProvider: OMTLinkProvider;
+let omtDocumentInformationProvider: OmtDocumentInformationProvider;
 let workspaceLookup: WorkspaceLookup;
 
 // tell the client what functionality is supported in this LSP when it initializes.
@@ -66,7 +66,7 @@ connection.onInitialize((params: InitializeParams) => {
 connection.onInitialized(() => {
     shutdownCheck();
     workspaceLookup = new WorkspaceLookup(connection.workspace);
-    omtLinkProvider = new OMTLinkProvider(workspaceLookup);
+    omtDocumentInformationProvider = new OmtDocumentInformationProvider(workspaceLookup);
     workspaceLookup.init().then(() => {
         workspaceLookup.scanAll();
     });
@@ -113,7 +113,7 @@ connection.onDefinition((params) => {
     return locations;
 });
 
-function getLocationsForLink(params: DefinitionParams, links: OmtDocumentResult, link: OmtLocalObject): Location[] {
+function getLocationsForLink(params: DefinitionParams, links: OmtDocumentInformation, link: OmtLocalObject): Location[] {
     const locations: Location[] = []
     links.definedObjects.filter(x => x.name === link.name).forEach(t => {
         locations.push(Location.create(params.textDocument.uri, t.range));
@@ -173,15 +173,15 @@ documents.onDidChangeContent((change) => {
     if (currentChangingDocumentUri === change.document.uri) {
         timerId && clearTimeout(timerId);
     }
-    timerId = setTimeout(() => documentResults.set(change.document.uri, omtLinkProvider.provideDocumentLinks(change.document)), 1000);
+    timerId = setTimeout(() => documentResults.set(change.document.uri, omtDocumentInformationProvider.provideDocumentInformation(change.document)), 1000);
     currentChangingDocumentUri = change.document.uri;
     return workspaceLookup.fileChanged(change);
 });
 
-function getOmtDocumentResult(document: TextDocument): OmtDocumentResult {
+function getOmtDocumentResult(document: TextDocument): OmtDocumentInformation {
     let result = documentResults.get(document.uri);
     if (!result) {
-        result = omtLinkProvider.provideDocumentLinks(document);
+        result = omtDocumentInformationProvider.provideDocumentInformation(document);
         documentResults.set(document.uri, result);
     }
     return result;
@@ -214,7 +214,7 @@ const documentLinkResolve = (link: DocumentLink) => {
     shutdownCheck();
     // the data would have been set during a call to `documentLinksHandler` when the document was opened
     // usually because it would be less efficient to resolve the link at that time.
-    link.target = omtLinkProvider.resolveLink(link.data);
+    link.target = omtDocumentInformationProvider.resolveLink(link.data);
     return link;
 }
 

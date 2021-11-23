@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { SinonStub, stub } from 'sinon';
 import { DocumentLink, Position, Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import OMTLinkProvider, { exportedForTesting } from '../omtLinkProvider';
+import OMTLinkProvider, { exportedForTesting } from '../omtDocumentInformationProvider';
 import { WorkspaceLookup } from '../workspaceLookup';
 import * as sinonChai from 'sinon-chai';
 import { OmtImport, OmtLocalObject } from '../types';
@@ -33,14 +33,14 @@ describe('OMTLinkProvider', () => {
         linkProvider = new OMTLinkProvider(lookupStub);
     });
 
-    describe('provideDocumentLinks', () => {
+    describe('provideDocumentInformation', () => {
         let actualDocumentLinks: DocumentLink[];
 
         beforeEach(() => {
             const uri = 'testFixture/one/imports.omt';
             const textDocument = TextDocument.create(uri, 'omt', 1, readFileSync(resolve(uri)).toString());
             const errorStub = stub(console, 'error');
-            actualDocumentLinks = linkProvider.provideDocumentLinks(textDocument).documentLinks;
+            actualDocumentLinks = linkProvider.provideDocumentInformation(textDocument).documentLinks;
             //- called in the catch clause for reading tsconfig-invalid
             expect(errorStub).to.be.calledOnce;
             errorStub.restore();

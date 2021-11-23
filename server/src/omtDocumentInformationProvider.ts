@@ -4,7 +4,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
-import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtDocumentResult, OmtImport, OmtLocalObject } from './types';
+import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { parse } from 'yaml';
 import { YAMLError } from 'yaml/util';
 
@@ -16,7 +16,7 @@ const otherDeclareMatch = /^(\w+):/g;
 /**
  * Provides DocumentLinks for the imports of an OMT file.
  */
-export default class OMTLinkProvider {
+export default class OmtDocumentInformationProvider {
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
@@ -30,10 +30,10 @@ export default class OMTLinkProvider {
      * The declared import links can be resolved using the data and the `resolveLink` function.
      * @param document the document containing OMT
      */
-    provideDocumentLinks(document: TextDocument): OmtDocumentResult {
+    provideDocumentInformation(document: TextDocument): OmtDocumentInformation {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
-        return this.findOMTUrl(document, shorthands);
+        return this.getOmtDocumentInformation(document, shorthands);
     }
 
     /**
@@ -88,8 +88,8 @@ export default class OMTLinkProvider {
      * @param document the OMT file we are scanning
      * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
      */
-    private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): OmtDocumentResult {
-        console.time('findOMTUrl for ' + document.uri);
+    private getOmtDocumentInformation(document: TextDocument, shorthands: Map<string, string>): OmtDocumentInformation {
+        console.time('getOmtDocumentInformation for ' + document.uri);
         const documentLinks: DocumentLink[] = [];
         const calledObjects: OmtLocalObject[] = [];
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
@@ -150,7 +150,7 @@ export default class OMTLinkProvider {
                 fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line));
             }
         }
-        console.timeEnd('findOMTUrl for ' + document.uri);
+        console.timeEnd('getOmtDocumentInformation for ' + document.uri);
         return {
             documentLinks,
             definedObjects: fileImportsResult?.localDefinedObject ?? [],
@@ -217,13 +217,12 @@ export function getImportsFromDocument(document: TextDocument, shorthands?: Map<
         const importUrls = Object.keys(documentImports);
         importUrls.forEach(importUrl => {
             const imports: string[] = documentImports[importUrl];
-
-            imports.forEach(importName => {
-                const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
-                if (uriMatchResult) {
+            const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
+            if (uriMatchResult) {
+                imports.forEach(importName => {
                     omtImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
-                }
-            });
+                });
+            }
         });
     }
     if ("queries" in yamlDocument) {
