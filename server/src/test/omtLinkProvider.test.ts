@@ -129,11 +129,11 @@ describe('OMTLinkProvider', () => {
     });
 
     const document = [
-        "DEFINE QUERY test => 'Hello world';", 
+        "DEFINE QUERY test => 'Hello world';",
         "DEFINE COMMAND cmd(param) => param;",
     ].join("\n");
-    const queryRegex = /(?<=DEFINE\ QUERY\ )(test)(?=[^a-zA-Z])/gm;
-    const commandRegex = /(?<=DEFINE\ COMMAND\ )(cmd)(?=[^a-zA-Z])/gm;
+    const queryRegex = /(?<=DEFINE QUERY )(test)(?=[^a-zA-Z])/gm;
+    const commandRegex = /(?<=DEFINE COMMAND )(cmd)(?=[^a-zA-Z])/gm;
 
     describe('findDefinedObjects', () => {
         it('should return correct object for query', () => {
@@ -144,7 +144,7 @@ describe('OMTLinkProvider', () => {
             expect(results.length).to.equal(1);
             const result = results[0];
             expect(result.name).to.equal('test');
-            expect(result.range).to.deep.equal(Range.create({line: 0, character: 13}, {line: 0, character: 17}));
+            expect(result.range).to.deep.equal(Range.create({ line: 0, character: 13 }, { line: 0, character: 17 }));
         });
     });
 
@@ -154,7 +154,7 @@ describe('OMTLinkProvider', () => {
             const result = exportedForTesting.findRangeWithRegex(document, queryRegex);
 
             // ASSERT
-            expect(result).to.deep.equal(Range.create({line: 0, character: 13}, {line: 0, character: 17}));
+            expect(result).to.deep.equal(Range.create({ line: 0, character: 13 }, { line: 0, character: 17 }));
         });
 
         it('should return correct range for simple command', () => {
@@ -162,7 +162,7 @@ describe('OMTLinkProvider', () => {
             const result = exportedForTesting.findRangeWithRegex(document, commandRegex);
 
             // ASSERT
-            expect(result).to.deep.equal(Range.create({line: 1, character: 15}, {line: 1, character: 18}));
+            expect(result).to.deep.equal(Range.create({ line: 1, character: 15 }, { line: 1, character: 18 }));
         });
 
         it('should throw error when definition found multiple times', () => {

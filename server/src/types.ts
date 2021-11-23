@@ -59,7 +59,7 @@ export interface OmtDocumentResult {
 /**
  * Used for declared objects in files, like Activities, Commands etc., and for used objects
  */
- export interface OmtLocalObject {
+export interface OmtLocalObject {
     name: string;
     range: Range;
 }
@@ -67,7 +67,7 @@ export interface OmtDocumentResult {
 /**
  * Used to define the imports within an OMT file
  */
- export interface OmtImport {
+export interface OmtImport {
     name: string;
     url: string;
     fullUrl: string;

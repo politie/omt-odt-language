@@ -49,7 +49,7 @@ connection.onInitialize((params: InitializeParams) => {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
             definitionProvider: true,
-            documentLinkProvider: {resolveProvider: true},
+            documentLinkProvider: { resolveProvider: true },
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -82,10 +82,10 @@ connection.onInitialized(() => {
 });
 
 function comparePositions(pos1: Position, pos2: Position) {
-    if(pos1.line !== pos2.line) {
+    if (pos1.line !== pos2.line) {
         return pos1.line > pos2.line ? 1 : -1;
     }
-    if(pos1.character !== pos2.character) {
+    if (pos1.character !== pos2.character) {
         return pos1.character > pos2.character ? 1 : -1;
     }
     return 0;
@@ -98,18 +98,18 @@ function positionInRange(position: Position, range: Range) {
 
 
 connection.onDefinition((params) => {
-    let locations: Location[] = [];
+    const locations: Location[] = [];
     const document = documents.get(params.textDocument.uri);
-    if(document) {
+    if (document) {
         const links = getOmtDocumentResult(document);
-        
+
         links.calledObjects.forEach(link => {
-            if(positionInRange(params.position, link.range)) {  
+            if (positionInRange(params.position, link.range)) {
                 locations.push(...getLocationsForLink(params, links, link));
             }
         });
     }
-    
+
     return locations;
 });
 
@@ -120,12 +120,12 @@ function getLocationsForLink(params: DefinitionParams, links: OmtDocumentResult,
     });
     links.availableImports.filter(x => x.name === link.name).forEach(i => {
         const linkUrl = `${i.fullUrl}`;
-        
+
         const otherDocument = TextDocument.create(linkUrl, 'omt', 1, fs.readFileSync(linkUrl).toString());
-        if(otherDocument) {
+        if (otherDocument) {
             const result = getImportsFromDocument(otherDocument);
             const definedObject = result.localDefinedObject.find(x => x.name == link.name);
-            if(definedObject) {
+            if (definedObject) {
                 locations.push(Location.create(i.fullUrl, definedObject.range));
             }
         }
@@ -173,7 +173,7 @@ documents.onDidChangeContent((change) => {
 
 function getOmtDocumentResult(document: TextDocument): OmtDocumentResult {
     let result = documentResults.get(document.uri);
-    if(!result) {
+    if (!result) {
         result = omtLinkProvider.provideDocumentLinks(document);
         documentResults.set(document.uri, result);
     }

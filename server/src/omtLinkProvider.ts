@@ -91,7 +91,7 @@ export default class OMTLinkProvider {
     private findOMTUrl(document: TextDocument, shorthands: Map<string, string>): OmtDocumentResult {
         console.time('findOMTUrl for ' + document.uri);
         const documentLinks: DocumentLink[] = [];
-        const calledObjects: any[] = [];
+        const calledObjects: OmtLocalObject[] = [];
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
         const documentText = document.getText();
@@ -100,14 +100,14 @@ export default class OMTLinkProvider {
             fileImportsResult = getImportsFromDocument(document, shorthands);
         }
         catch (error) {
-            if(error instanceof YAMLError) {
+            if (error instanceof YAMLError) {
                 console.log(error);
             }
             else {
                 throw error;
             }
         }
-        let fileImports = fileImportsResult?.omtImports;
+        const fileImports = fileImportsResult?.omtImports;
         const lines = documentText.split(/\r?\n/);
         for (let l = 0; l <= lines.length - 1; l++) {
             const line = lines[l];
@@ -116,8 +116,6 @@ export default class OMTLinkProvider {
             } else if (isScanning) {
                 if (otherDeclareMatch.exec(line)) {
                     isScanning = false;
-                    //break; // we can stop matching after the import block
-                    
                 } else {
                     const uriMatchResult = getUriMatch(line, document, shorthands);
                     const diMatchResult = getDiMatch(line);
@@ -149,14 +147,14 @@ export default class OMTLinkProvider {
             }
             else {
                 fileImports && calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
-                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line, document));
+                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line));
             }
         }
         console.timeEnd('findOMTUrl for ' + document.uri);
         return {
-            documentLinks, 
-            definedObjects: fileImportsResult?.localDefinedObject ?? [], 
-            calledObjects, 
+            documentLinks,
+            definedObjects: fileImportsResult?.localDefinedObject ?? [],
+            calledObjects,
             availableImports: fileImportsResult?.omtImports ?? []
         };
     }
@@ -186,33 +184,25 @@ function getDiMatch(line: string) {
 }
 
 function getReferencesToOtherFilesForCode(fileImports: OmtImport[], l: number, line: string): OmtLocalObject[] {
-    let usages: OmtLocalObject[] = [];
+    const usages: OmtLocalObject[] = [];
     fileImports.forEach(t => {
-        if(line.includes(t.name)) {
+        if (line.includes(t.name)) {
             const characterStart = line.indexOf(t.name);
-            usages.push({name: t.name, range: Range.create({line: l, character: characterStart}, {line: l, character: characterStart + t.name.length})});
+            usages.push({ name: t.name, range: Range.create({ line: l, character: characterStart }, { line: l, character: characterStart + t.name.length }) });
         }
     });
     return usages;
 }
 
-function getLocalLocationsForCode(declaredObjects: any[], l: number, line: string, document: TextDocument): OmtLocalObject[] {
-    let documentLinks: OmtLocalObject[] = [];
+function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], l: number, line: string): OmtLocalObject[] {
+    const documentLinks: OmtLocalObject[] = [];
 
-    declaredObjects.forEach(declaredObject => {
-        if(line.includes(declaredObject.name)) {
-            const characterIndex = line.search(new RegExp(`${declaredObject.name}(?=[^a-zA-Z]|^)`)) ?? line.indexOf(declaredObject.name);
-            try {
-                documentLinks.push({
-                    name: declaredObject.name, 
-                    range: Range.create({line: l, character: characterIndex}, {line: l, character: characterIndex + declaredObject.name.length})
-                });
-            }
-            catch(Error) {
-                const test = "";
-            }
-            
-        }
+    declaredObjects.filter(declaredObject => line.includes(declaredObject.name)).forEach(declaredObject => {
+        const characterIndex = line.search(new RegExp(`${declaredObject.name}(?=[^a-zA-Z]|^)`)) ?? line.indexOf(declaredObject.name);
+        documentLinks.push({
+            name: declaredObject.name,
+            range: Range.create({ line: l, character: characterIndex }, { line: l, character: characterIndex + declaredObject.name.length })
+        });
     });
     return documentLinks;
 }
@@ -220,53 +210,53 @@ function getLocalLocationsForCode(declaredObjects: any[], l: number, line: strin
 export function getImportsFromDocument(document: TextDocument, shorthands?: Map<string, string>) {
     const documentText = document.getText();
     const yamlDocument = parse(document.getText());
-    let omtImports: OmtImport[] = [];
-    let localDefinedObject: OmtLocalObject[] = [];
-    if("import" in yamlDocument && shorthands) {
+    const omtImports: OmtImport[] = [];
+    const localDefinedObject: OmtLocalObject[] = [];
+    if ("import" in yamlDocument && shorthands) {
         const documentImports = yamlDocument["import"];
         const importUrls = Object.keys(documentImports);
         importUrls.forEach(importUrl => {
             const imports: string[] = documentImports[importUrl];
-            
+
             imports.forEach(importName => {
                 const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
                 if (uriMatchResult) {
-                        omtImports.push({name: importName, url: importUrl, fullUrl: uriMatchResult.url});
+                    omtImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
                 }
             });
         });
     }
-    if("queries" in yamlDocument) {
+    if ("queries" in yamlDocument) {
         localDefinedObject.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
     }
-    if("commands" in yamlDocument) {
+    if ("commands" in yamlDocument) {
         localDefinedObject.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
     }
-    if("model" in yamlDocument) {
+    if ("model" in yamlDocument) {
         const modelEntries = yamlDocument["model"];
         localDefinedObject.push(...findModelEntries(modelEntries, documentText));
         const keys = Object.keys(modelEntries);
         keys.forEach(key => {
             const entry = modelEntries[key];
 
-            if("commands" in entry) {
+            if ("commands" in entry) {
                 localDefinedObject.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
             }
 
-            if("queries" in entry) {
+            if ("queries" in entry) {
                 localDefinedObject.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
             }
         });
     }
-    return {omtImports, localDefinedObject};
+    return { omtImports, localDefinedObject };
 }
 
 function findModelEntries(modelEntries: any, documentText: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
     const keys = Object.keys(modelEntries);
     keys.forEach(key => {
-        const range = findRange(documentText, key, undefined, ": !");
-        localDefinedObjects.push({name: key, range});
+        const range = findRangeWithRegex(documentText, new RegExp(`(${key})(?=: !)`));
+        localDefinedObjects.push({ name: key, range });
     });
     return localDefinedObjects;
 }
@@ -274,11 +264,11 @@ function findModelEntries(modelEntries: any, documentText: string): OmtLocalObje
 function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
     const queriesString: any = value;
-    const queriesRegex = new RegExp(`(?<=DEFINE\ ${define}\ )([a-zA-Z]+)`, "gm");
+    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z]+)`, "gm");
     const definedQueries: string[] = queriesString.match(queriesRegex);
     definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE\ ${define}\ )(${q})(?=[^a-zA-Z])`, "gm"))
-        localDefinedObjects.push({name: q, range: rangeForQuery})
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z])`, "gm"))
+        localDefinedObjects.push({ name: q, range: rangeForQuery })
     });
 
     return localDefinedObjects;
@@ -286,37 +276,19 @@ function findDefinedObjects(value: string, documentText: string, define: string)
 
 function findRangeWithRegex(documentText: string, regex: RegExp): Range {
     const lines = documentText.split(/\r?\n/);
-    let ranges: Range[] = [];
-    
+    const ranges: Range[] = [];
+
     lines.forEach((line, i) => {
         const result = line.match(regex);
-        if(result) {
+        if (result) {
             const name = result[0];
             const index = line.indexOf(name);
-            ranges.push(Range.create({line: i, character: index}, {line: i, character: index + name.length}));
+            ranges.push(Range.create({ line: i, character: index }, { line: i, character: index + name.length }));
         }
     });
 
-    if(ranges.length !== 1) {
+    if (ranges.length !== 1) {
         throw new Error(`${ranges.length} results found for ${regex}, expected only one.`);
-    }
-
-    return ranges[0];
-}
-
-function findRange(documentText: string, text: string, prefix?: string, postfix?: string): Range {
-    const lines = documentText.split(/\r?\n/);
-    let ranges: Range[] = [];
-    
-    lines.forEach((line, i) => {
-        const index = line.indexOf((prefix ?? '') + text + (postfix ?? ''));
-        if(index > 0) {
-            ranges.push(Range.create({line: i, character: index + (prefix?.length ?? 0)}, {line: i, character: index + text.length + (prefix?.length ?? 0)}));
-        }
-    });
-
-    if(ranges.length !== 1) {
-        throw new Error(`${ranges.length} results found for ${prefix + text}, expected only one.`);
     }
 
     return ranges[0];
