@@ -184,25 +184,25 @@ function getDiMatch(line: string) {
 }
 
 function getReferencesToOtherFilesForCode(fileImports: OmtImport[], l: number, line: string): OmtLocalObject[] {
-    const usages: OmtLocalObject[] = [];
-    fileImports.forEach(t => {
-        if (line.includes(t.name)) {
-            const characterStart = line.indexOf(t.name);
-            usages.push({ name: t.name, range: Range.create({ line: l, character: characterStart }, { line: l, character: characterStart + t.name.length }) });
-        }
-    });
-    return usages;
+    return findUsagesInLine(fileImports.map(x => x.name), l, line);
 }
 
 function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], l: number, line: string): OmtLocalObject[] {
+    return findUsagesInLine(declaredObjects.map(x => x.name), l, line);
+}
+
+function findUsagesInLine(declaredObjects: string[], l: number, line: string): OmtLocalObject[] {
     const documentLinks: OmtLocalObject[] = [];
 
-    declaredObjects.filter(declaredObject => line.includes(declaredObject.name)).forEach(declaredObject => {
-        const characterIndex = line.search(new RegExp(`${declaredObject.name}(?=[^a-zA-Z]|^)`)) ?? line.indexOf(declaredObject.name);
-        documentLinks.push({
-            name: declaredObject.name,
-            range: Range.create({ line: l, character: characterIndex }, { line: l, character: characterIndex + declaredObject.name.length })
-        });
+    declaredObjects.filter(declaredObject => line.includes(declaredObject)).forEach(declaredObject => {
+        const characterIndex = line.search(new RegExp(`${declaredObject}(?=[^a-zA-Z]|$)`)) ?? line.indexOf(declaredObject);
+
+        if (characterIndex >= 0) {
+            documentLinks.push({
+                name: declaredObject,
+                range: Range.create({ line: l, character: characterIndex }, { line: l, character: characterIndex + declaredObject.length })
+            });
+        }
     });
     return documentLinks;
 }
@@ -351,6 +351,8 @@ function createDocumentLink(line: number, start: number, length: number, uri: st
 }
 
 export const exportedForTesting = {
+    getLocalLocationsForCode,
+    getReferencesToOtherFilesForCode,
     getUriMatch,
     findDefinedObjects,
     findRangeWithRegex,

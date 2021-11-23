@@ -170,7 +170,7 @@ let currentChangingDocumentUri: string;
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent((change) => {
     shutdownCheck();
-    if(currentChangingDocumentUri === change.document.uri) {
+    if (currentChangingDocumentUri === change.document.uri) {
         timerId && clearTimeout(timerId);
     }
     timerId = setTimeout(() => documentResults.set(change.document.uri, omtLinkProvider.provideDocumentLinks(change.document)), 1000);

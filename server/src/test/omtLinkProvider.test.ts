@@ -7,6 +7,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import OMTLinkProvider, { exportedForTesting } from '../omtLinkProvider';
 import { WorkspaceLookup } from '../workspaceLookup';
 import * as sinonChai from 'sinon-chai';
+import { OmtImport, OmtLocalObject } from '../types';
 use(sinonChai);
 
 type Case = {
@@ -134,6 +135,7 @@ describe('OMTLinkProvider', () => {
     ].join("\n");
     const queryRegex = /(?<=DEFINE QUERY )(test)(?=[^a-zA-Z])/gm;
     const commandRegex = /(?<=DEFINE COMMAND )(cmd)(?=[^a-zA-Z])/gm;
+    const testRange = Range.create({ line: 0, character: 13 }, { line: 0, character: 17 });
 
     describe('findDefinedObjects', () => {
         it('should return correct object for query', () => {
@@ -144,7 +146,7 @@ describe('OMTLinkProvider', () => {
             expect(results.length).to.equal(1);
             const result = results[0];
             expect(result.name).to.equal('test');
-            expect(result.range).to.deep.equal(Range.create({ line: 0, character: 13 }, { line: 0, character: 17 }));
+            expect(result.range).to.deep.equal(testRange);
         });
     });
 
@@ -154,7 +156,7 @@ describe('OMTLinkProvider', () => {
             const result = exportedForTesting.findRangeWithRegex(document, queryRegex);
 
             // ASSERT
-            expect(result).to.deep.equal(Range.create({ line: 0, character: 13 }, { line: 0, character: 17 }));
+            expect(result).to.deep.equal(testRange);
         });
 
         it('should return correct range for simple command', () => {
@@ -186,7 +188,83 @@ describe('OMTLinkProvider', () => {
             // ACT / ASSERT
             expect(() => exportedForTesting.findRangeWithRegex(wrong_document, queryRegex)).throw("0 results found for")
         });
-    })
+    });
+
+    describe('getLocalLocationsForCode', () => {
+        const lineNumber = 12;
+        const declaredObjects: OmtLocalObject[] = [{ name: "test", range: testRange }];
+        it('should return correct object when used once', () => {
+            // ARRANGE
+            const line = "    @test(param1, param2);";
+
+            // ACT
+            const results = exportedForTesting.getLocalLocationsForCode(declaredObjects, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal("test");
+            expect(result.range.start).to.deep.equal({ line: lineNumber, character: 5 });
+            expect(result.range.end).to.deep.equal({ line: lineNumber, character: 9 });
+        });
+
+        it('should return no objects when not found', () => {
+            // ARRANGE
+            const line = "    @testTwo(param1, param2);";
+
+            // ACT
+            const results = exportedForTesting.getLocalLocationsForCode(declaredObjects, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(0);
+        });
+
+        it('should return correct object when used once as query', () => {
+            // ARRANGE
+            const line = "    testObject / test";
+
+            // ACT
+            const results = exportedForTesting.getLocalLocationsForCode(declaredObjects, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal("test");
+            expect(result.range.start).to.deep.equal({ line: lineNumber, character: 17 });
+            expect(result.range.end).to.deep.equal({ line: lineNumber, character: 21 });
+        });
+    });
+
+    describe('getReferencesToOtherFilesForCode', () => {
+        const omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
+        const lineNumber = 15;
+
+        it('should return correct object', () => {
+            // ARRANGE
+            const line = "    @TestActivity();";
+
+            // ACT
+            const results = exportedForTesting.getReferencesToOtherFilesForCode(omtImports, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal("TestActivity");
+            expect(result.range.start).to.deep.equal({ line: lineNumber, character: 5 });
+            expect(result.range.end).to.deep.equal({ line: lineNumber, character: 17 });
+        });
+
+        it('should return correct object', () => {
+            // ARRANGE
+            const line = "    @TestActivityTwo();";
+
+            // ACT
+            const results = exportedForTesting.getReferencesToOtherFilesForCode(omtImports, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(0);
+        });
+    });
 });
 
 function toRange(sLine: number, sChar: number, eLine: number, eChar: number) {
