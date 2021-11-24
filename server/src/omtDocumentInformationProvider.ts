@@ -195,7 +195,7 @@ function findUsagesInLine(declaredObjects: string[], l: number, line: string): O
     const documentLinks: OmtLocalObject[] = [];
 
     declaredObjects.filter(declaredObject => line.includes(declaredObject)).forEach(declaredObject => {
-        const characterIndex = line.search(new RegExp(`${declaredObject}(?=[^a-zA-Z]|$)`)) ?? line.indexOf(declaredObject);
+        const characterIndex = line.search(new RegExp(`${declaredObject}(?=[^a-zA-Z0-9]|$)`)) ?? line.indexOf(declaredObject);
 
         if (characterIndex >= 0) {
             documentLinks.push({
@@ -263,10 +263,10 @@ function findModelEntries(modelEntries: any, documentText: string): OmtLocalObje
 function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
     const queriesString: any = value;
-    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z]+)`, "gm");
+    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9]+)`, "gm");
     const definedQueries: string[] = queriesString.match(queriesRegex);
     definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z])`, "gm"))
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9])`, "gm"))
         localDefinedObjects.push({ name: q, range: rangeForQuery })
     });
 

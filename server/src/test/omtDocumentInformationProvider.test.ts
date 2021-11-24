@@ -148,6 +148,24 @@ describe('OMTLinkProvider', () => {
             expect(result.name).to.equal('test');
             expect(result.range).to.deep.equal(testRange);
         });
+
+        it('should return correct object for query when a number is in the name', () => {
+            // ARRANGE
+            const documentWithNumberInName = [
+                "DEFINE QUERY test2 => 'Hello world';",
+                "DEFINE COMMAND cmd2(param) => param;",
+            ].join("\n");
+
+            // ACT
+            const results = exportedForTesting.findDefinedObjects(documentWithNumberInName, documentWithNumberInName, "QUERY");
+
+            // ASSERT
+            const testRangeWithNumber = Range.create({ line: 0, character: 13 }, { line: 0, character: 18 });
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal('test2');
+            expect(result.range).to.deep.equal(testRangeWithNumber);
+        });
     });
 
     describe('findRangeWithRegex', () => {
