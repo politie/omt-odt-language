@@ -18,6 +18,8 @@ const otherDeclareMatch = /^(\w+):/g;
  */
 export default class OmtDocumentInformationProvider {
 
+    private tsConfigFiles = glob.sync('**/tsconfig**.json');
+
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
     /**
@@ -34,6 +36,11 @@ export default class OmtDocumentInformationProvider {
         // regular path links, with or without shorthands
         const shorthands = this.contextPaths(document);
         return this.getOmtDocumentInformation(document, shorthands);
+    }
+
+    provideImportsFromDocument(document: TextDocument) {
+        const shorthands = this.contextPaths(document);
+        return getImportsFromDocument(document, shorthands);
     }
 
     /**
@@ -54,7 +61,7 @@ export default class OmtDocumentInformationProvider {
      * @param document the document that needs context.
      */
     private contextPaths(document: TextDocument) {
-        return new Map<string, string>(glob.sync('**/tsconfig**.json')
+        return new Map<string, string>(this.tsConfigFiles
             // we need to filter for same parent because another config may have some of the same paths
             .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
             .reduce((paths: [string, string][], uri: string) => {
