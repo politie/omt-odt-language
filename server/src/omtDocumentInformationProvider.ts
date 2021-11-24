@@ -4,7 +4,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
-import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
+import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { parse } from 'yaml';
 import { YAMLError } from 'yaml/util';
 
@@ -38,9 +38,9 @@ export default class OmtDocumentInformationProvider {
         return this.getOmtDocumentInformation(document, shorthands);
     }
 
-    provideImportsFromDocument(document: TextDocument) {
+    provideAvailableObjectsFromDocument(document: TextDocument): OmtAvailableObjects {
         const shorthands = this.contextPaths(document);
-        return getImportsFromDocument(document, shorthands);
+        return getAvailableObjectsFromDocument(document, shorthands);
     }
 
     /**
@@ -86,12 +86,7 @@ export default class OmtDocumentInformationProvider {
     }
 
     /**
-     * scan the document for imports and return DocumentLinks for
-     * absolute paths,
-     * relative paths,
-     * paths starting with a shorthand ('@shorthand/relativePath'),
-     * declared imports ('module: moduleName'). For declared imports the target will be undefined.
-     * The declared import links can be resolved using the data and the `resolveLink` function.
+     * Scan the document for imports/declarations/used objects and returns an OmtDocumentInformation object.
      * @param document the OMT file we are scanning
      * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
      */
@@ -104,7 +99,7 @@ export default class OmtDocumentInformationProvider {
         const documentText = document.getText();
         let fileImportsResult = undefined;
         try {
-            fileImportsResult = getImportsFromDocument(document, shorthands);
+            fileImportsResult = getAvailableObjectsFromDocument(document, shorthands);
         }
         catch (error) {
             if (error instanceof YAMLError) {
@@ -114,7 +109,6 @@ export default class OmtDocumentInformationProvider {
                 throw error;
             }
         }
-        const fileImports = fileImportsResult?.omtImports;
         const lines = documentText.split(/\r?\n/);
         for (let l = 0; l <= lines.length - 1; l++) {
             const line = lines[l];
@@ -148,21 +142,21 @@ export default class OmtDocumentInformationProvider {
                             }));
                     }
                     else {
-                        fileImports && calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
+                        fileImportsResult && calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
                     }
                 }
             }
             else {
-                fileImports && calledObjects.push(...getReferencesToOtherFilesForCode(fileImports, l, line));
-                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.localDefinedObject, l, line));
+                fileImportsResult && calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
+                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.definedObjects, l, line));
             }
         }
         console.timeEnd('getOmtDocumentInformation for ' + document.uri);
         return {
             documentLinks,
-            definedObjects: fileImportsResult?.localDefinedObject ?? [],
+            definedObjects: fileImportsResult?.definedObjects ?? [],
             calledObjects,
-            availableImports: fileImportsResult?.omtImports ?? []
+            availableImports: fileImportsResult?.availableImports ?? []
         };
     }
 }
@@ -214,11 +208,11 @@ function findUsagesInLine(declaredObjects: string[], l: number, line: string): O
     return documentLinks;
 }
 
-export function getImportsFromDocument(document: TextDocument, shorthands?: Map<string, string>) {
+export function getAvailableObjectsFromDocument(document: TextDocument, shorthands?: Map<string, string>): OmtAvailableObjects {
     const documentText = document.getText();
     const yamlDocument = parse(document.getText());
-    const omtImports: OmtImport[] = [];
-    const localDefinedObject: OmtLocalObject[] = [];
+    const availableImports: OmtImport[] = [];
+    const definedObjects: OmtLocalObject[] = [];
     if ("import" in yamlDocument && shorthands) {
         const documentImports = yamlDocument["import"];
         const importUrls = Object.keys(documentImports);
@@ -227,34 +221,34 @@ export function getImportsFromDocument(document: TextDocument, shorthands?: Map<
             const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
             if (uriMatchResult) {
                 imports.forEach(importName => {
-                    omtImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
+                    availableImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
                 });
             }
         });
     }
     if ("queries" in yamlDocument) {
-        localDefinedObject.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
+        definedObjects.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
     }
     if ("commands" in yamlDocument) {
-        localDefinedObject.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
+        definedObjects.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
     }
     if ("model" in yamlDocument) {
         const modelEntries = yamlDocument["model"];
-        localDefinedObject.push(...findModelEntries(modelEntries, documentText));
+        definedObjects.push(...findModelEntries(modelEntries, documentText));
         const keys = Object.keys(modelEntries);
         keys.forEach(key => {
             const entry = modelEntries[key];
 
             if ("commands" in entry) {
-                localDefinedObject.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
+                definedObjects.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
             }
 
             if ("queries" in entry) {
-                localDefinedObject.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
+                definedObjects.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
             }
         });
     }
-    return { omtImports, localDefinedObject };
+    return { availableImports, definedObjects };
 }
 
 function findModelEntries(modelEntries: any, documentText: string): OmtLocalObject[] {

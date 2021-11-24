@@ -43,16 +43,22 @@ export type DeclaredImportLinkData = {
 }
 
 /**
- * Object containing the information for an OMT file:
+ * Object containing the information for an OMT file, extending the OmtAvailableObjects with:
  * - documentLinks, paths used in imports that link to another file
- * - definedObjects, a list of defined objects in the file
  * - calledObjects, a list of used objects
+ */
+export interface OmtDocumentInformation extends OmtAvailableObjects {
+    documentLinks: DocumentLink[];
+    calledObjects: OmtLocalObject[];
+}
+
+/**
+ * Object containing the information for available objects that can be reused:
+ * - definedObjects, a list of defined objects in the file
  * - availableImports, a list of imported objects
  */
-export interface OmtDocumentInformation {
-    documentLinks: DocumentLink[];
+export interface OmtAvailableObjects {
     definedObjects: OmtLocalObject[];
-    calledObjects: OmtLocalObject[];
     availableImports: OmtImport[];
 }
 

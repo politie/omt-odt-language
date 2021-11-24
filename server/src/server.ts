@@ -8,7 +8,6 @@ import {
     InitializeResult,
     DocumentLinkParams,
     DocumentLink,
-    DefinitionParams,
     Location,
     Range,
 } from 'vscode-languageserver/node';
@@ -19,7 +18,7 @@ import {
 import OmtDocumentInformationProvider from './omtDocumentInformationProvider';
 import { WorkspaceLookup } from './workspaceLookup';
 import * as fs from "fs";
-import { OmtDocumentInformation, OmtLocalObject } from './types';
+import { OmtAvailableObjects, OmtDocumentInformation, OmtLocalObject } from './types';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -101,11 +100,11 @@ connection.onDefinition((params) => {
     const locations: Location[] = [];
     const document = documents.get(params.textDocument.uri);
     if (document) {
-        const links = getOmtDocumentResult(document);
+        const availableObjects = getOmtDocumentResult(document);
 
-        links.calledObjects.forEach(link => {
+        availableObjects.calledObjects.forEach(link => {
             if (positionInRange(params.position, link.range)) {
-                locations.push(...getLocationsForLink(params, links, link));
+                locations.push(...getLocationsForLink(params.textDocument.uri, availableObjects, link));
             }
         });
     }
@@ -113,35 +112,25 @@ connection.onDefinition((params) => {
     return locations;
 });
 
-function getLocationsForLink(params: DefinitionParams, links: OmtDocumentInformation, link: OmtLocalObject): Location[] {
+function getLocationsForLink(linkUrl: string, availableObjects: OmtAvailableObjects, link: OmtLocalObject): Location[] {
     const locations: Location[] = []
-    links.definedObjects.filter(x => x.name === link.name).forEach(t => {
-        locations.push(Location.create(params.textDocument.uri, t.range));
+    availableObjects.definedObjects.filter(x => x.name === link.name).forEach(t => {
+        locations.push(Location.create(linkUrl, t.range));
     });
-    links.availableImports.filter(x => x.name === link.name).forEach(i => {
-        const linkUrl = `${i.fullUrl}`;
-        locations.push(...findDefinition(link, linkUrl));
+    availableObjects.availableImports.filter(x => x.name === link.name).forEach(i => {
+        const newLinkUrl = `${i.fullUrl}`;
+        locations.push(...getLocationsInImportedFile(newLinkUrl, link));
     });
     return locations;
 }
 
-function findDefinition(link: OmtLocalObject, linkUrl: string): Location[] {
-    const locations: Location[] = [];
+function getLocationsInImportedFile(linkUrl: string, link: OmtLocalObject): Location[] {
     const otherDocument = TextDocument.create(linkUrl, 'omt', 1, fs.readFileSync(linkUrl).toString());
     if (otherDocument) {
-        const result = omtDocumentInformationProvider.provideImportsFromDocument(otherDocument);
-        const definedObject = result.localDefinedObject.find(x => x.name == link.name);
-        if (definedObject) {
-            locations.push(Location.create(linkUrl, definedObject.range));
-        }
-        else {
-            const importedObject = result.omtImports.find(x => x.name == link.name);
-            if (importedObject) {
-                return findDefinition(link, importedObject.fullUrl);
-            }
-        }
+        const availableObjects = omtDocumentInformationProvider.provideAvailableObjectsFromDocument(otherDocument);
+        return getLocationsForLink(linkUrl, availableObjects, link);
     }
-    return locations;
+    return [];
 }
 
 /**
