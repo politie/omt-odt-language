@@ -273,7 +273,7 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
  * @param documentText the text of the document, used to find the line numbers
  * @returns A list of OmtLocalObject with the range where the declared object can be found in the document
  */
-function findModelEntries(modelEntries: Object, documentText: string): OmtLocalObject[] {
+function findModelEntries(modelEntries: Record<string, unknown>, documentText: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
     const keys = Object.keys(modelEntries);
     keys.forEach(key => {
@@ -392,5 +392,6 @@ export const exportedForTesting = {
     getReferencesToOtherFilesForCode,
     getUriMatch,
     findDefinedObjects,
+    findModelEntries,
     findRangeWithRegex,
 }

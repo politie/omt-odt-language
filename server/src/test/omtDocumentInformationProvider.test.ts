@@ -8,6 +8,7 @@ import OMTLinkProvider, { exportedForTesting } from '../omtDocumentInformationPr
 import { WorkspaceLookup } from '../workspaceLookup';
 import * as sinonChai from 'sinon-chai';
 import { OmtImport, OmtLocalObject } from '../types';
+import { parse } from 'yaml';
 use(sinonChai);
 
 type Case = {
@@ -281,6 +282,32 @@ describe('OMTLinkProvider', () => {
 
             // ASSERT
             expect(results.length).to.equal(0);
+        });
+    });
+
+    describe('findModelEntries', () => {
+        it('should return correct entries', () => {
+            // ARRANGE
+            const yamlDocument = [
+                "model:",
+                "    testActivity: !Activity",
+                "        dummy: true",
+                "    testProcedure: !Procedure",
+                "        dummy: true",
+            ].join("\n");
+            const parsedDocument = parse(yamlDocument);
+
+            // ACT
+            const results = exportedForTesting.findModelEntries(parsedDocument["model"], yamlDocument);
+
+            // ASSERT
+            expect(results.length).to.equal(2);
+            const resultOne = results[0];
+            expect(resultOne.name).to.equal("testActivity");
+            expect(resultOne.range).to.deep.equal({start: {line: 1, character: 4}, end: {line: 1, character: 16}});
+            const resultTwo = results[1];
+            expect(resultTwo.name).to.equal("testProcedure");
+            expect(resultTwo.range).to.deep.equal({start: {line: 3, character: 4}, end: {line: 3, character: 17}});
         });
     });
 });
