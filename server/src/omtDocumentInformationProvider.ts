@@ -23,14 +23,9 @@ export default class OmtDocumentInformationProvider {
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
     /**
-     * Scan the document for imports and return DocumentLinks for:
-     *  - absolute paths
-     *  - relative paths
-     *  - paths starting with a shorthand ('@shorthand/relativePath')
-     *  - declared imports ('module: moduleName')
-     * For declared imports the target will be undefined.
-     * The declared import links can be resolved using the data and the `resolveLink` function.
+     * Scan the document for imports/declarations/used objects and returns an OmtDocumentInformation object.
      * @param document the document containing OMT
+     * @returns an OmtDocumentInformation object
      */
     provideDocumentInformation(document: TextDocument): OmtDocumentInformation {
         // regular path links, with or without shorthands
@@ -38,6 +33,11 @@ export default class OmtDocumentInformationProvider {
         return this.getOmtDocumentInformation(document, shorthands);
     }
 
+    /**
+     * Scan the document and return the imports and declard objects
+     * @param document the document containing OMT
+     * @returns an OmtAvailableObjects object, containing a list of imported objects and declared objects
+     */
     provideAvailableObjectsFromDocument(document: TextDocument): OmtAvailableObjects {
         const shorthands = this.contextPaths(document);
         return getAvailableObjectsFromDocument(document, shorthands);
@@ -89,6 +89,7 @@ export default class OmtDocumentInformationProvider {
      * Scan the document for imports/declarations/used objects and returns an OmtDocumentInformation object.
      * @param document the OMT file we are scanning
      * @param resolveShorthand function to resolve shorthand annotations at the start of import paths
+     * @returns an OmtDocumentInformation object
      */
     private getOmtDocumentInformation(document: TextDocument, shorthands: Map<string, string>): OmtDocumentInformation {
         console.time('getOmtDocumentInformation for ' + document.uri);
@@ -97,7 +98,7 @@ export default class OmtDocumentInformationProvider {
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
         const documentText = document.getText();
-        let fileImportsResult = undefined;
+        let fileImportsResult;
         try {
             fileImportsResult = getAvailableObjectsFromDocument(document, shorthands);
         }
@@ -141,14 +142,14 @@ export default class OmtDocumentInformationProvider {
                                 }
                             }));
                     }
-                    else {
-                        fileImportsResult && calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
+                    else if (fileImportsResult) {
+                        calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
                     }
                 }
             }
-            else {
-                fileImportsResult && calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
-                fileImportsResult && calledObjects.push(...getLocalLocationsForCode(fileImportsResult.definedObjects, l, line));
+            else if (fileImportsResult) {
+                calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
+                calledObjects.push(...getLocalLocationsForCode(fileImportsResult.definedObjects, l, line));
             }
         }
         console.timeEnd('getOmtDocumentInformation for ' + document.uri);
@@ -192,22 +193,37 @@ function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], l: number, 
     return findUsagesInLine(declaredObjects.map(x => x.name), l, line);
 }
 
-function findUsagesInLine(declaredObjects: string[], l: number, line: string): OmtLocalObject[] {
+/**
+ * A function to find usages of declared objects in a specific line of code 
+ * @param declaredObjects a list of declared objects
+ * @param lineNumber used for creating the Range object
+ * @param line the string in where we going to search for declaredObject
+ * @returns a list of OmtLocalObjects, containing all Ranges (with their names) where declared Objects are being used
+ */
+function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string): OmtLocalObject[] {
     const documentLinks: OmtLocalObject[] = [];
+    const regex = (declaredObject: string) => new RegExp(`${declaredObject}(?=[^a-zA-Z0-9]|$)`);
 
-    declaredObjects.filter(declaredObject => line.includes(declaredObject)).forEach(declaredObject => {
-        const characterIndex = line.search(new RegExp(`${declaredObject}(?=[^a-zA-Z0-9]|$)`)) ?? line.indexOf(declaredObject);
+    declaredObjects.filter(declaredObject => line.match(regex(declaredObject))).forEach(declaredObject => {
+        const characterIndex = line.search(regex(declaredObject));
 
         if (characterIndex >= 0) {
             documentLinks.push({
                 name: declaredObject,
-                range: Range.create({ line: l, character: characterIndex }, { line: l, character: characterIndex + declaredObject.length })
+                range: Range.create({ line: lineNumber, character: characterIndex }, { line: lineNumber, character: characterIndex + declaredObject.length })
             });
         }
     });
     return documentLinks;
 }
 
+
+/**
+ * A function that can be used to retrieve all imported and declared objects (objects available to use)
+ * @param document the TextDocument object
+ * @param shorthands a list of shorthands that should be replaced by a full url
+ * @returns an OmtAvailableObjects object, containing a list of imported objects and declared objects
+ */
 export function getAvailableObjectsFromDocument(document: TextDocument, shorthands?: Map<string, string>): OmtAvailableObjects {
     const documentText = document.getText();
     const yamlDocument = parse(document.getText());
@@ -251,7 +267,13 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
     return { availableImports, definedObjects };
 }
 
-function findModelEntries(modelEntries: any, documentText: string): OmtLocalObject[] {
+/**
+ * A function to get all declared activities/procedures etc.
+ * @param modelEntries the result of yamlDocument["model"]
+ * @param documentText the text of the document, used to find the line numbers
+ * @returns A list of OmtLocalObject with the range where the declared object can be found in the document
+ */
+function findModelEntries(modelEntries: Object, documentText: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
     const keys = Object.keys(modelEntries);
     keys.forEach(key => {
@@ -261,12 +283,18 @@ function findModelEntries(modelEntries: any, documentText: string): OmtLocalObje
     return localDefinedObjects;
 }
 
+/**
+ * A function to get all declared objects in ODT code
+ * @param value a piece of text that contains (multiline) ODT code
+ * @param documentText the text of the document, used to find the line numbers
+ * @param define the thing we define, something like QUERY or COMMAND
+ * @returns A list of OmtLocalObject with the range where the declared object can be found in the document
+ */
 function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
-    const queriesString: any = value;
     const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9]+)`, "gm");
-    const definedQueries: string[] = queriesString.match(queriesRegex);
-    definedQueries.forEach(q => {
+    const definedQueries = value.match(queriesRegex);
+    definedQueries && definedQueries.forEach(q => {
         const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9])`, "gm"))
         localDefinedObjects.push({ name: q, range: rangeForQuery })
     });
@@ -274,6 +302,12 @@ function findDefinedObjects(value: string, documentText: string, define: string)
     return localDefinedObjects;
 }
 
+/**
+ * This function assumes that the regex is found only once in the document, and returns the Range where it can be found.
+ * @param documentText the text of the document, used to find the line numbers
+ * @param regex the regex which we are trying to find
+ * @returns A range where the regex can be found, or an error if the regex is found zero or more than one times.
+ */
 function findRangeWithRegex(documentText: string, regex: RegExp): Range {
     const lines = documentText.split(/\r?\n/);
     const ranges: Range[] = [];
@@ -350,6 +384,9 @@ function createDocumentLink(line: number, start: number, length: number, uri: st
     return DocumentLink.create(Range.create(from, to), uri, data);
 }
 
+/**
+ * Used to export some functions that will be tested (but not exported for usage)
+ */
 export const exportedForTesting = {
     getLocalLocationsForCode,
     getReferencesToOtherFilesForCode,
