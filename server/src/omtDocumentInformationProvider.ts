@@ -161,12 +161,26 @@ export default class OmtDocumentInformationProvider {
     }
 }
 
-function getReferencesToOtherFilesForCode(fileImports: OmtImport[], l: number, line: string): OmtLocalObject[] {
-    return findUsagesInLine(fileImports.map(x => x.name), l, line);
+/**
+ * A function that returns a list of Ranges where imports (reference to other files) are being used
+ * @param fileImports a list of imports
+ * @param lineNumber used for creating the Range object
+ * @param line the string in where we going to search for used imports
+ * @returns a list of OmtLocalObjects, containing all Ranges (with their names) where declared Objects are being used
+ */
+function getReferencesToOtherFilesForCode(fileImports: OmtImport[], lineNumber: number, line: string): OmtLocalObject[] {
+    return findUsagesInLine(fileImports.map(x => x.name), lineNumber, line);
 }
 
-function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], l: number, line: string): OmtLocalObject[] {
-    return findUsagesInLine(declaredObjects.map(x => x.name), l, line);
+/**
+ * A function that returns a list of Ranges where declared objects within a file are being used
+ * @param declaredObjects a list of declared objects in the file
+ * @param lineNumber used for creating the Range object
+ * @param line the string in where we going to search for used imports
+ * @returns a list of OmtLocalObjects, containing all Ranges (with their names) where declared Objects are being used
+ */
+function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], lineNumber: number, line: string): OmtLocalObject[] {
+    return findUsagesInLine(declaredObjects.map(x => x.name), lineNumber, line);
 }
 
 /**
