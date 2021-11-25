@@ -1,15 +1,14 @@
-import { dirname, isAbsolute, resolve } from 'path';
+import { dirname, resolve } from 'path';
 import { DocumentLink, Position, Range } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
-import { parse } from 'yaml';
 import { YAMLError } from 'yaml/util';
+import { getDiMatch, getUriMatch } from './importMatch';
+import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
 
-const omtUriMatch = /( +["']?)(.*\.omt)/;
-const declaredImportMatch = /( +)(?:module:)(.*):/;
 const importMatch = /^import:/g;
 const otherDeclareMatch = /^(\w+):/g;
 
@@ -162,29 +161,6 @@ export default class OmtDocumentInformationProvider {
     }
 }
 
-function getUriMatch(line: string, document: TextDocument, shorthands: Map<string, string>) {
-    const uriMatch = omtUriMatch.exec(line);
-    if (uriMatch) {
-        // match[0] is the full match inluding the whitespace of match[1]
-        // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
-        // match[2] is the link text, including the @shorthands
-        const link = replaceStart(uriMatch[2].trim(), shorthands);
-        const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
-        return { uriMatch, url };
-    }
-}
-
-function getDiMatch(line: string) {
-    const diMatch = declaredImportMatch.exec(line);
-    if (diMatch) {
-        // match[0] is the full line match including the trailing colon
-        // match[1] is the whitespace prepending the import
-        // match[2] is the module name
-        const declaredImportModule = '' + diMatch[2];
-        return { diMatch, declaredImportModule }
-    }
-}
-
 function getReferencesToOtherFilesForCode(fileImports: OmtImport[], l: number, line: string): OmtLocalObject[] {
     return findUsagesInLine(fileImports.map(x => x.name), l, line);
 }
@@ -217,159 +193,6 @@ function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: s
     return documentLinks;
 }
 
-
-/**
- * A function that can be used to retrieve all imported and declared objects (objects available to use)
- * @param document the TextDocument object
- * @param shorthands a list of shorthands that should be replaced by a full url
- * @returns an OmtAvailableObjects object, containing a list of imported objects and declared objects
- */
-export function getAvailableObjectsFromDocument(document: TextDocument, shorthands?: Map<string, string>): OmtAvailableObjects {
-    const documentText = document.getText();
-    const yamlDocument = parse(document.getText());
-    const availableImports: OmtImport[] = [];
-    const definedObjects: OmtLocalObject[] = [];
-    if ("import" in yamlDocument && shorthands) {
-        const documentImports = yamlDocument["import"];
-        const importUrls = Object.keys(documentImports);
-        importUrls.forEach(importUrl => {
-            const imports: string[] = documentImports[importUrl];
-            const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
-            if (uriMatchResult) {
-                imports.forEach(importName => {
-                    availableImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
-                });
-            }
-        });
-    }
-    if ("queries" in yamlDocument) {
-        definedObjects.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
-    }
-    if ("commands" in yamlDocument) {
-        definedObjects.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
-    }
-    if ("model" in yamlDocument) {
-        const modelEntries = yamlDocument["model"];
-        definedObjects.push(...findModelEntries(modelEntries, documentText));
-        const keys = Object.keys(modelEntries);
-        keys.forEach(key => {
-            const entry = modelEntries[key];
-
-            if ("commands" in entry) {
-                definedObjects.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
-            }
-
-            if ("queries" in entry) {
-                definedObjects.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
-            }
-        });
-    }
-    return { availableImports, definedObjects };
-}
-
-/**
- * A function to get all declared activities/procedures etc.
- * @param modelEntries the result of yamlDocument["model"]
- * @param documentText the text of the document, used to find the line numbers
- * @returns A list of OmtLocalObject with the range where the declared object can be found in the document
- */
-function findModelEntries(modelEntries: Record<string, unknown>, documentText: string): OmtLocalObject[] {
-    const localDefinedObjects: OmtLocalObject[] = [];
-    const keys = Object.keys(modelEntries);
-    keys.forEach(key => {
-        const range = findRangeWithRegex(documentText, new RegExp(`(${key})(?=: !)`));
-        localDefinedObjects.push({ name: key, range });
-    });
-    return localDefinedObjects;
-}
-
-/**
- * A function to get all declared objects in ODT code
- * @param value a piece of text that contains (multiline) ODT code
- * @param documentText the text of the document, used to find the line numbers
- * @param define the thing we define, something like QUERY or COMMAND
- * @returns A list of OmtLocalObject with the range where the declared object can be found in the document
- */
-function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
-    const localDefinedObjects: OmtLocalObject[] = [];
-    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9]+)`, "gm");
-    const definedQueries = value.match(queriesRegex);
-    definedQueries && definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9])`, "gm"))
-        localDefinedObjects.push({ name: q, range: rangeForQuery })
-    });
-
-    return localDefinedObjects;
-}
-
-/**
- * This function assumes that the regex is found only once in the document, and returns the Range where it can be found.
- * @param documentText the text of the document, used to find the line numbers
- * @param regex the regex which we are trying to find
- * @returns A range where the regex can be found, or an error if the regex is found zero or more than one times.
- */
-function findRangeWithRegex(documentText: string, regex: RegExp): Range {
-    const lines = documentText.split(/\r?\n/);
-    const ranges: Range[] = [];
-
-    lines.forEach((line, i) => {
-        const result = line.match(regex);
-        if (result) {
-            const name = result[0];
-            const index = line.indexOf(name);
-            ranges.push(Range.create({ line: i, character: index }, { line: i, character: index + name.length }));
-        }
-    });
-
-    if (ranges.length !== 1) {
-        throw new Error(`${ranges.length} results found for ${regex}, expected only one.`);
-    }
-
-    return ranges[0];
-}
-
-/**
- * Makes an absolute path based on a link relative to a document
- * @param document The document the link is relative to
- * @param link a relative path from the document
- */
-function toAbsolutePath(document: TextDocument, link: string): string {
-    return resolve(dirpath(document.uri), link)
-}
-
-/**
- * Convert the uri to a path to a directory and make sure it does not start with `file://`
- * @param uri path to be made into a dirpath
- */
-function dirpath(uri: string): string {
-    uri = dirname(uri);
-    return uri.startsWith('file:') ? uri.substr(7) : uri;
-}
-
-/**
- * Replace the start of the uri with the mapped value if it starts with a shorthand, otherwise returns the same path.
- * @param uri the path that may start with a shorthand
- * @param shorthands a mapping of shorthands to the paths they represent
- */
-function replaceStart(uri: string, shorthands: Map<string, string>): string {
-    shorthands.forEach((value, key) => {
-        if (uri.startsWith(key)) {
-            uri = uri.substr(key.length);
-            uri = resolve(value.substr(0, osNeutralLastSlashIndex(value)), '.' + uri);
-        }
-    });
-    return uri;
-}
-
-/**
- * Find the last index of the slash*.
- * @param path path we want to find the last slash of
- */
-function osNeutralLastSlashIndex(path: string): number {
-    const unixIndex = path.lastIndexOf('/*');
-    return unixIndex >= 0 ? unixIndex : path.lastIndexOf('\\*');
-}
-
 /**
  * Create a DocumentLink linking to another document or to be resolved later.
  * @param line the line number within the document where the link should be
@@ -390,8 +213,4 @@ function createDocumentLink(line: number, start: number, length: number, uri: st
 export const exportedForTesting = {
     getLocalLocationsForCode,
     getReferencesToOtherFilesForCode,
-    getUriMatch,
-    findDefinedObjects,
-    findModelEntries,
-    findRangeWithRegex,
 }
