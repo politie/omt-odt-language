@@ -97,7 +97,7 @@ export default class OmtDocumentInformationProvider {
         // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
         let isScanning = false;
         const documentText = document.getText();
-        let fileImportsResult = undefined;
+        let fileImportsResult;
         try {
             fileImportsResult = getAvailableObjectsFromDocument(document, shorthands);
         }
