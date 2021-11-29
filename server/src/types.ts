@@ -25,24 +25,6 @@ export type CheckTextResult = {
 };
 
 /**
- * Type guard for `DeclaredImportLinkData`
- * @param data object that could be `DeclaredImportLinkData`
- */
-export function isDeclaredImportLinkData(data: unknown): data is DeclaredImportLinkData {
-    const linkData = data as DeclaredImportLinkData;
-    return linkData.declaredImport?.module !== undefined;
-}
-
-/**
- * Data nescesary to resolve a declared import link
- */
-export type DeclaredImportLinkData = {
-    declaredImport: {
-        module: string
-    }
-}
-
-/**
  * Object containing the information for an OMT file, extending the OmtAvailableObjects with:
  * - documentLinks, paths used in imports that link to another file
  * - calledObjects, a list of used objects

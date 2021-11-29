@@ -4,13 +4,11 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
-import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
+import { OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { YAMLError } from 'yaml/util';
-import { getDiMatch, getUriMatch } from './importMatch';
 import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
 
-const importMatch = /^import:/g;
-const otherDeclareMatch = /^(\w+):/g;
+const newLine = /\r?\n/;
 
 /**
  * Provides DocumentLinks for the imports of an OMT file.
@@ -40,18 +38,6 @@ export default class OmtDocumentInformationProvider {
     provideAvailableObjectsFromDocument(document: TextDocument): OmtAvailableObjects {
         const shorthands = this.contextPaths(document);
         return getAvailableObjectsFromDocument(document, shorthands);
-    }
-
-    /**
-     * Resolve the target of a DocumentLink using its data.
-     * @returns A string if the data could be related to a watched link target, such as a module declaration.
-     * Returns undefined when unable to resolve the link with the specified data.
-     * @param data the data from a document link
-     */
-    resolveLink(data?: DeclaredImportLinkData | unknown) {
-        if (data && isDeclaredImportLinkData(data)) {
-            return this.workspaceLookup.getModulePath(data.declaredImport.module);
-        }
     }
 
     /**
@@ -94,10 +80,9 @@ export default class OmtDocumentInformationProvider {
         console.time('getOmtDocumentInformation for ' + document.uri);
         const documentLinks: DocumentLink[] = [];
         const calledObjects: OmtLocalObject[] = [];
-        // check all lines between 'import:' and another '(\w+):' (without any preceding spaces)
-        let isScanning = false;
+
         const documentText = document.getText();
-        let fileImportsResult;
+        let fileImportsResult: OmtAvailableObjects | undefined;
         try {
             fileImportsResult = getAvailableObjectsFromDocument(document, shorthands);
         }
@@ -109,55 +94,27 @@ export default class OmtDocumentInformationProvider {
                 throw error;
             }
         }
-        const lines = documentText.split(/\r?\n/);
-        for (let l = 0; l <= lines.length - 1; l++) {
-            const line = lines[l];
-            if (importMatch.exec(line)) {
-                isScanning = true; // start scannning lines for import paths after we enter an import block
-            } else if (isScanning) {
-                if (otherDeclareMatch.exec(line)) {
-                    isScanning = false;
-                } else {
-                    const uriMatchResult = getUriMatch(line, document, shorthands);
-                    const diMatchResult = getDiMatch(line);
-                    if (uriMatchResult) {
-                        // match[0] is the full match inluding the whitespace of match[1]
-                        // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
-                        // match[2] is the link text, including the @shorthands
-                        documentLinks.push(
-                            createDocumentLink(l, uriMatchResult.uriMatch[1].length, uriMatchResult.uriMatch[2].length, uriMatchResult.url));
-                    }
-                    else if (diMatchResult) {
-                        // match[0] is the full line match including the trailing colon
-                        // match[1] is the whitespace prepending the import
-                        // match[2] is the module name
-                        // because the server may not be done scanning the workspace when this is called
-                        // we will resolve the link after the user clicked on it by using the resolveDocumentLink functionality
-                        // the url will be undefined and we pass the declared import information as data with the link
-                        documentLinks.push(
-                            createDocumentLink(l, diMatchResult.diMatch[1].length, diMatchResult.diMatch[0].length - diMatchResult.diMatch[1].length, undefined, {
-                                declaredImport: {
-                                    module: diMatchResult.declaredImportModule,
-                                }
-                            }));
-                    }
-                    else if (fileImportsResult) {
-                        calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
-                    }
-                }
-            }
-            else if (fileImportsResult) {
-                calledObjects.push(...getReferencesToOtherFilesForCode(fileImportsResult.availableImports, l, line));
-                calledObjects.push(...getLocalLocationsForCode(fileImportsResult.definedObjects, l, line));
-            }
+        if (fileImportsResult) {
+            const lines = documentText.split(newLine);
+            const availableImports = fileImportsResult.availableImports;
+            const definedObjects = fileImportsResult.definedObjects;
+            lines.forEach((line, lineNumber) => {
+                calledObjects.push(...getReferencesToOtherFilesForCode(availableImports, lineNumber, line));
+                calledObjects.push(...getLocalLocationsForCode(definedObjects, lineNumber, line));
+                documentLinks.push(...getDocumentImportLinks(availableImports, lineNumber, line));
+            });
+            console.timeEnd('getOmtDocumentInformation for ' + document.uri);
+            return {
+                documentLinks,
+                definedObjects: fileImportsResult.definedObjects ?? [],
+                calledObjects,
+                availableImports: fileImportsResult.availableImports ?? []
+            };
         }
-        console.timeEnd('getOmtDocumentInformation for ' + document.uri);
-        return {
-            documentLinks,
-            definedObjects: fileImportsResult?.definedObjects ?? [],
-            calledObjects,
-            availableImports: fileImportsResult?.availableImports ?? []
-        };
+        else {
+            console.timeEnd('getOmtDocumentInformation with YAML errors for ' + document.uri);
+            return { documentLinks: [], definedObjects: [], calledObjects: [], availableImports: [] };
+        }
     }
 }
 
@@ -181,6 +138,24 @@ function getReferencesToOtherFilesForCode(fileImports: OmtImport[], lineNumber: 
  */
 function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], lineNumber: number, line: string): OmtLocalObject[] {
     return findUsagesInLine(declaredObjects.map(x => x.name), lineNumber, line);
+}
+
+/**
+ * A function that returns a list of DocumentLinks created for each import URL
+ * @param fileImports a list of imports
+ * @param lineNumber used for creating the Range object
+ * @param line the string in where we going to search for used imports
+ * @returns a list of DocumentLinks
+ */
+function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, line: string): DocumentLink[] {
+    const imports = fileImports.map(x => x.url);
+    const results = findUsagesInLine(imports, lineNumber, line);
+    return results.map(omtLocalObject => createDocumentLink(
+        lineNumber,
+        omtLocalObject.range.start.character,
+        omtLocalObject.name.length,
+        fileImports.find(x => omtLocalObject.name === x.url)?.fullUrl
+    ));
 }
 
 /**
@@ -225,6 +200,7 @@ function createDocumentLink(line: number, start: number, length: number, uri: st
  * Used to export some functions that will be tested (but not exported for usage)
  */
 export const exportedForTesting = {
+    getDocumentImportLinks,
     getLocalLocationsForCode,
     getReferencesToOtherFilesForCode,
 }

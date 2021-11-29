@@ -1,30 +1,9 @@
 import { dirname, isAbsolute, resolve } from 'path';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
-const omtUriMatch = /( +["']?)(.*\.omt)/;
-const declaredImportMatch = /( +)(?:module:)(.*):/;
-
-export function getUriMatch(line: string, document: TextDocument, shorthands: Map<string, string>) {
-    const uriMatch = omtUriMatch.exec(line);
-    if (uriMatch) {
-        // match[0] is the full match inluding the whitespace of match[1]
-        // match[1] is the whitespace and optional quotes. both of which we don't want to include in the linked text
-        // match[2] is the link text, including the @shorthands
-        const link = replaceStart(uriMatch[2].trim(), shorthands);
-        const url = isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
-        return { uriMatch, url };
-    }
-}
-
-export function getDiMatch(line: string) {
-    const diMatch = declaredImportMatch.exec(line);
-    if (diMatch) {
-        // match[0] is the full line match including the trailing colon
-        // match[1] is the whitespace prepending the import
-        // match[2] is the module name
-        const declaredImportModule = '' + diMatch[2];
-        return { diMatch, declaredImportModule }
-    }
+export function getUriMatch(uri: string, document: TextDocument, shorthands: Map<string, string>): string {
+    const link = replaceStart(uri.trim(), shorthands);
+    return isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
 }
 
 /**

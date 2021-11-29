@@ -21,11 +21,9 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
         importUrls.forEach(importUrl => {
             const imports: string[] = documentImports[importUrl];
             const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
-            if (uriMatchResult) {
-                imports.forEach(importName => {
-                    availableImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult.url });
-                });
-            }
+            imports.forEach(importName => {
+                availableImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult });
+            });
         });
     }
     if ("queries" in yamlDocument) {
