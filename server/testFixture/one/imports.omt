@@ -1,5 +1,5 @@
 import:
-    '../relative.omt':
+    ../relative.omt:
     -   RelativeAction
     '@one/shorthanded.omt':
     -   shorthandAction
