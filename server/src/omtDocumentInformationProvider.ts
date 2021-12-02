@@ -169,7 +169,7 @@ function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: s
     const documentLinks: OmtLocalObject[] = [];
     const regex = (declaredObject: string) => new RegExp(`${declaredObject}(?=[^a-zA-Z0-9]|$)`);
 
-    declaredObjects.filter(declaredObject => line.match(regex(declaredObject))).forEach(declaredObject => {
+    declaredObjects.filter(declaredObject => declaredObject && line.match(regex(declaredObject))).forEach(declaredObject => {
         const characterIndex = line.search(regex(declaredObject));
 
         if (characterIndex >= 0) {

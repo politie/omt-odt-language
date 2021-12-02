@@ -125,7 +125,7 @@ describe('OMTLinkProvider', () => {
     });
 
     describe('getReferencesToOtherFilesForCode', () => {
-        const omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
+        let omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
         const lineNumber = 15;
 
         it('should return correct object', () => {
@@ -146,6 +146,18 @@ describe('OMTLinkProvider', () => {
         it('should return correct object', () => {
             // ARRANGE
             const line = "    @TestActivityTwo();";
+
+            // ACT
+            const results = exportedForTesting.getReferencesToOtherFilesForCode(omtImports, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(0);
+        });
+
+        it('should return no object when name is null', () => {
+            // ARRANGE
+            const line = "    -   $test / pol:omschrijving = null;";
+            omtImports[0].name = null as any;
 
             // ACT
             const results = exportedForTesting.getReferencesToOtherFilesForCode(omtImports, lineNumber, line);
