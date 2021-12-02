@@ -125,7 +125,7 @@ describe('OMTLinkProvider', () => {
     });
 
     describe('getReferencesToOtherFilesForCode', () => {
-        let omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
+        const omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
         const lineNumber = 15;
 
         it('should return correct object', () => {
@@ -157,6 +157,7 @@ describe('OMTLinkProvider', () => {
         it('should return no object when name is null', () => {
             // ARRANGE
             const line = "    -   $test / pol:omschrijving = null;";
+            // eslint-disable-next-line
             omtImports[0].name = null as any;
 
             // ACT
