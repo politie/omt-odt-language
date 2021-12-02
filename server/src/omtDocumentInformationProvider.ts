@@ -112,7 +112,8 @@ export default class OmtDocumentInformationProvider {
             };
         }
         else {
-            console.timeEnd('getOmtDocumentInformation with YAML errors for ' + document.uri);
+            console.timeEnd('getOmtDocumentInformation for ' + document.uri);
+            console.warn(`getOmtDocumentInformation for ${document.uri} failed with YAML errors`);
             return { documentLinks: [], definedObjects: [], calledObjects: [], availableImports: [] };
         }
     }
