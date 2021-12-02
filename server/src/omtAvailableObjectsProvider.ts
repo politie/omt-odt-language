@@ -12,7 +12,7 @@ import { getUriMatch } from './importMatch';
  */
 export function getAvailableObjectsFromDocument(document: TextDocument, shorthands?: Map<string, string>): OmtAvailableObjects {
     const documentText = document.getText();
-    const yamlDocument = parse(document.getText());
+    const yamlDocument = parse(document.getText()) ?? {};
     const availableImports: OmtImport[] = [];
     const definedObjects: OmtLocalObject[] = [];
     if ("import" in yamlDocument && shorthands) {
