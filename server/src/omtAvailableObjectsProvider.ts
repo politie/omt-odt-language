@@ -106,7 +106,7 @@ function findModelEntries(modelEntries: Record<string, unknown>, documentText: s
     const localDefinedObjects: OmtLocalObject[] = [];
     const keys = Object.keys(modelEntries);
     keys.forEach(key => {
-        const range = findRangeWithRegex(documentText, new RegExp(`(${key})(?=: !)`));
+        const range = findRangeWithRegex(documentText, new RegExp(`(?<= +)(${key})(?=: !)`));
         localDefinedObjects.push({ name: key, range });
     });
     return localDefinedObjects;

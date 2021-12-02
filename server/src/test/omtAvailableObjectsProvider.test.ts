@@ -90,9 +90,11 @@ describe('OmtAvailableObjectsProvider', () => {
             // ARRANGE
             const yamlDocument = [
                 "model:",
-                "    testActivity: !Activity",
+                "    TestActivity: !Activity",
                 "        dummy: true",
-                "    testProcedure: !Procedure",
+                "    TestProcedure: !Procedure",
+                "        dummy: true",
+                "    AnotherTestActivity: !Activity",
                 "        dummy: true",
             ].join("\n");
             const parsedDocument = parse(yamlDocument);
@@ -101,13 +103,16 @@ describe('OmtAvailableObjectsProvider', () => {
             const results = exportedForTesting.findModelEntries(parsedDocument["model"], yamlDocument);
 
             // ASSERT
-            expect(results.length).to.equal(2);
+            expect(results.length).to.equal(3);
             const resultOne = results[0];
-            expect(resultOne.name).to.equal("testActivity");
+            expect(resultOne.name).to.equal("TestActivity");
             expect(resultOne.range).to.deep.equal({start: {line: 1, character: 4}, end: {line: 1, character: 16}});
             const resultTwo = results[1];
-            expect(resultTwo.name).to.equal("testProcedure");
+            expect(resultTwo.name).to.equal("TestProcedure");
             expect(resultTwo.range).to.deep.equal({start: {line: 3, character: 4}, end: {line: 3, character: 17}});
+            const resultThree = results[2];
+            expect(resultThree.name).to.equal("AnotherTestActivity");
+            expect(resultThree.range).to.deep.equal({start: {line: 5, character: 4}, end: {line: 5, character: 23}});
         });
     });
 });
