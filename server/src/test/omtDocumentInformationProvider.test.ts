@@ -154,6 +154,17 @@ describe('OMTLinkProvider', () => {
             expect(results.length).to.equal(0);
         });
 
+        it('should return correct object when ending on the same name', () => {
+            // ARRANGE
+            const line = "    @AnotherTestActivity();";
+
+            // ACT
+            const results = exportedForTesting.getReferencesToOtherFilesForCode(omtImports, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(0);
+        });
+
         it('should return no object when name is null', () => {
             // ARRANGE
             const line = "    -   $test / pol:omschrijving = null;";

@@ -168,7 +168,7 @@ function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, li
  */
 function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string): OmtLocalObject[] {
     const documentLinks: OmtLocalObject[] = [];
-    const regex = (declaredObject: string) => new RegExp(`${declaredObject}(?=[^a-zA-Z0-9]|$)`);
+    const regex = (declaredObject: string) => new RegExp(`(?<=[^a-zA-Z0-9]|^)${declaredObject}(?=[^a-zA-Z0-9]|$)`);
 
     declaredObjects.filter(declaredObject => declaredObject && line.match(regex(declaredObject))).forEach(declaredObject => {
         const characterIndex = line.search(regex(declaredObject));
