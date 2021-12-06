@@ -1,8 +1,6 @@
 import:
     ../relative.omt:
     -   RelativeAction
-    '@one/shorthanded.omt':
-    -   shorthandAction
     '@one/quotedShorthand.omt':
     -   quotedShorthandAction
     "@one/doubleQuotedShorthand.omt":

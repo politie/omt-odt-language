@@ -49,11 +49,10 @@ describe('OMTLinkProvider', () => {
         // test uri links with and without shorthands
         const cases: Case[] = [
             { i: 0, line: 1, start: 4, end: 19, target: resolve('testFixture/relative.omt'), should: 'should make a link for a relative path' },
-            { i: 1, line: 3, start: 5, end: 25, target: resolve('testFixture/one/shorthanded.omt'), should: 'should recognize a shorthand from the tsconfig in current project folder' },
-            { i: 2, line: 5, start: 5, end: 29, target: resolve('testFixture/one/quotedShorthand.omt'), should: 'should ignore quotes 1' },
-            { i: 3, line: 7, start: 5, end: 35, target: resolve('testFixture/one/doubleQuotedShorthand.omt'), should: 'should ignore quotes 2' },
-            { i: 4, line: 9, start: 5, end: 32, target: resolve('testFixture/one/@two/siblingShorthanded.omt'), should: 'should not ignore a shorthand from a sibling path' },
-            { i: 5, line: 11, start: 5, end: 28, target: resolve('testFixture/three/parentPathed.omt'), should: 'should recognize a shorthand from the tsconfig in a parent project' },
+            { i: 1, line: 3, start: 5, end: 29, target: resolve('testFixture/one/quotedShorthand.omt'), should: 'should ignore quotes 1' },
+            { i: 2, line: 5, start: 5, end: 35, target: resolve('testFixture/one/doubleQuotedShorthand.omt'), should: 'should ignore quotes 2' },
+            { i: 3, line: 7, start: 5, end: 32, target: resolve('testFixture/one/@two/siblingShorthanded.omt'), should: 'should not ignore a shorthand from a sibling path' },
+            { i: 4, line: 9, start: 5, end: 28, target: resolve('testFixture/three/parentPathed.omt'), should: 'should recognize a shorthand from the tsconfig in a parent project' },
         ];
 
         // test all cases
