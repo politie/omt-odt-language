@@ -39,19 +39,6 @@
             "             ${0:@LOG('snippet');}"
         ]
     },
-    "Declared imports": {
-        "prefix": "declare",
-        "description": "Declare modules with their imports.\n\nUse in OMT modules only.",
-        "body": [
-            "declare:",
-            "    ${1:ModuleName}:",
-            "        ${2:ThingToDeclare}:",
-            "            type: ${3|Activity,Command,Procedure|}",
-            "            params:",
-            "            -   ${4:primitive type or prefixed IRI}",
-            "            returns: ${0:primitive type or prefixed IRI}"
-        ]
-    },
     "Imports": {
         "prefix": "import",
         "description": "Import definitions from another OMT file and/or module.",

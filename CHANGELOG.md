@@ -7,6 +7,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.9.0] - 2021-12-06
+
+### Added
+
+- Implemented Go to Definition
+
+### Removed
+
+- OMT Declared import support
+
 ## [2.8.8] - 2021-11-23
 
 ### Fixed
