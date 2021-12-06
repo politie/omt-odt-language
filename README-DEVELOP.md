@@ -55,7 +55,7 @@ by the extension in `/client`. The features currently implemented are:
   - Declared OMT imports as empty paths with data to be resolved
 - Go to Definition
   - Works for imported and declared objects
-  - Based on text, 
+  - Based on text
 
 ### The `snippets` folder
 
