@@ -60,3 +60,21 @@ export interface OmtImport {
     url: string;
     fullUrl: string;
 }
+
+/**
+ * Type guard for `DeclaredImportLinkData`
+ * @param data object that could be `DeclaredImportLinkData`
+ */
+export function isDeclaredImportLinkData(data: unknown): data is DeclaredImportLinkData {
+    const linkData = data as DeclaredImportLinkData;
+    return linkData.declaredImport?.module !== undefined;
+}
+
+/**
+ * Data nescesary to resolve a declared import link
+ */
+export type DeclaredImportLinkData = {
+    declaredImport: {
+        module: string
+    }
+}

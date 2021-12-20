@@ -1,4 +1,6 @@
 import:
+    module:Declared:
+    -   DeclaredQuery
     ../relative.omt:
     -   RelativeAction
     '@one/quotedShorthand.omt':

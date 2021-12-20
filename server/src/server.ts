@@ -9,6 +9,7 @@ import {
     DocumentLinkParams,
     Location,
     Range,
+    DocumentLink,
 } from 'vscode-languageserver/node';
 import {
     Position,
@@ -47,7 +48,7 @@ connection.onInitialize((params: InitializeParams) => {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
             definitionProvider: true,
-            documentLinkProvider: { resolveProvider: false },
+            documentLinkProvider: { resolveProvider: true },
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -75,6 +76,7 @@ connection.onInitialized(() => {
     }
     if (hasDocumentLinkCapabilities) {
         connection.onDocumentLinks(documentLinksHandler);
+        connection.onDocumentLinkResolve(documentLinkResolve);
     }
 });
 
@@ -199,6 +201,19 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
     } else {
         return undefined;
     }
+}
+
+/**
+ * called by the client when a link target was empty.
+ * it will try and resolve it using the data on the link.
+ * @param link a documenet link without a target
+ */
+const documentLinkResolve = (link: DocumentLink) => {
+    shutdownCheck();
+    // the data would have been set during a call to `documentLinksHandler` when the document was opened
+    // usually because it would be less efficient to resolve the link at that time.
+    link.target = omtDocumentInformationProvider.resolveLink(link.data);
+    return link;
 }
 
 // Make the text document manager listen on the connection
