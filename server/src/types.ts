@@ -67,7 +67,7 @@ export interface OmtImport {
  */
 export function isDeclaredImportLinkData(data: unknown): data is DeclaredImportLinkData {
     const linkData = data as DeclaredImportLinkData;
-    return linkData.declaredImport?.module !== undefined;
+    return typeof linkData.declaredImport?.module === 'string';
 }
 
 /**
