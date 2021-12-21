@@ -46,7 +46,7 @@
             "declare:",
             "    ${1:ModuleName}:",
             "        ${2:ThingToDeclare}:",
-            "            type: ${3|Activity,Command,Procedure|}",
+            "            type: ${3|Activity,Command,Procedure,Query|}",
             "            params:",
             "            -   ${4:primitive type or prefixed IRI}",
             "            returns: ${0:primitive type or prefixed IRI}"

@@ -189,7 +189,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "match": "^ +(type): +(Activity|Command|Procedure)(.*)",
+                    "match": "^ +(type): +(Activity|Command|Procedure|Query)(.*)",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "name": "support.type.omt" },
