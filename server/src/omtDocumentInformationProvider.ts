@@ -102,8 +102,7 @@ export default class OmtDocumentInformationProvider {
         catch (error) {
             if (error instanceof YAMLError) {
                 console.log(error);
-            }
-            else {
+            } else {
                 throw error;
             }
         }
@@ -123,8 +122,7 @@ export default class OmtDocumentInformationProvider {
                 calledObjects,
                 availableImports: fileImportsResult.availableImports ?? []
             };
-        }
-        else {
+        } else {
             console.timeEnd('getOmtDocumentInformation for ' + document.uri);
             console.warn(`getOmtDocumentInformation for ${document.uri} failed with YAML errors`);
             return { documentLinks: [], definedObjects: [], calledObjects: [], availableImports: [] };
@@ -214,8 +212,7 @@ function createDocumentLink(line: number, omtLocalObject: OmtLocalObject, uri: s
                 module: declaredImportModule
             }
         });
-    }
-    else {
+    } else {
         return DocumentLink.create(Range.create(from, to), uri, data);
     }
 }
