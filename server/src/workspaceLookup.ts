@@ -113,8 +113,7 @@ export class WorkspaceLookup {
             const message = `folder '${folder.uri}' was already added`;
             console.error(message);
             return Promise.reject(message);
-        }
-        else {
+        } else {
             this.folders.set(folder.uri, folder);
             return this.scanFolder(folder);
         }

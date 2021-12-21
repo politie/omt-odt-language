@@ -4,9 +4,10 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
-import { OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
+import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { YAMLError } from 'yaml/util';
 import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
+import { getDiMatch } from './importMatch';
 
 const newLine = /\r?\n/;
 
@@ -38,6 +39,18 @@ export default class OmtDocumentInformationProvider {
     provideAvailableObjectsFromDocument(document: TextDocument): OmtAvailableObjects {
         const shorthands = this.contextPaths(document);
         return getAvailableObjectsFromDocument(document, shorthands);
+    }
+
+    /**
+     * Resolve the target of a DocumentLink using its data.
+     * @returns A string if the data could be related to a watched link target, such as a module declaration.
+     * Returns undefined when unable to resolve the link with the specified data.
+     * @param data the data from a document link
+     */
+    resolveLink(data?: DeclaredImportLinkData | unknown) {
+        if (data && isDeclaredImportLinkData(data)) {
+            return this.workspaceLookup.getModulePath(data.declaredImport.module);
+        }
     }
 
     /**
@@ -89,8 +102,7 @@ export default class OmtDocumentInformationProvider {
         catch (error) {
             if (error instanceof YAMLError) {
                 console.log(error);
-            }
-            else {
+            } else {
                 throw error;
             }
         }
@@ -110,8 +122,7 @@ export default class OmtDocumentInformationProvider {
                 calledObjects,
                 availableImports: fileImportsResult.availableImports ?? []
             };
-        }
-        else {
+        } else {
             console.timeEnd('getOmtDocumentInformation for ' + document.uri);
             console.warn(`getOmtDocumentInformation for ${document.uri} failed with YAML errors`);
             return { documentLinks: [], definedObjects: [], calledObjects: [], availableImports: [] };
@@ -153,8 +164,7 @@ function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, li
     const results = findUsagesInLine(imports, lineNumber, line);
     return results.map(omtLocalObject => createDocumentLink(
         lineNumber,
-        omtLocalObject.range.start.character,
-        omtLocalObject.name.length,
+        omtLocalObject,
         fileImports.find(x => omtLocalObject.name === x.url)?.fullUrl
     ));
 }
@@ -186,15 +196,25 @@ function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: s
 /**
  * Create a DocumentLink linking to another document or to be resolved later.
  * @param line the line number within the document where the link should be
- * @param start the start position on the line
- * @param length the length of the text representing the link
+ * @param omtLocalObject the object where the link will be placed
  * @param uri the path to the document. leave undefined if the link will be resolved using the resolveDocumentLink request
  * @param data the data passed with the link when resolving it with the resolveDocumentLink request
  */
-function createDocumentLink(line: number, start: number, length: number, uri: string | undefined, data?: unknown): DocumentLink {
+function createDocumentLink(line: number, omtLocalObject: OmtLocalObject, uri: string | undefined, data?: unknown): DocumentLink {
+    const start = omtLocalObject.range.start.character;
+    const length = omtLocalObject.name.length;
     const from = Position.create(line, start);
     const to = Position.create(line, start + length);
-    return DocumentLink.create(Range.create(from, to), uri, data);
+    const declaredImportModule = getDiMatch(omtLocalObject.name);
+    if (declaredImportModule) {
+        return DocumentLink.create(Range.create(from, to), undefined, {
+            declaredImport: {
+                module: declaredImportModule
+            }
+        });
+    } else {
+        return DocumentLink.create(Range.create(from, to), uri, data);
+    }
 }
 
 /**

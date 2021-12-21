@@ -6,6 +6,15 @@ export function getUriMatch(uri: string, document: TextDocument, shorthands: Map
     return isAbsolute(link) ? resolve(document.uri, link) : toAbsolutePath(document, link);
 }
 
+export function getDiMatch(uri: string): string | undefined {
+    const declaredImportMatch = /(?:module:)(.*)/;
+    const diMatch = declaredImportMatch.exec(uri);
+    if (diMatch) {
+        return diMatch[1];
+    }
+    return undefined;
+}
+
 /**
  * Replace the start of the uri with the mapped value if it starts with a shorthand, otherwise returns the same path.
  * @param uri the path that may start with a shorthand

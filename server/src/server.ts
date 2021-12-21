@@ -9,6 +9,7 @@ import {
     DocumentLinkParams,
     Location,
     Range,
+    DocumentLink,
 } from 'vscode-languageserver/node';
 import {
     Position,
@@ -18,6 +19,7 @@ import OmtDocumentInformationProvider from './omtDocumentInformationProvider';
 import { WorkspaceLookup } from './workspaceLookup';
 import * as fs from "fs";
 import { OmtAvailableObjects, OmtDocumentInformation, OmtLocalObject } from './types';
+import { getDiMatch } from './importMatch';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -47,7 +49,7 @@ connection.onInitialize((params: InitializeParams) => {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
             definitionProvider: true,
-            documentLinkProvider: { resolveProvider: false },
+            documentLinkProvider: { resolveProvider: true },
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -75,6 +77,7 @@ connection.onInitialized(() => {
     }
     if (hasDocumentLinkCapabilities) {
         connection.onDocumentLinks(documentLinksHandler);
+        connection.onDocumentLinkResolve(documentLinkResolve);
     }
 });
 
@@ -115,7 +118,17 @@ function getLocationsForLink(linkUrl: string, availableObjects: OmtAvailableObje
     });
     availableObjects.availableImports.filter(x => x.name === link.name).forEach(i => {
         const newLinkUrl = `${i.fullUrl}`;
-        locations.push(...getLocationsInImportedFile(newLinkUrl, link));
+        const declaredImportModule = getDiMatch(i.url);
+        if (declaredImportModule) {
+            const url = omtDocumentInformationProvider.resolveLink({
+                declaredImport: {
+                    module: declaredImportModule
+                }
+            });
+            url && locations.push(...getLocationsInImportedFile(url, link));
+        } else {
+            locations.push(...getLocationsInImportedFile(newLinkUrl, link));
+        }
     });
     return locations;
 }
@@ -199,6 +212,19 @@ const documentLinksHandler = (params: DocumentLinkParams) => {
     } else {
         return undefined;
     }
+}
+
+/**
+ * called by the client when a link target was empty.
+ * it will try and resolve it using the data on the link.
+ * @param link a documenet link without a target
+ */
+const documentLinkResolve = (link: DocumentLink) => {
+    shutdownCheck();
+    // the data would have been set during a call to `documentLinksHandler` when the document was opened
+    // usually because it would be less efficient to resolve the link at that time.
+    link.target = omtDocumentInformationProvider.resolveLink(link.data);
+    return link;
 }
 
 // Make the text document manager listen on the connection
