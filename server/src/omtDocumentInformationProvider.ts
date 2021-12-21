@@ -7,6 +7,7 @@ import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { YAMLError } from 'yaml/util';
 import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
+import { getDiMatch } from './importMatch';
 
 const newLine = /\r?\n/;
 
@@ -206,10 +207,8 @@ function createDocumentLink(line: number, omtLocalObject: OmtLocalObject, uri: s
     const length = omtLocalObject.name.length;
     const from = Position.create(line, start);
     const to = Position.create(line, start + length);
-    const declaredImportMatch = /(?:module:)(.*)/;
-    const diMatch = declaredImportMatch.exec(omtLocalObject.name);
-    if (diMatch) {
-        const declaredImportModule = '' + diMatch[1];
+    const declaredImportModule = getDiMatch(omtLocalObject.name);
+    if (declaredImportModule) {
         return DocumentLink.create(Range.create(from, to), undefined, {
             declaredImport: {
                 module: declaredImportModule

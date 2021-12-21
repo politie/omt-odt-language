@@ -19,6 +19,7 @@ import OmtDocumentInformationProvider from './omtDocumentInformationProvider';
 import { WorkspaceLookup } from './workspaceLookup';
 import * as fs from "fs";
 import { OmtAvailableObjects, OmtDocumentInformation, OmtLocalObject } from './types';
+import { getDiMatch } from './importMatch';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -117,7 +118,17 @@ function getLocationsForLink(linkUrl: string, availableObjects: OmtAvailableObje
     });
     availableObjects.availableImports.filter(x => x.name === link.name).forEach(i => {
         const newLinkUrl = `${i.fullUrl}`;
-        locations.push(...getLocationsInImportedFile(newLinkUrl, link));
+        const declaredImportModule = getDiMatch(i.url);
+        if (declaredImportModule) {
+            const url = omtDocumentInformationProvider.resolveLink({
+                declaredImport: {
+                    module: declaredImportModule
+                }
+            });
+            url && locations.push(...getLocationsInImportedFile(url, link));
+        } else {
+            locations.push(...getLocationsInImportedFile(newLinkUrl, link));
+        }
     });
     return locations;
 }

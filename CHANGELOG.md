@@ -7,7 +7,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
-## [2.10.0] - 2021-12-20
+## [2.10.0] - 2021-12-21
 
 ### Added
 

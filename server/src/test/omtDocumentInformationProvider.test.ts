@@ -187,7 +187,10 @@ describe('OMTLinkProvider', () => {
     });
 
     describe('getDocumentImportLinks', () => {
-        const omtImports: OmtImport[] = [{ name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" }];
+        const omtImports: OmtImport[] = [
+            { name: "TestActivity", url: "../test.omt", fullUrl: "/workspace/test.omt" },
+            { name: "TestModule", url: "module:TestModule", fullUrl: "module:TestModule" },
+        ];
         const lineNumber = 15;
 
         it('should return correct object', () => {
@@ -203,7 +206,24 @@ describe('OMTLinkProvider', () => {
             expect(result.target).to.equal("/workspace/test.omt");
             expect(result.range.start).to.deep.equal({ line: lineNumber, character: 5 });
             expect(result.range.end).to.deep.equal({ line: lineNumber, character: 16 });
+            expect(result.data).to.be.undefined;
         });
+
+        it('should return correct declared import', () => {
+            // ARRANGE
+            const line = "    module:TestModule:";
+
+            // ACT
+            const results = exportedForTesting.getDocumentImportLinks(omtImports, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.data).to.deep.equal({ declaredImport: { module: "TestModule" } });
+            expect(result.target).to.be.undefined;
+            expect(result.range.start).to.deep.equal({ line: lineNumber, character: 4 });
+            expect(result.range.end).to.deep.equal({ line: lineNumber, character: 21 });
+        })
     });
 
     describe('resolveLink', () => {
