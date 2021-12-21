@@ -24,6 +24,7 @@ workspace root. It will use the  LSP server to provide these features:
 
 - Document Link
   - OMT imports with paths
+  - OMT declared imports
 
 ### The `configurations` folder
 
@@ -53,6 +54,8 @@ by the extension in `/client`. The features currently implemented are:
   - Relative paths
   - Paths beginning with a @Shorthand
   - Declared OMT imports as empty paths with data to be resolved
+- Resolve Document Link
+  - Declared OMT imports
 - Go to Definition
   - Works for imported and declared objects
   - Based on text
