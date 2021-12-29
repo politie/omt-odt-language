@@ -50,6 +50,7 @@ export interface OmtAvailableObjects {
 export interface OmtLocalObject {
     name: string;
     range: Range;
+    parameters?: string[];
 }
 
 /**

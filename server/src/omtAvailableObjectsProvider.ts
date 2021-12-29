@@ -60,14 +60,23 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
  */
 function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
-    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9]+)`, "gm");
+    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9_]+)`, "gm");
     const definedQueries = value.match(queriesRegex);
     definedQueries && definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9])`, "gm"))
-        localDefinedObjects.push({ name: q, range: rangeForQuery })
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9_])`, "gm"))
+        const getParametersRegex = new RegExp(`DEFINE ${define} ${q} *(((?<parameters>.*)))? *=>`, "gm");
+        const parameters = getParametersRegex.exec(documentText);
+        localDefinedObjects.push({ name: q, range: rangeForQuery, parameters: trimAndSplitParameterString(parameters?.groups?.parameters) })
     });
 
     return localDefinedObjects;
+}
+
+function trimAndSplitParameterString(parameters?: string) {
+    if(!parameters) {
+        return [];
+    }
+    return parameters.replace(/[() ]/gm, '').split(",");
 }
 
 /**
@@ -107,9 +116,21 @@ function findModelEntries(modelEntries: Record<string, unknown>, documentText: s
     const keys = Object.keys(modelEntries);
     keys.forEach(key => {
         const range = findRangeWithRegex(documentText, new RegExp(`(?<= +)(${key})(?=: !)`));
-        localDefinedObjects.push({ name: key, range });
+        let parameters: string[] = [];
+        if(instanceWithParams(modelEntries[key])) {
+            parameters = (modelEntries[key] as ObjectWithParams).params;
+        }
+        localDefinedObjects.push({ name: key, range, parameters });
     });
     return localDefinedObjects;
+}
+
+interface ObjectWithParams {
+    params: string[];
+}
+
+function instanceWithParams(object: unknown | ObjectWithParams): object is ObjectWithParams {
+    return (object as ObjectWithParams).params !== undefined;
 }
 
 /**
@@ -119,4 +140,6 @@ export const exportedForTesting = {
     findDefinedObjects,
     findModelEntries,
     findRangeWithRegex,
+    instanceWithParams,
+    trimAndSplitParameterString,
 }
