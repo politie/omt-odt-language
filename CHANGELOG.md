@@ -7,6 +7,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.10.2] - 2022-01-04
+
+### Fixed
+
+- Solved issue that the query link was set on the wrong object
+
 ## [2.10.1] - 2021-12-21
 
 ### Added

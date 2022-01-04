@@ -161,7 +161,7 @@ function getLocalLocationsForCode(declaredObjects: OmtLocalObject[], lineNumber:
  */
 function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, line: string): DocumentLink[] {
     const imports = fileImports.map(x => x.url);
-    const results = findUsagesInLine(imports, lineNumber, line);
+    const results = findUsagesInLine(imports, lineNumber, line, true);
     return results.map(omtLocalObject => createDocumentLink(
         lineNumber,
         omtLocalObject,
@@ -174,11 +174,13 @@ function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, li
  * @param declaredObjects a list of declared objects
  * @param lineNumber used for creating the Range object
  * @param line the string in where we going to search for declaredObject
+ * @param colonAllowed if false, the regex will search for declaredObjects that are not starting and not ending with a colon
  * @returns a list of OmtLocalObjects, containing all Ranges (with their names) where declared Objects are being used
  */
-function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string): OmtLocalObject[] {
+function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string, colonAllowed: boolean = false): OmtLocalObject[] {
     const documentLinks: OmtLocalObject[] = [];
-    const regex = (declaredObject: string) => new RegExp(`(?<=[^a-zA-Z0-9]|^)${declaredObject}(?=[^a-zA-Z0-9]|$)`);
+    const optionalColon = colonAllowed ? '' : ':';
+    const regex = (declaredObject: string) => new RegExp(`(?<=[^a-zA-Z0-9${optionalColon}]|^)${declaredObject}(?=[^a-zA-Z0-9${optionalColon}]|$)`);
 
     declaredObjects.filter(declaredObject => declaredObject && line.match(regex(declaredObject))).forEach(declaredObject => {
         const characterIndex = line.search(regex(declaredObject));

@@ -85,10 +85,11 @@ describe('OMTLinkProvider', () => {
     });
 
     const testRange = Range.create({ line: 0, character: 13 }, { line: 0, character: 17 });
+    const editableRange = Range.create({ line: 1, character: 4 }, { line: 1, character: 12 });
 
     describe('getLocalLocationsForCode', () => {
         const lineNumber = 12;
-        const declaredObjects: OmtLocalObject[] = [{ name: "test", range: testRange }];
+        const declaredObjects: OmtLocalObject[] = [{ name: "test", range: testRange }, { name: "editable", range: editableRange }];
         it('should return correct object when used once', () => {
             // ARRANGE
             const line = "    @test(param1, param2);";
@@ -128,6 +129,21 @@ describe('OMTLinkProvider', () => {
             expect(result.name).to.equal("test");
             expect(result.range.start).to.deep.equal({ line: lineNumber, character: 17 });
             expect(result.range.end).to.deep.equal({ line: lineNumber, character: 21 });
+        });
+
+        it('should return correct object when query result is put on the payload with the same name', () => {
+            // ARRANGE
+            const line = "    editable: editable";
+
+            // ACT
+            const results = exportedForTesting.getLocalLocationsForCode(declaredObjects, lineNumber, line);
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal("editable");
+            expect(result.range.start).to.deep.equal({ line: lineNumber, character: 14 });
+            expect(result.range.end).to.deep.equal({ line: lineNumber, character: 22 });
         });
     });
 
