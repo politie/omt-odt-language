@@ -1,8 +1,10 @@
 import { expect, use } from 'chai';
 import { Range } from 'vscode-languageserver';
-import { exportedForTesting } from '../omtAvailableObjectsProvider';
+import { exportedForTesting, getAvailableObjectsFromDocument } from '../omtAvailableObjectsProvider';
 import * as sinonChai from 'sinon-chai';
 import { parse } from 'yaml';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import { OmtImport } from '../types';
 use(sinonChai);
 
 describe('OmtAvailableObjectsProvider', () => {
@@ -196,6 +198,82 @@ describe('OmtAvailableObjectsProvider', () => {
 
             // ASSERT
             expect(output).to.be.false;
+        });
+    });
+
+    describe('getAvailableObjectsFromDocument', () => {
+        it('should return correct object', () => {
+            // ARRANGE
+            const yamlDocument = [
+                "import:",
+                "    '@test/file1.omt':",
+                "    -   File1Activity",
+                "    -   file1Query",
+                "commands: |",
+                "    DEFINE COMMAND cmd($param) => { @File1Activity($param); }",
+                "model:",
+                "    AnotherTestActivity: !Activity",
+                "        dummy: true",
+                "        onDone: |",
+                "            @cmd('test');"
+            ].join("\n");
+            const textDocument = TextDocument.create(`test.omt`, 'omt', 1, yamlDocument);
+            const shorthands = new Map<string, string>();
+            shorthands.set("@test", "/folder/*");
+
+            // ACT
+            const result = getAvailableObjectsFromDocument(textDocument, shorthands);
+
+            // ASSERT
+            expect(result.definedObjects.length).to.equal(2);
+            const definedCommand = result.definedObjects[0];
+            expect(definedCommand.name).to.equal("cmd");
+            expect(definedCommand.range).to.deep.equal(Range.create({line: 5, character: 19}, {line: 5, character: 22}));
+            const definedActivity = result.definedObjects[1];
+            expect(definedActivity.name).to.equal("AnotherTestActivity");
+            expect(definedActivity.range).to.deep.equal(Range.create({line: 7, character: 4}, {line: 7, character: 23}));
+
+            expect(result.availableImports.length).to.equal(2);
+            const activityImport = result.availableImports[0];
+            const expectedActivityImport: OmtImport = { name: "File1Activity", url: "@test/file1.omt", fullUrl: "/folder/file1.omt"}
+            expect(activityImport).to.deep.equal(expectedActivityImport);
+            const queryImport = result.availableImports[1];
+            const expectedQueryImport: OmtImport = { name: "file1Query", url: "@test/file1.omt", fullUrl: "/folder/file1.omt"}
+            expect(queryImport).to.deep.equal(expectedQueryImport);
+        });
+
+        it('should work when working on imports', () => {
+            // ARRANGE
+            const yamlDocument = [
+                "import:",
+                "    ",
+            ].join("\n");
+            const textDocument = TextDocument.create(`test.omt`, 'omt', 1, yamlDocument);
+            const shorthands = new Map<string, string>();
+
+            // ACT
+            const result = getAvailableObjectsFromDocument(textDocument, shorthands);
+
+            // ASSERT
+            expect(result.availableImports.length).to.equal(0);
+            expect(result.definedObjects.length).to.equal(0);
+        });
+
+        it('should work when working on imports 2', () => {
+            // ARRANGE
+            const yamlDocument = [
+                "import:",
+                "    'test':",
+            ].join("\n");
+            const textDocument = TextDocument.create(`test.omt`, 'omt', 1, yamlDocument);
+            const shorthands = new Map<string, string>();
+
+            // ACT
+            const result = getAvailableObjectsFromDocument(textDocument, shorthands);
+
+            // ASSERT
+            expect(result.availableImports.length).to.equal(0);
+            expect(result.definedObjects.length).to.equal(0);
         });
     });
 });

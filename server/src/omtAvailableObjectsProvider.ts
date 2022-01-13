@@ -15,36 +15,46 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
     const yamlDocument = parse(document.getText()) ?? {};
     const availableImports: OmtImport[] = [];
     const definedObjects: OmtLocalObject[] = [];
-    if ("import" in yamlDocument && shorthands) {
+    if (yamlDocument["import"] && shorthands) {
         const documentImports = yamlDocument["import"];
         const importUrls = Object.keys(documentImports);
         importUrls.forEach(importUrl => {
-            const imports: string[] = documentImports[importUrl];
+            const imports: string[] = documentImports[importUrl] ?? [];
             const uriMatchResult = getUriMatch(' ' + importUrl, document, shorthands);
             imports.forEach(importName => {
                 availableImports.push({ name: importName, url: importUrl, fullUrl: uriMatchResult });
             });
         });
     }
-    if ("queries" in yamlDocument) {
+    if (yamlDocument["queries"]) {
         definedObjects.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
     }
-    if ("commands" in yamlDocument) {
+    if (yamlDocument["commands"]) {
         definedObjects.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
     }
-    if ("model" in yamlDocument) {
+    if (yamlDocument["model"]) {
         const modelEntries = yamlDocument["model"];
         definedObjects.push(...findModelEntries(modelEntries, documentText));
         const keys = Object.keys(modelEntries);
         keys.forEach(key => {
             const entry = modelEntries[key];
 
-            if ("commands" in entry) {
-                definedObjects.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
-            }
+            try {
+                if ("commands" in entry) {
+                    definedObjects.push(...findDefinedObjects(entry["commands"], documentText, "COMMAND"));
+                }
 
-            if ("queries" in entry) {
-                definedObjects.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
+                if ("queries" in entry) {
+                    definedObjects.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
+                }
+            } catch(error) {
+                // If entry is not an object, but a string for example, we cannot use the 'in' operator.
+                // Therefore we can ignore that error message and continue.
+                if(error instanceof TypeError && error.message.includes("Cannot use 'in' operator")) {
+                    console.log(error);
+                } else {
+                    throw error;
+                }
             }
         });
     }
