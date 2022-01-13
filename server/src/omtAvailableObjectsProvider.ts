@@ -15,7 +15,7 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
     const yamlDocument = parse(document.getText()) ?? {};
     const availableImports: OmtImport[] = [];
     const definedObjects: OmtLocalObject[] = [];
-    if ("import" in yamlDocument && yamlDocument["import"] && shorthands) {
+    if (yamlDocument["import"] && shorthands) {
         const documentImports = yamlDocument["import"];
         const importUrls = Object.keys(documentImports);
         importUrls.forEach(importUrl => {
@@ -26,13 +26,13 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
             });
         });
     }
-    if ("queries" in yamlDocument && yamlDocument["queries"]) {
+    if (yamlDocument["queries"]) {
         definedObjects.push(...findDefinedObjects(yamlDocument["queries"], documentText, "QUERY"));
     }
-    if ("commands" in yamlDocument && yamlDocument["commands"]) {
+    if (yamlDocument["commands"]) {
         definedObjects.push(...findDefinedObjects(yamlDocument["commands"], documentText, "COMMAND"));
     }
-    if ("model" in yamlDocument && yamlDocument["model"]) {
+    if (yamlDocument["model"]) {
         const modelEntries = yamlDocument["model"];
         definedObjects.push(...findModelEntries(modelEntries, documentText));
         const keys = Object.keys(modelEntries);
