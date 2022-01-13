@@ -177,7 +177,7 @@ function getDocumentImportLinks(fileImports: OmtImport[], lineNumber: number, li
  * @param colonAllowed if false, the regex will search for declaredObjects that are not starting and not ending with a colon
  * @returns a list of OmtLocalObjects, containing all Ranges (with their names) where declared Objects are being used
  */
-function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string, colonAllowed: boolean = false): OmtLocalObject[] {
+function findUsagesInLine(declaredObjects: string[], lineNumber: number, line: string, colonAllowed = false): OmtLocalObject[] {
     const documentLinks: OmtLocalObject[] = [];
     const optionalColon = colonAllowed ? '' : ':';
     const regex = (declaredObject: string) => new RegExp(`(?<=[^a-zA-Z0-9${optionalColon}]|^)${declaredObject}(?=[^a-zA-Z0-9${optionalColon}]|$)`);
