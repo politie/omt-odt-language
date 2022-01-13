@@ -12,6 +12,7 @@ This plugin uses [Semantic versioning](https://semver.org).
 ### Fixed
 
 - Solved issue that the query link was set on the wrong object
+
 ## [2.11.0] - 2022-01-13
 
 ### Added
