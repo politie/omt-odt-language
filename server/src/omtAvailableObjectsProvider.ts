@@ -48,6 +48,8 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
                     definedObjects.push(...findDefinedObjects(entry["queries"], documentText, "QUERY"));
                 }
             } catch(error) {
+                // If entry is not an object, but a string for example, we cannot use the 'in' operator.
+                // Therefore we can ignore that error message and continue.
                 if(error instanceof TypeError && error.message.includes("Cannot use 'in' operator")) {
                     console.log(error);
                 } else {
