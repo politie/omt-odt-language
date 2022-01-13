@@ -191,7 +191,7 @@ describe("position", () => {
             expect(result.length).to.equal(0);
         });
 
-        it("should return one objects when defined", () => {
+        it("should return one object when defined", () => {
             // ARRANGE
             const availableObjects: OmtAvailableObjects = {
                 definedObjects: [{name: 'HelloWorld', range: Range.create({line: 10, character: 10}, {line: 10, character: 20}), parameters: []}],
@@ -213,7 +213,7 @@ describe("position", () => {
             expect(result[0].omtLocalObject).to.deep.equal(availableObjects.definedObjects[0])
         });
 
-        it("should return one objects when imported and defined in import", () => {
+        it("should return one object when imported and defined in import", () => {
             // ARRANGE
             const uri = 'testFixture/one/imports.omt';
             const fullUrl = resolve(uri);

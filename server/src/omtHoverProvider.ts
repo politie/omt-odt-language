@@ -36,7 +36,7 @@ export function getHoverInformationForPosition(
                 )
             );
         });
-    if (hovers.length == 1) {
+    if (hovers.length === 1) {
         return hovers[0];
     }
     return undefined;
