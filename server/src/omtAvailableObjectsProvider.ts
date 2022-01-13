@@ -60,10 +60,10 @@ export function getAvailableObjectsFromDocument(document: TextDocument, shorthan
  */
 function findDefinedObjects(value: string, documentText: string, define: string): OmtLocalObject[] {
     const localDefinedObjects: OmtLocalObject[] = [];
-    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9_]+)`, "gm");
+    const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9_-]+)`, "gm");
     const definedQueries = value.match(queriesRegex);
     definedQueries && definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9_])`, "gm"))
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9_-])`, "gm"))
         const getParametersRegex = new RegExp(`DEFINE ${define} ${q} *(((?<parameters>.*)))? *=>`, "gm");
         const parameters = getParametersRegex.exec(documentText);
         localDefinedObjects.push({ name: q, range: rangeForQuery, parameters: trimAndSplitParameterString(parameters?.groups?.parameters) })
@@ -129,7 +129,7 @@ interface ObjectWithParams {
     params: string[];
 }
 
-function instanceWithParams(object: unknown | ObjectWithParams): object is ObjectWithParams {
+function instanceWithParams(object: unknown): object is ObjectWithParams {
     return (object as ObjectWithParams).params !== undefined;
 }
 

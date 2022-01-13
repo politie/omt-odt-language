@@ -8,11 +8,11 @@ use(sinonChai);
 describe('OmtAvailableObjectsProvider', () => {
     const document = [
         "DEFINE QUERY test => 'Hello world';",
-        "DEFINE COMMAND cmd(param) => param;",
+        "DEFINE COMMAND cmd-1(param) => param;",
         "DEFINE COMMAND cmd_2($param1, $param2) => param;",
     ].join("\n");
     const queryRegex = /(?<=DEFINE QUERY )(test)(?=\W)/gm;
-    const commandRegex = /(?<=DEFINE COMMAND )(cmd)(?=\W)/gm;
+    const commandRegex = /(?<=DEFINE COMMAND )(cmd-1)(?=\W)/gm;
     const testRange = Range.create({ line: 0, character: 13 }, { line: 0, character: 17 });
 
     describe('findDefinedObjects', () => {
@@ -53,8 +53,8 @@ describe('OmtAvailableObjectsProvider', () => {
             // ASSERT
             expect(results.length).to.equal(2);
             const result = results[0];
-            expect(result.name).to.equal('cmd');
-            expect(result.range).to.deep.equal(Range.create({ line: 1, character: 15 }, { line: 1, character: 18 }));
+            expect(result.name).to.equal('cmd-1');
+            expect(result.range).to.deep.equal(Range.create({ line: 1, character: 15 }, { line: 1, character: 20 }));
             expect(result.parameters).to.deep.equal(['param']);
 
             const result2 = results[1];
@@ -78,7 +78,7 @@ describe('OmtAvailableObjectsProvider', () => {
             const result = exportedForTesting.findRangeWithRegex(document, commandRegex);
 
             // ASSERT
-            expect(result).to.deep.equal(Range.create({ line: 1, character: 15 }, { line: 1, character: 18 }));
+            expect(result).to.deep.equal(Range.create({ line: 1, character: 15 }, { line: 1, character: 20 }));
         });
 
         it('should throw error when definition found multiple times', () => {
