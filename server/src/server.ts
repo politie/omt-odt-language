@@ -8,17 +8,17 @@ import {
     InitializeResult,
     DocumentLinkParams,
     Location,
-    Range,
     DocumentLink,
 } from 'vscode-languageserver/node';
 import {
-    Position,
     TextDocument
 } from 'vscode-languageserver-textdocument';
 import OmtDocumentInformationProvider from './omtDocumentInformationProvider';
 import { WorkspaceLookup } from './workspaceLookup';
 import * as fs from "fs";
 import { OmtAvailableObjects, OmtDocumentInformation, OmtLocalObject } from './types';
+import { forEachAvailableObjectForLink, positionInRange } from './position';
+import { getHoverInformationForPosition } from './omtHoverProvider';
 import { getDiMatch } from './importMatch';
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -50,6 +50,7 @@ connection.onInitialize((params: InitializeParams) => {
             textDocumentSync: TextDocumentSyncKind.Incremental,
             definitionProvider: true,
             documentLinkProvider: { resolveProvider: true },
+            hoverProvider: true,
         }
     };
     if (hasWorkspaceFolderCapability) {
@@ -81,20 +82,6 @@ connection.onInitialized(() => {
     }
 });
 
-function comparePositions(pos1: Position, pos2: Position) {
-    if (pos1.line !== pos2.line) {
-        return pos1.line > pos2.line ? 1 : -1;
-    }
-    if (pos1.character !== pos2.character) {
-        return pos1.character > pos2.character ? 1 : -1;
-    }
-    return 0;
-}
-
-function positionInRange(position: Position, range: Range) {
-    return comparePositions(range.start, position) <= 0 && comparePositions(position, range.end) <= 0;
-}
-
 connection.onDefinition((params) => {
     const locations: Location[] = [];
     const document = documents.get(params.textDocument.uri);
@@ -103,7 +90,8 @@ connection.onDefinition((params) => {
 
         availableObjects.calledObjects.forEach(link => {
             if (positionInRange(params.position, link.range)) {
-                locations.push(...getLocationsForLink(params.textDocument.uri, availableObjects, link));
+                const createLocationObject = (linkUrl: string, omtLocalObject: OmtLocalObject) => Location.create(linkUrl, omtLocalObject.range);
+                locations.push(...forEachAvailableObjectForLink(omtDocumentInformationProvider, params.textDocument.uri, availableObjects, link, createLocationObject));
             }
         });
     }
@@ -141,6 +129,15 @@ function getLocationsInImportedFile(linkUrl: string, link: OmtLocalObject): Loca
     }
     return [];
 }
+
+connection.onHover((params) => {
+    const document = documents.get(params.textDocument.uri);
+    if (document) {
+        const omtDocumentInformation = getOmtDocumentResult(document);
+        return getHoverInformationForPosition(omtDocumentInformationProvider, params, omtDocumentInformation);
+    }
+    return undefined;
+})
 
 /**
  * shutdown protocol
