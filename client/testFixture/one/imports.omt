@@ -1,17 +1,17 @@
 import:
     module:Declared:
     -   DeclaredQuery
-     ../relative.omt:
+    ../relative.omt:
     -   RelativeAction
-    @one/shorthanded.omt:
+    '@one/shorthanded.omt':
     -   shorthandAction
     '@one/quotedShorthand.omt':
     -   quotedShorthandAction
     "@one/doubleQuotedShorthand.omt":
     -   doubleQuotedShorthandAction
-    @two/siblingShorthanded.omt:
+    '@two/siblingShorthanded.omt':
     -   siblingShorthanded
-    @three/parentPathed.omt:
+    '@three/parentPathed.omt':
     -   parentPathed
 
 model:
