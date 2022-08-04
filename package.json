@@ -1,144 +1,144 @@
 {
-	"name": "omt-odt-language",
-	"version": "2.11.1",
-	"license": "Apache-2.0",
-	"displayName": "OMT & ODT",
-	"description": "A language extension for the OMT and ODT languages",
-	"publisher": "pvr",
-	"icon": "logo.png",
-	"galleryBanner": {
-		"color": "#E4F3FF",
-		"theme": "light"
-	},
-	"categories": [
-		"Programming Languages",
-		"Snippets"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/emielb/omt-odt-language.git"
-	},
-	"bugs": {
-		"url": "https://github.com/emielb/omt-odt-language/issues"
-	},
-	"engines": {
-		"vscode": "^1.43.0"
-	},
-	"contributes": {
-		"languages": [
-			{
-				"id": "odt",
-				"aliases": [
-					"ODT",
-					"odt"
-				],
-				"extensions": [
-					".odt"
-				],
-				"configuration": "./configurations/odt.language-configuration.json"
-			},
-			{
-				"id": "omt",
-				"aliases": [
-					"OMT",
-					"omt"
-				],
-				"extensions": [
-					".omt"
-				],
-				"configuration": "./configurations/omt.language-configuration.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "odt",
-				"scopeName": "source.odt",
-				"path": "./syntaxes/odt.tmLanguage.json",
-				"embeddedLanguages": {
-					"meta.embedded.odt": "odt"
-				}
-			},
-			{
-				"language": "omt",
-				"scopeName": "source.omt",
-				"path": "./syntaxes/omt.tmLanguage.json",
-				"embeddedLanguages": {
-					"meta.embedded.block.odt": "odt",
-					"meta.embedded.inline.odt": "odt",
-					"meta.embedded.interpolated.odt": "odt",
-					"meta.embedded.iri-literal.odt": "odt",
-					"meta.embedded.iri-prefixed.odt": "odt"
-				}
-			}
-		],
-		"snippets": [
-			{
-				"language": "odt",
-				"path": "./snippets/odt.snippets.json"
-			},
-			{
-				"language": "omt",
-				"path": "./snippets/omt.snippets.json"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "OMT-ODT configuration",
-			"properties": {
-				"languageServerExample.maxNumberOfProblems": {
-					"scope": "resource",
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				}
-			}
-		}
-	},
-	"main": "./client/out/extension",
-	"activationEvents": [
-		"onLanguage:omt",
-		"onLanguage:odt"
-	],
-	"scripts": {
-		"vscode:prepublish": "npm run webpack",
-		"webpack": "npm run clean && webpack --mode production --config ./client/webpack.config.js && webpack --mode production --config ./server/webpack.config.js",
-		"webpack:dev": "npm run clean && webpack --mode none --config ./client/webpack.config.js && webpack --mode none --config ./server/webpack.config.js",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
-		"lint": "eslint . --ext .js,.jsx,.ts,.tsx,.md",
-		"clean": "rimraf client/out server/out",
-		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"pretest": "npm run compile",
-		"test": "sh ./scripts/e2e.sh",
-		"test-server": "cd server && npm run test",
-		"coverage-server": "cd server && npm run coverage"
-	},
-	"devDependencies": {
-		"@types/chai": "^4.2.22",
-		"@types/mocha": "^9.0.0",
-		"@types/node": "^18.6.3",
-		"@types/sinon": "^10.0.6",
-		"@types/sinon-chai": "^3.2.5",
-		"@typescript-eslint/eslint-plugin": "^5.4.0",
-		"@typescript-eslint/parser": "^5.4.0",
-		"chai": "^4.3.4",
-		"eslint": "^8.3.0",
-		"eslint-plugin-md": "^1.0.19",
-		"merge-options": "^3.0.4",
-		"mocha": "^9.1.3",
-		"rimraf": "^3.0.2",
-		"sinon": "^12.0.1",
-		"sinon-chai": "^3.7.0",
-		"ts-loader": "^9.2.6",
-		"ts-node": "^10.9.1",
-		"typescript": "^4.5.2",
-		"webpack": "^5.64.2",
-		"webpack-cli": "^4.9.1"
-	},
-	"__metadata": {
-		"id": "fe53e20e-979c-42b3-8d1d-42a2a3216913",
-		"publisherDisplayName": "PVR",
-		"publisherId": "b5e07eb4-8ef0-4306-b85d-a1d8941d25db",
-		"isPreReleaseVersion": false
-	}
+    "name": "omt-odt-language",
+    "version": "2.11.1",
+    "license": "Apache-2.0",
+    "displayName": "OMT & ODT",
+    "description": "A language extension for the OMT and ODT languages",
+    "publisher": "pvr",
+    "icon": "logo.png",
+    "galleryBanner": {
+        "color": "#E4F3FF",
+        "theme": "light"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/emielb/omt-odt-language.git"
+    },
+    "bugs": {
+        "url": "https://github.com/emielb/omt-odt-language/issues"
+    },
+    "engines": {
+        "vscode": "^1.43.0"
+    },
+    "contributes": {
+        "languages": [
+            {
+                "id": "odt",
+                "aliases": [
+                    "ODT",
+                    "odt"
+                ],
+                "extensions": [
+                    ".odt"
+                ],
+                "configuration": "./configurations/odt.language-configuration.json"
+            },
+            {
+                "id": "omt",
+                "aliases": [
+                    "OMT",
+                    "omt"
+                ],
+                "extensions": [
+                    ".omt"
+                ],
+                "configuration": "./configurations/omt.language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "odt",
+                "scopeName": "source.odt",
+                "path": "./syntaxes/odt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.odt": "odt"
+                }
+            },
+            {
+                "language": "omt",
+                "scopeName": "source.omt",
+                "path": "./syntaxes/omt.tmLanguage.json",
+                "embeddedLanguages": {
+                    "meta.embedded.block.odt": "odt",
+                    "meta.embedded.inline.odt": "odt",
+                    "meta.embedded.interpolated.odt": "odt",
+                    "meta.embedded.iri-literal.odt": "odt",
+                    "meta.embedded.iri-prefixed.odt": "odt"
+                }
+            }
+        ],
+        "snippets": [
+            {
+                "language": "odt",
+                "path": "./snippets/odt.snippets.json"
+            },
+            {
+                "language": "omt",
+                "path": "./snippets/omt.snippets.json"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "OMT-ODT configuration",
+            "properties": {
+                "languageServerExample.maxNumberOfProblems": {
+                    "scope": "resource",
+                    "type": "number",
+                    "default": 100,
+                    "description": "Controls the maximum number of problems produced by the server."
+                }
+            }
+        }
+    },
+    "main": "./client/out/extension",
+    "activationEvents": [
+        "onLanguage:omt",
+        "onLanguage:odt"
+    ],
+    "scripts": {
+        "vscode:prepublish": "npm run webpack",
+        "webpack": "npm run clean && webpack --mode production --config ./client/webpack.config.js && webpack --mode production --config ./server/webpack.config.js",
+        "webpack:dev": "npm run clean && webpack --mode none --config ./client/webpack.config.js && webpack --mode none --config ./server/webpack.config.js",
+        "compile": "tsc -b",
+        "watch": "tsc -b -w",
+        "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.md",
+        "clean": "rimraf client/out server/out",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "pretest": "npm run compile",
+        "test": "sh ./scripts/e2e.sh",
+        "test-server": "cd server && npm run test",
+        "coverage-server": "cd server && npm run coverage"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.2.22",
+        "@types/mocha": "^9.0.0",
+        "@types/node": "^18.6.3",
+        "@types/sinon": "^10.0.6",
+        "@types/sinon-chai": "^3.2.5",
+        "@typescript-eslint/eslint-plugin": "^5.4.0",
+        "@typescript-eslint/parser": "^5.4.0",
+        "chai": "^4.3.4",
+        "eslint": "^8.3.0",
+        "eslint-plugin-md": "^1.0.19",
+        "merge-options": "^3.0.4",
+        "mocha": "^9.1.3",
+        "rimraf": "^3.0.2",
+        "sinon": "^12.0.1",
+        "sinon-chai": "^3.7.0",
+        "ts-loader": "^9.2.6",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.5.2",
+        "webpack": "^5.64.2",
+        "webpack-cli": "^4.9.1"
+    },
+    "__metadata": {
+        "id": "fe53e20e-979c-42b3-8d1d-42a2a3216913",
+        "publisherDisplayName": "PVR",
+        "publisherId": "b5e07eb4-8ef0-4306-b85d-a1d8941d25db",
+        "isPreReleaseVersion": false
+    }
 }
