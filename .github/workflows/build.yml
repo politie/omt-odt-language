@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use node.js ${{ matrix.node-version }}
@@ -25,7 +25,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ matrix.node-version }}-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
-      
+
       - name: Install
         if: steps.cache-modules.output.cache-hit != 'true'
         run: npm install
@@ -35,7 +35,7 @@ jobs:
 
       - name: Test-Server
         run: npm run test-server
-      
+
       - name: Linting
         run: npm run lint
 

@@ -7,12 +7,27 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.12.0] - 2022-08-04
+
+### Added
+
+- CI build for nodejs v18 (current LTS since 2022-04-19)
+
+### Changed
+
+- updated dependencies
+- changed CD build to nodejs v16 (active LTS since 2021-10-26)
+
+## Removed
+
+- dropped CI build for nodejs v12 (maintenance ended 2022-04-30)
+
 ## [2.11.1] - 2022-01-13
 
 ### Fixed
 
 - Solved issue that the query link was set on the wrong object
-- Solved some issues that the plugin crashed when working on OMT documents 
+- Solved some issues that the plugin crashed when working on OMT documents
   (incomplete imports for example)
 
 ## [2.11.0] - 2022-01-13
