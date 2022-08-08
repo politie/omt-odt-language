@@ -181,6 +181,7 @@
                 { "include": "#graphs" },
                 { "include": "#_payload" },
                 { "include": "#prefixes" },
+                { "include": "#_rules" },
                 { "include": "#_variables" },
                 { "include": "#_watchers" }
             ]
