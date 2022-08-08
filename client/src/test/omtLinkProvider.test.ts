@@ -13,10 +13,11 @@ describe('OMTLinkProvider', () => {
     before(async () => {
         sendRequestStub = stub(LanguageClient.prototype, 'sendRequest')
             .resolves([
-                new DocumentLink(toRange(1, 4, 1, 19))
+                new DocumentLink(toRange(1, 4, 1, 19)),
             ]);
 
         await activate(docUri);
+        await new Promise(resolve => setTimeout(resolve, 150)); // language client needs some extra startup time apparently
     });
 
     after(() => {

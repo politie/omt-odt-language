@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.11.1",
+    "version": "2.12.0",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
@@ -116,7 +116,7 @@
     "devDependencies": {
         "@types/chai": "^4.2.22",
         "@types/mocha": "^9.0.0",
-        "@types/node": "^16.11.9",
+        "@types/node": "^18.6.3",
         "@types/sinon": "^10.0.6",
         "@types/sinon-chai": "^3.2.5",
         "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -130,9 +130,15 @@
         "sinon": "^12.0.1",
         "sinon-chai": "^3.7.0",
         "ts-loader": "^9.2.6",
-        "ts-node": "^10.4.0",
+        "ts-node": "^10.9.1",
         "typescript": "^4.5.2",
         "webpack": "^5.64.2",
         "webpack-cli": "^4.9.1"
+    },
+    "__metadata": {
+        "id": "fe53e20e-979c-42b3-8d1d-42a2a3216913",
+        "publisherDisplayName": "PVR",
+        "publisherId": "b5e07eb4-8ef0-4306-b85d-a1d8941d25db",
+        "isPreReleaseVersion": false
     }
 }

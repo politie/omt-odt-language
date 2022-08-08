@@ -12,12 +12,12 @@
         "vscode": "^1.43.0"
     },
     "dependencies": {
-        "typescript": "^4.3.2",
-        "vscode-languageclient": "^7.0.0"
+        "typescript": "^4.5.2",
+        "vscode-languageclient": "^8.0.0"
     },
     "devDependencies": {
-        "@types/node": "^15.12.2",
-        "@types/vscode": "^1.56.0",
-        "vscode-test": "^1.5.2"
+        "@types/node": "^18.6.3",
+        "@types/vscode": "^1.69.0",
+        "vscode-test": "^1.6.1"
     }
 }
