@@ -36,6 +36,12 @@
                         "1": { "name": "entity.name.function.odt"},
                         "2": { "name": "variable.parameter.flag.odt" }
                     }
+                },
+                {
+                    "match": "\\b[^@][\\w@\\u0100-\\u017f-]+((?:![\\w@\\u0100-\\u017f-]+){0,2})",
+                    "captures": {
+                        "1": { "name": "variable.parameter.flag.odt" }
+                    }
                 }
             ]
         },
@@ -121,7 +127,7 @@
                 },
                 {
                     "name": "keyword.operator.comparisson.odt",
-                    "match": "\\b(EQUALS|GREATER_THAN|GREATER_THAN_EQUALS|HAS|IN|LESS_THAN|LESS_THAN_EQUALS)\\b"
+                    "match": "\\b(EQUALS|GREATER_THAN|GREATER_THAN_EQUALS|HAS|IIF|IN|LESS_THAN|LESS_THAN_EQUALS)\\b"
                 },
                 {
                     "name": "keyword.operator.date.odt",
@@ -133,7 +139,7 @@
                 },
                 {
                     "name": "keyword.operator.string.odt",
-                    "match": "\\b(CONCAT|CONTAINS|FORMAT|FORMAT_DATE|INDEX_OF|JOIN|LENGTH|LOWERCASE|SPLIT|SUBSTRING|TRIM|UPPERCASE)\\b"
+                    "match": "\\b(CONCAT|CONTAINS|FORMAT|FORMAT_DATE|INDEX_OF|JOIN|LENGTH|LOWERCASE|REPLACE|SPLIT|SUBSTRING|TRIM|UPPERCASE)\\b"
                 },
                 {
                     "name": "keyword.operator.odt",
@@ -141,7 +147,7 @@
                 },
                 {
                     "name": "keyword.operator.odt",
-                    "match": "\\b(CALL|CAST|CATCH|ELEMENTS|ERROR|FIND_SUBJECTS|GRAPH|IDENTITY|LOG|REPEAT|TRAVERSE|TYPE)\\b"
+                    "match": "\\b(CAST|CATCH|ELEMENTS|ERROR|FIND_SUBJECTS|GRAPH|IDENTITY|JSON_VALUES|LOG|REPEAT|TRAVERSE|TYPE)\\b"
                 }
             ]
         },

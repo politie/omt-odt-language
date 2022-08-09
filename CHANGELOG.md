@@ -7,6 +7,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.12.2] - 2022-08-09
+
+### Added
+
+- Syntax highlighting for ODT IIF, REPLACE and JSON_VALUES operators
+- Syntax highlighting for OMT Loadables
+- Syntax highlighting for OMT NotificationAction
+- Syntax highlighting for OMT Rules in extended form
+
+### Changed
+
+- Refactored and updated merge handlers' syntax highlighting
+- Updated OMT Activity syntax highlighting
+- Refactored OMT Actions' syntax highlighting
+
 ## [2.12.1] - 2022-08-08
 
 ### Added
