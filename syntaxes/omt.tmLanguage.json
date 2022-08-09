@@ -276,6 +276,14 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
+                    "match": "(?:\\G|^) +(anyPredicate): *(true)?(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.language.boolean.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
                     "match": "(?:\\G|^) +(from): *(parent|both)?(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
@@ -287,24 +295,7 @@
         },
         "_merge-predicates-def": {
             "patterns": [
-                { "include": "#comments" },
-                {
-                    "begin": "(?:\\G|^) +(subjects|predicates|when): +",
-                    "beginCaptures": {
-                        "1": { "name": "keyword.control.omt" }
-                    },
-                    "end": "$",
-                    "contentName": "meta.embedded.inline.odt",
-                    "patterns": [{ "include": "source.odt" }]
-                },
-                {
-                    "match": "(?:\\G|^) +(from): *(parent|both)?(.*)$",
-                    "captures": {
-                        "1": { "name": "keyword.control.omt" },
-                        "2": { "name": "constant.language.omt" },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    }
-                },
+                { "include": "#_merge-lists-def" },
                 {
                     "match": "(?:\\G|^) +(use): *(parent|current)?(.*)$",
                     "captures": {
@@ -336,7 +327,7 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(context): *(current)?(.*)$",
+                    "match": "(?:\\G|^) +(context): *(current|parent|both)?(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "name": "constant.language.omt" },
