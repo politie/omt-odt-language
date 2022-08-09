@@ -75,7 +75,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^ +(title): +",
+                    "begin": "^ +(title|onDefaultClose): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
                     },
@@ -568,6 +568,45 @@
                 { "include": "#_params" },
                 { "include": "#prefixes" },
                 { "include": "#_variables" }
+            ]
+        },
+        "_rule-def": {
+            "patterns": [
+                {
+                    "begin": "( +)(\\w+): +(?=[^#\\s])",
+                    "beginCaptures": { "2": { "name": "entity.name.tag.omt" } },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "( +)(\\w+): *(#.*)?",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.tag.omt" },
+                        "3": { "patterns": [{ "include": "#comments" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.payload-property.omt",
+                    "patterns": [
+                        { "include": "#comments" },
+                        {
+                            "begin": "^( +)(query): +",
+                            "beginCaptures": { "2": { "name": "keyword.control.omt" } },
+                            "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                            "contentName": "meta.embedded.inline.odt",
+                            "patterns": [{ "include": "source.odt" }]
+                        },
+                        {
+                            "match": "^ +(strict): +(\\w+) *(.*)$",
+                            "captures": {
+                                "1": { "name": "keyword.control.omt" },
+                                "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                                "3": { "patterns": [{ "include": "#_comments-only" }] }
+                            }
+                        }
+                    ]
+                }
+
             ]
         },
         "_service-def": {
@@ -1068,27 +1107,17 @@
                 { "include": "#_payload-property-def" }
             ]
         },
-        "_kv-odt": {
+        "_kv-ref": {
+            "match": "^ +(\\w+): +(!Ref.*)$",
+            "captures": {
+                "1": { "name": "variable.other.constant.omt" },
+                "2": { "patterns": [{ "include": "#_ref"}]}
+            }
+        },
+        "_kv-rule": {
             "patterns": [
                 { "include": "#comments" },
-                {
-                    "begin": "^( +)(\\w+): *",
-                    "beginCaptures": { "2": { "name": "entity.name.tag.omt" } },
-                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.embedded.inline.odt",
-                    "patterns": [{ "include": "source.odt" }]
-                }
-            ]
-        },
-        "_kv-ref": {
-            "patterns": [
-                {
-                    "match": "^ +(\\w+): +(!Ref.*)$",
-                    "captures": {
-                        "1": { "name": "variable.other.constant.omt" },
-                        "2": { "patterns": [{ "include": "#_ref"}]}
-                    }
-                }
+                { "include": "#_rule-def" }
             ]
         },
         "_li-action": {
@@ -1605,7 +1634,7 @@
             },
             "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
             "contentName": "meta.kv.rules.omt",
-            "patterns": [{ "include": "#_kv-odt" }]
+            "patterns": [{ "include": "#_kv-rule" }]
         },
         "_types": {
             "patterns": [
