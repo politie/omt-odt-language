@@ -61,15 +61,7 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(busyDisabled): *(\\w*)(.*)$",
-                    "captures": {
-                        "1": { "name": "keyword.control.omt" },
-                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    }
-                },
-                {
-                    "match": "(?:\\G|^) +(promoteSubMenuItemToMainMenu): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(busyDisabled|promoteSubMenuItemToMainMenu): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "patterns": [{ "include": "#_boolean-only" }] },
@@ -331,6 +323,58 @@
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "name": "constant.language.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
+        "_notification-action-def": {
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(icon|id): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "(?:\\G|^) +(description|title): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.interpolated.odt",
+                    "patterns": [{ "include": "#_interpolated-odt" }]
+                },
+                {
+                    "begin": "(?:\\G|^) +(disabled|dynamicActionQuery|precondition): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.inline.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "begin": "((?:\\G|^) +)(onSelect|onMarkAsRead|onDelete): *\\|(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.function.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.embedded.block.odt",
+                    "patterns": [{ "include": "source.odt" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(busyDisabled): *(\\w*)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "patterns": [{ "include": "#_boolean-only" }] },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 }
@@ -737,7 +781,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^( +)(bestandstatus|bottomNavigation|dashboard(?:Actions)?|dossier|entitybar|fixed|notifications):(.*)$",
+                    "begin": "^( +)(bestandstatus|bottomNavigation|dashboard(?:Actions)?|fixed):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
@@ -745,6 +789,36 @@
                     "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
                     "contentName": "meta.list.global-actions.omt",
                     "patterns": [{ "include": "#_li-action" }]
+                },
+                {
+                    "begin": "^( +)(dossier):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.dossier.omt",
+                    "patterns": [{ "include": "#_li-dossier-action" }]
+                },
+                {
+                    "begin": "^( +)(entitybar):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.entitybar.omt",
+                    "patterns": [{ "include": "#_li-entitybar-action" }]
+                },
+                {
+                    "begin": "^( +)(notifications):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.notifications.omt",
+                    "patterns": [{ "include": "#_li-notification-action" }]
                 }
             ]
         },
@@ -839,6 +913,39 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.action.omt",
                     "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!DossierAction)(?!!Ref).)*$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.dossier.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!EntitybarAction)(?!!Ref).)*$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.entitybar.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+):(?: +(!NotificationAction)(?!!Ref).)*$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.notification.omt",
+                    "patterns": [{ "include": "#_notification-action-def" }]
                 }
             ]
         },
@@ -971,11 +1078,65 @@
         "_li-action": {
             "patterns": [
                 { "include": "#_list-comment" },
-                { "include": "#_li-ref" },
+                { "include": "#_list-ref" },
+                {
+                    "begin": "^( +)-(?: +(!Action))?(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt"}
+                    },
+                    "contentName": "meta.action.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)-(?: +(!DossierAction))(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt"}
+                    },
+                    "contentName": "meta.action.dossier.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)-(?: +(!EntitybarAction))(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt"}
+                    },
+                    "contentName": "meta.action.entitybar.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)-(?: +(!NotificationAction))(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "beginCaptures": {
+                        "2": { "name": "entity.name.type.omt"}
+                    },
+                    "contentName": "meta.action.notification.omt",
+                    "patterns": [{ "include": "#_notification-action-def" }]
+                }
+            ]
+        },
+        "_li-dossier-action": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                { "include": "#_list-ref" },
                 {
                     "begin": "^( +)-(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.action.omt",
+                    "contentName": "meta.action.dossier.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                }
+            ]
+        },
+        "_li-entitybar-action": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                { "include": "#_list-ref" },
+                {
+                    "begin": "^( +)-(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.entitybar.omt",
                     "patterns": [{ "include": "#_action-def" }]
                 }
             ]
@@ -1033,6 +1194,18 @@
                 }
             ]
         },
+        "_li-notification-action": {
+            "patterns": [
+                { "include": "#_list-comment" },
+                { "include": "#_list-ref" },
+                {
+                    "begin": "^( +)-(?! +!Ref)",
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.notification.omt",
+                    "patterns": [{ "include": "#_notification-action-def" }]
+                }
+            ]
+        },
         "_li-odt": {
             "patterns": [
                 { "include": "#_list-comment" },
@@ -1058,22 +1231,12 @@
         "_li-param": {
             "patterns": [
                 { "include": "#_list-comment" },
-                { "include": "#_li-ref" },
+                { "include": "#_list-ref" },
                 {
                     "begin": "^( +)-(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.param.omt",
                     "patterns": [{ "include": "#_param-def" }]
-                }
-            ]
-        },
-        "_li-ref": {
-            "patterns": [
-                {
-                    "match": "^ +- +(!Ref.*)$",
-                    "captures": {
-                        "1": { "patterns": [{ "include": "#_ref" }] }
-                    }
                 }
             ]
         },
@@ -1115,6 +1278,12 @@
             "match": "^ *([^ -].*)$",
             "captures": {
                 "1": { "patterns": [{ "include": "#_comments-only" }] }
+            }
+        },
+        "_list-ref": {
+            "match": "^ +- +(!Ref.*)$",
+            "captures": {
+                "1": { "patterns": [{ "include": "#_ref" }] }
             }
         },
         "menu": {
@@ -1183,6 +1352,28 @@
                     "patterns": [{ "include": "#_component-def" }]
                 },
                 {
+                    "begin": "^( +)(\\w+): +(!DossierAction)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.dossier.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!EntitybarAction)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.entitybar.omt",
+                    "patterns": [{ "include": "#_action-def" }]
+                },
+                {
                     "begin": "^( +)(\\w+): +(!ForbiddenPredicates)(.*)$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
@@ -1236,6 +1427,17 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.handler.validation.omt",
                     "patterns": [{ "include": "#_merge-validation-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!NotificationAction)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.action.notification.omt",
+                    "patterns": [{ "include": "#_notification-action-def" }]
                 },
                 {
                     "begin": "^( +)(\\w+): +(!Ontology)(.*)$",
