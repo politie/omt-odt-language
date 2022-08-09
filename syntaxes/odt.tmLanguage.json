@@ -36,6 +36,12 @@
                         "1": { "name": "entity.name.function.odt"},
                         "2": { "name": "variable.parameter.flag.odt" }
                     }
+                },
+                {
+                    "match": "\\B[^@][\\w@\\u0100-\\u017f-]+((?:![\\w@\\u0100-\\u017f-]+){0,2})",
+                    "captures": {
+                        "1": { "name": "variable.parameter.flag.odt" }
+                    }
                 }
             ]
         },

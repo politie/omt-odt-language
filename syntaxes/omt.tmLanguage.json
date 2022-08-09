@@ -255,6 +255,22 @@
                 { "include": "#_handlers" }
             ]
         },
+        "_loadable-def":{
+            "patterns": [
+                { "include": "#comments" },
+                {
+                    "match": "(?:\\G|^) +(path|schema): *(\\S+)(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": {
+                            "name": "string.unquoted.omt",
+                            "patterns": [{ "include": "#_escape" }]
+                        },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                }
+            ]
+        },
         "_merge-lists-def": {
             "patterns": [
                 { "include": "#comments" },
@@ -1394,6 +1410,17 @@
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "contentName": "meta.graph-shape-handlers.omt",
                     "patterns": [{ "include": "#_graph-shape-handlers-def" }]
+                },
+                {
+                    "begin": "^( +)(\\w+): +(!Loadable)(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "variable.other.constant.omt" },
+                        "3": { "name": "entity.name.type.omt" },
+                        "4": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
+                    "contentName": "meta.loadable.omt",
+                    "patterns": [{ "include": "#_loadable-def" }]
                 },
                 {
                     "begin": "^( +)(\\w+): +(!MergeLists)(.*)$",
