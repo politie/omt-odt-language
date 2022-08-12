@@ -1,6 +1,6 @@
 # OMT & ODT Language Support README
 
-![CI](https://github.com/emielb/omt-odt-language/workflows/Build%20and%20Test/badge.svg)
+[![CI](https://github.com/politie/omt-odt-language/actions/workflows/build.yml/badge.svg)](https://github.com/politie/omt-odt-language/actions/workflows/build.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/politie/omt-odt-language/badge.svg)](https://snyk.io/test/github/politie/omt-odt-language)
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/pvr.omt-odt-language?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=pvr.omt-odt-language)
 [![GitHub](https://img.shields.io/github/license/politie/omt-odt-language?color=blue)](https://github.com/politie/omt-odt-language/blob/main/LICENSE)
@@ -12,8 +12,6 @@ Like any serious programming language OMT and ODT deserve their own syntax
 highlighting. We gathered the best people in the fields of semantics,
 regular expressions and syntax highlighting coloring psychology. They then
 worked 24/7 for two years to develop this extremely exciting extension.
-
-![now in color](https://media.giphy.com/media/Eym0WtMIAzAu4/giphy.gif "Now in Color!")
 
 ## Features
 
