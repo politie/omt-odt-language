@@ -16,10 +16,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/emielb/omt-odt-language.git"
+        "url": "https://github.com/politie/omt-odt-language.git"
     },
     "bugs": {
-        "url": "https://github.com/emielb/omt-odt-language/issues"
+        "url": "https://github.com/politie/omt-odt-language/issues"
     },
     "engines": {
         "vscode": "^1.43.0"
