@@ -16,10 +16,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/emielb/omt-odt-language.git"
+        "url": "https://github.com/politie/omt-odt-language.git"
     },
     "bugs": {
-        "url": "https://github.com/emielb/omt-odt-language/issues"
+        "url": "https://github.com/politie/omt-odt-language/issues"
     },
     "engines": {
         "vscode": "^1.43.0"
@@ -105,7 +105,9 @@
         "webpack:dev": "npm run clean && webpack --mode none --config ./client/webpack.config.js && webpack --mode none --config ./server/webpack.config.js",
         "compile": "tsc -b",
         "watch": "tsc -b -w",
-        "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.md",
+        "lint": "npm run lint:eslint && npm run lint:md",
+        "lint:eslint": "eslint . --ext .js,.jsx,.ts,.tsx",
+        "lint:md": "markdownlint -c .markdownlint.jsonc .",
         "clean": "rimraf client/out server/out",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "pretest": "npm run compile",
@@ -123,7 +125,7 @@
         "@typescript-eslint/parser": "^5.4.0",
         "chai": "^4.3.4",
         "eslint": "^8.3.0",
-        "eslint-plugin-md": "^1.0.19",
+        "markdownlint-cli": "^0.32.1",
         "merge-options": "^3.0.4",
         "mocha": "^9.1.3",
         "rimraf": "^3.0.2",

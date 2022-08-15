@@ -7,6 +7,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.12.3] - 2022-08-12
+
+### Security
+
+- Replaced `eslint-plugin-md` by `markdownlint-cli` for linting markdown files
+
+### Changed
+
+- Updated links in package.json and README.md
+
+### Removed
+
 ## [2.12.2] - 2022-08-09
 
 ### Added

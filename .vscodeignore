@@ -14,7 +14,8 @@
 .editorconfig
 .eslintignore
 .eslintrc.js
-.markdownlint.json
+.markdownlintignore
+.markdownlint.jsonc
 **/tsconfig.json
 **/*.js
 

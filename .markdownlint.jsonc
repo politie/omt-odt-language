@@ -1,0 +1,14 @@
+{
+    "default": true,
+    "MD013": {
+        // line-length
+        "line_length": 140
+    },
+    "MD030": {
+        // list-marker-space: number of spaces after a list marker
+        "ol_multi": 1,
+        "ol_single": 1,
+        "ul_multi": 1,
+        "ul_single": 1
+    }
+}
