@@ -16,7 +16,7 @@ const newLine = /\r?\n/;
  */
 export default class OmtDocumentInformationProvider {
 
-    private tsConfigFiles = glob.sync('**/tsconfig**.json', {realpath: true});
+    private tsConfigFiles = glob.sync('**/tsconfig**.json', { realpath: true });
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
