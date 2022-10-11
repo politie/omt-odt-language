@@ -7,6 +7,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.12.4] - 2022-10-11
+
+### Fixed
+
+- Solved issue that not all shorthands were found
+
 ## [2.12.3] - 2022-08-12
 
 ### Security
