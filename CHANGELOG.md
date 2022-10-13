@@ -13,6 +13,12 @@ This plugin uses [Semantic versioning](https://semver.org).
 
 - Solved issue that not all shorthands were found
 
+## [2.12.5] - 2022-10-13
+
+## Fixed
+
+- Error when the arrow of DEFINE query/command is placed on a newline
+
 ## [2.12.3] - 2022-08-12
 
 ### Security

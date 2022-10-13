@@ -73,7 +73,7 @@ function findDefinedObjects(value: string, documentText: string, define: string)
     const queriesRegex = new RegExp(`(?<=DEFINE ${define} )([a-zA-Z0-9_-]+)`, "gm");
     const definedQueries = value.match(queriesRegex);
     definedQueries && definedQueries.forEach(q => {
-        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9_-])`, "gm"))
+        const rangeForQuery = findRangeWithRegex(documentText, new RegExp(`(?<=DEFINE ${define} )(${q})(?=[^a-zA-Z0-9_-]| *$)`, "gm"))
         const getParametersRegex = new RegExp(`DEFINE ${define} ${q} *(((?<parameters>.*)))? *=>`, "gm");
         const parameters = getParametersRegex.exec(documentText);
         localDefinedObjects.push({ name: q, range: rangeForQuery, parameters: trimAndSplitParameterString(parameters?.groups?.parameters) })

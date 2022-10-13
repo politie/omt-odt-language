@@ -64,6 +64,24 @@ describe('OmtAvailableObjectsProvider', () => {
             expect(result2.range).to.deep.equal(Range.create({ line: 2, character: 15 }, { line: 2, character: 20 }));
             expect(result2.parameters).to.deep.equal(['$param1', '$param2']);
         });
+
+        it('should return correct object for query multiple lines', () => {
+            // ARRANGE
+            const documentNewLines = [
+                "DEFINE QUERY test",
+                "    => 'Hello world';"
+            ].join("\n");
+
+            // ACT
+            const results = exportedForTesting.findDefinedObjects(documentNewLines, documentNewLines, "QUERY");
+
+            // ASSERT
+            expect(results.length).to.equal(1);
+            const result = results[0];
+            expect(result.name).to.equal('test');
+            expect(result.range).to.deep.equal(testRange);
+            expect(result.parameters).to.deep.equal([]);
+        });
     });
 
     describe('findRangeWithRegex', () => {
@@ -127,13 +145,13 @@ describe('OmtAvailableObjectsProvider', () => {
             expect(results.length).to.equal(3);
             const resultOne = results[0];
             expect(resultOne.name).to.equal("TestActivity");
-            expect(resultOne.range).to.deep.equal({start: {line: 1, character: 4}, end: {line: 1, character: 16}});
+            expect(resultOne.range).to.deep.equal({ start: { line: 1, character: 4 }, end: { line: 1, character: 16 } });
             const resultTwo = results[1];
             expect(resultTwo.name).to.equal("TestProcedure");
-            expect(resultTwo.range).to.deep.equal({start: {line: 3, character: 4}, end: {line: 3, character: 17}});
+            expect(resultTwo.range).to.deep.equal({ start: { line: 3, character: 4 }, end: { line: 3, character: 17 } });
             const resultThree = results[2];
             expect(resultThree.name).to.equal("AnotherTestActivity");
-            expect(resultThree.range).to.deep.equal({start: {line: 5, character: 4}, end: {line: 5, character: 23}});
+            expect(resultThree.range).to.deep.equal({ start: { line: 5, character: 4 }, end: { line: 5, character: 23 } });
         });
         it('should return correct entry with parameters', () => {
             // ARRANGE
@@ -154,7 +172,7 @@ describe('OmtAvailableObjectsProvider', () => {
             expect(results.length).to.equal(1);
             const resultOne = results[0];
             expect(resultOne.name).to.equal("TestActivity");
-            expect(resultOne.range).to.deep.equal({start: {line: 1, character: 4}, end: {line: 1, character: 16}});
+            expect(resultOne.range).to.deep.equal({ start: { line: 1, character: 4 }, end: { line: 1, character: 16 } });
             expect(resultOne.parameters).to.deep.equal(["$paramOne", "$paramTwo"]);
         });
     });
@@ -163,7 +181,7 @@ describe('OmtAvailableObjectsProvider', () => {
         it('should remove parentheses and trim/split', () => {
             // ARRANGE
             const inputValue = "( $param1, $param2)";
-            
+
             // ACT
             const output = exportedForTesting.trimAndSplitParameterString(inputValue);
 
@@ -228,17 +246,17 @@ describe('OmtAvailableObjectsProvider', () => {
             expect(result.definedObjects.length).to.equal(2);
             const definedCommand = result.definedObjects[0];
             expect(definedCommand.name).to.equal("cmd");
-            expect(definedCommand.range).to.deep.equal(Range.create({line: 5, character: 19}, {line: 5, character: 22}));
+            expect(definedCommand.range).to.deep.equal(Range.create({ line: 5, character: 19 }, { line: 5, character: 22 }));
             const definedActivity = result.definedObjects[1];
             expect(definedActivity.name).to.equal("AnotherTestActivity");
-            expect(definedActivity.range).to.deep.equal(Range.create({line: 7, character: 4}, {line: 7, character: 23}));
+            expect(definedActivity.range).to.deep.equal(Range.create({ line: 7, character: 4 }, { line: 7, character: 23 }));
 
             expect(result.availableImports.length).to.equal(2);
             const activityImport = result.availableImports[0];
-            const expectedActivityImport: OmtImport = { name: "File1Activity", url: "@test/file1.omt", fullUrl: "/folder/file1.omt"}
+            const expectedActivityImport: OmtImport = { name: "File1Activity", url: "@test/file1.omt", fullUrl: "/folder/file1.omt" }
             expect(activityImport).to.deep.equal(expectedActivityImport);
             const queryImport = result.availableImports[1];
-            const expectedQueryImport: OmtImport = { name: "file1Query", url: "@test/file1.omt", fullUrl: "/folder/file1.omt"}
+            const expectedQueryImport: OmtImport = { name: "file1Query", url: "@test/file1.omt", fullUrl: "/folder/file1.omt" }
             expect(queryImport).to.deep.equal(expectedQueryImport);
         });
 
