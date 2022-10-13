@@ -43,7 +43,7 @@ function toAbsolutePath(document: TextDocument, link: string): string {
  * Convert the uri to a path to a directory and make sure it does not start with `file://`
  * @param uri path to be made into a dirpath
  */
-function dirpath(uri: string): string {
+export function dirpath(uri: string): string {
     uri = dirname(uri);
     return uri.startsWith('file:') ? uri.substr(7) : uri;
 }

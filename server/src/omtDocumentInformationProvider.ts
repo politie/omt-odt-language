@@ -7,7 +7,7 @@ import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
 import { YAMLError } from 'yaml/util';
 import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
-import { getDiMatch } from './importMatch';
+import { dirpath, getDiMatch } from './importMatch';
 
 const newLine = /\r?\n/;
 
@@ -16,7 +16,7 @@ const newLine = /\r?\n/;
  */
 export default class OmtDocumentInformationProvider {
 
-    private tsConfigFiles = glob.sync('**/tsconfig**.json');
+    private tsConfigFiles = glob.sync('**/tsconfig**.json', { realpath: true });
 
     constructor(private workspaceLookup: WorkspaceLookup) { }
 
@@ -59,9 +59,10 @@ export default class OmtDocumentInformationProvider {
      * @param document the document that needs context.
      */
     private contextPaths(document: TextDocument) {
+        const dirpathValue = dirpath(document.uri);
         return new Map<string, string>(this.tsConfigFiles
             // we need to filter for same parent because another config may have some of the same paths
-            .filter(uri => document.uri.startsWith(uri.substr(0, uri.lastIndexOf('/'))))
+            .filter(uri => dirpathValue.startsWith(uri.substring(0, uri.lastIndexOf('/'))))
             .reduce((paths: [string, string][], uri: string) => {
                 try {
                     const file = readFileSync(uri, 'utf8');
@@ -71,7 +72,7 @@ export default class OmtDocumentInformationProvider {
                         for (const key in json.compilerOptions.paths) {
                             const relPath = json.compilerOptions.paths[key].toString();
                             const newPath = resolve(dirname(uri), relPath);
-                            paths.push([key.substr(0, key.lastIndexOf('/*')), newPath]);
+                            paths.push([key.substring(0, key.lastIndexOf('/*')), newPath]);
                         }
                     }
                 } catch (e) {
