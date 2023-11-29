@@ -22,7 +22,7 @@ export function getDiMatch(uri: string): string | undefined {
  */
 function replaceStart(uri: string, shorthands: Map<string, string>): string {
     shorthands.forEach((value, key) => {
-        if (uri.startsWith(key)) {
+        if (uri.startsWith(key) && key != "") {
             uri = uri.substr(key.length);
             uri = resolve(value.substr(0, osNeutralLastSlashIndex(value)), '.' + uri);
         }
