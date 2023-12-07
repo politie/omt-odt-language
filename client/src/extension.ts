@@ -10,7 +10,7 @@ let client: LanguageClient;
  * That client will in turn start the server with the configuration defined in this function.
  * @param context The `ExtensionContext` instance created by vscode
  */
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(
         join('server', 'out', 'server.js')
@@ -55,7 +55,7 @@ export function activate(context: ExtensionContext) {
     );
 
     // Start the client. This will also launch the server
-    client.start();
+    await client.start();
 
     // register document link provider for OMT files
     Disposable.from(

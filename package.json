@@ -22,7 +22,7 @@
         "url": "https://github.com/politie/omt-odt-language/issues"
     },
     "engines": {
-        "vscode": "^1.43.0"
+        "vscode": "^1.84.2"
     },
     "contributes": {
         "languages": [
@@ -95,10 +95,6 @@
         }
     },
     "main": "./client/out/extension",
-    "activationEvents": [
-        "onLanguage:omt",
-        "onLanguage:odt"
-    ],
     "scripts": {
         "vscode:prepublish": "npm run webpack",
         "webpack": "npm run clean && webpack --mode production --config ./client/webpack.config.js && webpack --mode production --config ./server/webpack.config.js",
@@ -116,26 +112,26 @@
         "coverage-server": "cd server && npm run coverage"
     },
     "devDependencies": {
-        "@types/chai": "^4.2.22",
-        "@types/mocha": "^9.0.0",
-        "@types/node": "^18.6.3",
-        "@types/sinon": "^10.0.6",
-        "@types/sinon-chai": "^3.2.5",
-        "@typescript-eslint/eslint-plugin": "^5.4.0",
-        "@typescript-eslint/parser": "^5.4.0",
-        "chai": "^4.3.4",
-        "eslint": "^8.3.0",
-        "markdownlint-cli": "^0.32.1",
+        "@types/chai": "^4.3.11",
+        "@types/mocha": "^9.1.1",
+        "@types/node": "^18.19.3",
+        "@types/sinon": "^10.0.20",
+        "@types/sinon-chai": "^3.2.12",
+        "@typescript-eslint/eslint-plugin": "^5.62.0",
+        "@typescript-eslint/parser": "^5.62.0",
+        "chai": "^4.3.10",
+        "eslint": "^8.55.0",
+        "markdownlint-cli": "^0.32.2",
         "merge-options": "^3.0.4",
-        "mocha": "^9.1.3",
+        "mocha": "^9.2.2",
         "rimraf": "^3.0.2",
         "sinon": "^12.0.1",
         "sinon-chai": "^3.7.0",
-        "ts-loader": "^9.2.6",
+        "ts-loader": "^9.5.1",
         "ts-node": "^10.9.1",
-        "typescript": "^4.5.2",
-        "webpack": "^5.64.2",
-        "webpack-cli": "^4.9.1"
+        "typescript": "^5.2.2",
+        "webpack": "^5.89.0",
+        "webpack-cli": "^4.10.0"
     },
     "__metadata": {
         "id": "fe53e20e-979c-42b3-8d1d-42a2a3216913",
