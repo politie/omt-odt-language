@@ -72,7 +72,11 @@ export default class OmtDocumentInformationProvider {
                         for (const key in json.compilerOptions.paths) {
                             const relPath = json.compilerOptions.paths[key].toString();
                             const newPath = resolve(dirname(uri), relPath);
-                            paths.push([key.substring(0, key.lastIndexOf('/*')), newPath]);
+                            if (key.lastIndexOf('/*') === -1) {
+                                paths.push([key, newPath]);
+                            } else {
+                                paths.push([key.substring(0, key.lastIndexOf('/*')), newPath]);
+                            }
                         }
                     }
                 } catch (e) {
