@@ -54,6 +54,7 @@ describe('OMTLinkProvider', () => {
             { i: 3, line: 7, start: 5, end: 35, target: resolve('testFixture/one/doubleQuotedShorthand.omt'), should: 'should ignore quotes 2' },
             { i: 4, line: 9, start: 5, end: 32, target: resolve('testFixture/one/@two/siblingShorthanded.omt'), should: 'should not ignore a shorthand from a sibling path' },
             { i: 5, line: 11, start: 5, end: 28, target: resolve('testFixture/three/parentPathed.omt'), should: 'should recognize a shorthand from the tsconfig in a parent project' },
+            { i: 6, line: 13, start: 5, end: 15, target: resolve(''), should: 'should not break other imports when there are imports without an ending /*' },
         ];
 
         // test all cases
