@@ -10,26 +10,27 @@ describe('OMTLinkProvider', () => {
     const docUri = getDocUri('one/imports.omt');
     let sendRequestStub: SinonStub;
 
-    before(async () => {
+    before('set stub', () => {
         sendRequestStub = stub(LanguageClient.prototype, 'sendRequest')
             .resolves([
                 new DocumentLink(toRange(1, 4, 1, 19)),
             ]);
-
-        await activate(docUri);
-        await new Promise(resolve => setTimeout(resolve, 150)); // language client needs some extra startup time apparently
     });
 
-    after(() => {
+    after('cleanup', () => {
         sendRequestStub.restore();
     });
 
-    it('should request documentlinks from the server', () => {
+    it('should request documentlinks from the server', async () => {
         // only test if the omtLinkProvider calls the right server functions
         // and if it is called when the document is loaded
         // the making of the links should be tested for the server
         // and the rendering of the links is the responsibility of vscode
         const requestMethod = "textDocument/documentLink";
+
+        await activate(docUri);
+        await new Promise(resolve => setTimeout(resolve, 1_500)); // language client needs some extra startup time apparently
+
         expect(sendRequestStub).to.be.calledWith(requestMethod, { textDocument: { uri: docUri.toString() } });
     });
 });
