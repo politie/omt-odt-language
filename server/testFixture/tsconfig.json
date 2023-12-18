@@ -4,6 +4,9 @@
         "paths": {
             "@three/*": [
                 "three/*"
+            ],
+            "@four/five": [
+                "four/five/index.omt"
             ]
         }
     }

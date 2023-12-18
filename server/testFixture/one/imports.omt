@@ -11,6 +11,8 @@ import:
     -   siblingShorthanded
     '@three/parentPathed.omt':
     -   parentPathed
+    '@four/five':
+    -   fourFive
 
 model:
     TestActivity: !Activity
