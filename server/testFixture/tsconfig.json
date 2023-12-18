@@ -6,7 +6,7 @@
                 "three/*"
             ],
             "@four/five": [
-                "four/five/index.ts"
+                "four/five/index.omt"
             ]
         }
     }
