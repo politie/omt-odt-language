@@ -19,7 +19,8 @@ describe('importMatch', () => {
         const folder = "/hello/world";
         const dummyTextDocument: TextDocument = TextDocument.create(`${folder}/test.omt`, 'omt', 1, "hello world");
         const shorthands: Map<string, string> = new Map<string, string>([
-            ["@shared", "/src/shared/*"]
+            ["@shared", "/src/shared/*"],
+            ["@hello/world", "/hello/world.omt"],
         ]);
 
         it('should replace shorthands', () => {
@@ -40,6 +41,11 @@ describe('importMatch', () => {
         it('should replace relative path parent folder', () => {
             const result = getUriMatch("../test2.omt", dummyTextDocument, shorthands);
             expect(result).to.equal("/hello/test2.omt");
+        });
+
+        it('should replace shorthands to direct path', () => {
+            const result = getUriMatch("@hello/world", dummyTextDocument, shorthands);
+            expect(result).to.equal("/hello/world.omt");
         });
     });
 });
