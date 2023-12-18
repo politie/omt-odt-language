@@ -23,8 +23,13 @@ export function getDiMatch(uri: string): string | undefined {
 function replaceStart(uri: string, shorthands: Map<string, string>): string {
     shorthands.forEach((value, key) => {
         if (uri.startsWith(key)) {
-            uri = uri.substr(key.length);
-            uri = resolve(value.substr(0, osNeutralLastSlashIndex(value)), '.' + uri);
+            uri = uri.substring(key.length);
+            const lastSlashIndex = osNeutralLastSlashIndex(value);
+            if (lastSlashIndex === -1) {
+                uri = value;
+            } else {
+                uri = resolve(value.substring(0, osNeutralLastSlashIndex(value)), '.' + uri);
+            }
         }
     });
     return uri;
