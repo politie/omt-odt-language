@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.13.3",
+    "version": "2.13.4",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
