@@ -1,6 +1,6 @@
 {
     "name": "omt-odt-language",
-    "version": "2.13.4",
+    "version": "2.13.7",
     "license": "Apache-2.0",
     "displayName": "OMT & ODT",
     "description": "A language extension for the OMT and ODT languages",
@@ -130,7 +130,7 @@
         "ts-loader": "^9.5.1",
         "ts-node": "^10.9.1",
         "typescript": "^5.2.2",
-        "webpack": "^5.89.0",
+        "webpack": "^5.94.0",
         "webpack-cli": "^4.10.0"
     },
     "__metadata": {
