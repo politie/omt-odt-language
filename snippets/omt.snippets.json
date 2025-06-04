@@ -13,25 +13,12 @@
     //     ]
     // }
     // MODULE ENTRY POINT / DOCUMENT CONSTRUCTS
-    "Menu definition": {
-        "prefix": "menu",
-        "description": "Define sections of the application menu.\n\nUse in OMT modules only.",
-        "body": [
-            "menu:",
-            "    ${1:SectionName}:",
-            "    -   title: ${2:Menu item name}",
-            "        icon: ${3:icon}",
-            "        promoteSubMenuItemToMainMenu: ${4:false}",
-            "        onSelect: |",
-            "            ${0:@LOG(`$2`);}"
-        ]
-    },
     "Global actions": {
         "prefix": "global-actions",
         "description": "Define global actions.\n\nUse in OMT modules only.",
         "body": [
             "actions:",
-            "    ${1|dashboard,dossier,notifications,dashboardActions|}:",
+            "    ${1|route,dossier,notifications,routeActions|}:",
             "    -    id: $2",
             "         title: ${3:Action name}",
             "         icon: ${4:Action icon}",
