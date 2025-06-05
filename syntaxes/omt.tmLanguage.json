@@ -11,7 +11,6 @@
         { "include": "#graphs" },
         { "include": "#handlers" },
         { "include": "#import" },
-        { "include": "#menu" },
         { "include": "#model" },
         { "include": "#module-name" },
         { "include": "#on-session-start" },
@@ -61,7 +60,7 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(busyDisabled|promoteSubMenuItemToMainMenu): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(busyDisabled): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "patterns": [{ "include": "#_boolean-only" }] },
@@ -836,13 +835,23 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^( +)(bestandstatus|bottomNavigation|dashboard(?:Actions)?|fixed):(.*)$",
+                    "begin": "^( +)(bestandstatus|bottomNavigation|route(?:Actions)?):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     },
                     "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
                     "contentName": "meta.list.global-actions.omt",
+                    "patterns": [{ "include": "#_li-action" }]
+                },
+                {
+                    "begin": "^( +)(route):(.*)$",
+                    "beginCaptures": {
+                        "2": { "name": "keyword.control.omt" },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    },
+                    "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
+                    "contentName": "meta.list.global-actions.route.omt",
                     "patterns": [{ "include": "#_li-action" }]
                 },
                 {
@@ -1330,28 +1339,6 @@
             "captures": {
                 "1": { "patterns": [{ "include": "#_ref" }] }
             }
-        },
-        "menu": {
-            "begin": "^(menu):(.*)$",
-            "beginCaptures": {
-                "1": { "name": "keyword.control.omt" },
-                "2": { "patterns": [{ "include": "#_comments-only" }] }
-            },
-            "end": "(?=^\\S)",
-            "contentName": "meta.menu.omt",
-            "patterns": [
-                { "include": "#comments" },
-                {
-                    "begin": "^( +)(.+?):(.*)$",
-                    "beginCaptures": {
-                        "2": { "name": "entity.name.tag.omt" },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    },
-                    "end": "(?=^(\\1[^#\\s-]|(?!\\1) *\\S))",
-                    "contentName": "meta.list.menu.omt",
-                    "patterns": [{ "include": "#_li-action" }]
-                }
-            ]
         },
         "model": {
             "begin": "^(model):(.*)$",
