@@ -343,7 +343,7 @@
                 }
             ]
         },
-        "_notification-action-def": {
+        "_system-message-action-def": {
             "patterns": [
                 { "include": "#comments" },
                 {
@@ -835,7 +835,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "begin": "^( +)(bestandstatus|bottomNavigation|route(?:Actions)?):(.*)$",
+                    "begin": "^( +)(bestandstatus|bottomNavigation|route):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
@@ -875,14 +875,14 @@
                     "patterns": [{ "include": "#_li-entitybar-action" }]
                 },
                 {
-                    "begin": "^( +)(notifications):(.*)$",
+                    "begin": "^( +)(systemMessage):(.*)$",
                     "beginCaptures": {
                         "2": { "name": "keyword.control.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     },
                     "end": "(?=^(\\1[^# -]|(?!\\1) *\\S))",
-                    "contentName": "meta.list.global-actions.notifications.omt",
-                    "patterns": [{ "include": "#_li-notification-action" }]
+                    "contentName": "meta.list.global-actions.systemMessage.omt",
+                    "patterns": [{ "include": "#_li-system-message-action" }]
                 }
             ]
         },
@@ -1001,15 +1001,15 @@
                     "patterns": [{ "include": "#_action-def" }]
                 },
                 {
-                    "begin": "^( +)(\\w+):(?: +(!NotificationAction)(?!!Ref).)*$",
+                    "begin": "^( +)(\\w+):(?: +(!SystemMessageAction)(?!!Ref).)*$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
                         "3": { "name": "entity.name.type.omt" },
                         "4": { "patterns": [{ "include": "#_comments-only" }] }
                     },
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.action.notification.omt",
-                    "patterns": [{ "include": "#_notification-action-def" }]
+                    "contentName": "meta.action.systemMessage.omt",
+                    "patterns": [{ "include": "#_system-message-action-def" }]
                 }
             ]
         },
@@ -1161,13 +1161,13 @@
                     "patterns": [{ "include": "#_action-def" }]
                 },
                 {
-                    "begin": "^( +)-(?: +(!NotificationAction))(?! +!Ref)",
+                    "begin": "^( +)-(?: +(!SystemMessageAction))(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
                     "beginCaptures": {
                         "2": { "name": "entity.name.type.omt"}
                     },
-                    "contentName": "meta.action.notification.omt",
-                    "patterns": [{ "include": "#_notification-action-def" }]
+                    "contentName": "meta.action.systemMessage.omt",
+                    "patterns": [{ "include": "#_system-message-action-def" }]
                 }
             ]
         },
@@ -1248,15 +1248,15 @@
                 }
             ]
         },
-        "_li-notification-action": {
+        "_li-system-message-action": {
             "patterns": [
                 { "include": "#_list-comment" },
                 { "include": "#_list-ref" },
                 {
                     "begin": "^( +)-(?! +!Ref)",
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.action.notification.omt",
-                    "patterns": [{ "include": "#_notification-action-def" }]
+                    "contentName": "meta.action.systemMessage.omt",
+                    "patterns": [{ "include": "#_system-message-action-def" }]
                 }
             ]
         },
@@ -1472,15 +1472,15 @@
                     "patterns": [{ "include": "#_merge-validation-def" }]
                 },
                 {
-                    "begin": "^( +)(\\w+): +(!NotificationAction)(.*)$",
+                    "begin": "^( +)(\\w+): +(!SystemMessageAction)(.*)$",
                     "beginCaptures": {
                         "2": { "name": "variable.other.constant.omt" },
                         "3": { "name": "entity.name.type.omt" },
                         "4": { "patterns": [{ "include": "#_comments-only" }] }
                     },
                     "end": "(?=^(\\1\\S|(?!\\1) *\\S))",
-                    "contentName": "meta.action.notification.omt",
-                    "patterns": [{ "include": "#_notification-action-def" }]
+                    "contentName": "meta.action.systemMessage.omt",
+                    "patterns": [{ "include": "#_system-message-action-def" }]
                 },
                 {
                     "begin": "^( +)(\\w+): +(!Ontology)(.*)$",

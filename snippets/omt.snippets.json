@@ -18,7 +18,7 @@
         "description": "Define global actions.\n\nUse in OMT modules only.",
         "body": [
             "actions:",
-            "    ${1|route,dossier,notifications,routeActions|}:",
+            "    ${1|bestandstatus,bottomNavigation,dossier,entitybar,route,systemMessage|}:",
             "    -    id: $2",
             "         title: ${3:Action name}",
             "         icon: ${4:Action icon}",
