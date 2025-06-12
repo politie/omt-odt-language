@@ -347,7 +347,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "match": "(?:\\G|^) +(icon|id): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(id|uuid): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": {
@@ -358,7 +358,7 @@
                     }
                 },
                 {
-                    "begin": "(?:\\G|^) +(description|title): +",
+                    "begin": "(?:\\G|^) +(description|title|detailedDescription|type): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
                     },
@@ -376,7 +376,7 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "begin": "((?:\\G|^) +)(onSelect|onMarkAsRead|onDelete): *\\|(.*)$",
+                    "begin": "((?:\\G|^) +)(onSelect): *\\|(.*)$",
                     "beginCaptures": {
                         "2": { "name": "entity.name.function.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
@@ -386,10 +386,27 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(busyDisabled): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(busyDisabled|blockedIndication|pushmessageIndication): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "patterns": [{ "include": "#_boolean-only" }] },
+                        "3": { "patterns": [{ "include": "#_comments-only" }] }
+                    }
+                },
+                {
+                    "begin": "^ +(lastEditedBy): +",
+                    "beginCaptures": {
+                        "1": { "name": "keyword.control.omt" }
+                    },
+                    "end": "$",
+                    "contentName": "meta.embedded.iri-literal.odt",
+                    "patterns": [{ "include": "source.odt#_iri-literal" }]
+                },
+                {
+                    "match": "(?:\\G|^) +(startDate|endDate): *(\\d{4}-\\d{2}-\\d{2})(.*)$",
+                    "captures": {
+                        "1": { "name": "keyword.control.omt" },
+                        "2": { "name": "constant.numeric.date.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 }
