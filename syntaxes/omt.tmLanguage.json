@@ -367,7 +367,7 @@
                     "patterns": [{ "include": "#_interpolated-odt" }]
                 },
                 {
-                    "begin": "(?:\\G|^) +(blockedIndication|disabled|dynamicActionQuery|endDate|precondition|pushmessageIndication|lastEditedBy|startDate|uuid): +",
+                    "begin": "(?:\\G|^) +(blockedIndication|disabled|dynamicActionQuery|endDate|lastEditedBy|precondition|pushmessageIndication|startDate|uuid): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
                     },
