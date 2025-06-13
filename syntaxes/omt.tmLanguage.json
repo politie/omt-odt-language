@@ -358,7 +358,7 @@
                     }
                 },
                 {
-                    "begin": "(?:\\G|^) +(description|title|detailedDescription|type): +",
+                    "begin": "(?:\\G|^) +(description|detailedDescription|title|type): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
                     },
