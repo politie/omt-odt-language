@@ -347,7 +347,7 @@
             "patterns": [
                 { "include": "#comments" },
                 {
-                    "match": "(?:\\G|^) +(id|uuid): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(icon|id): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": {
@@ -367,7 +367,7 @@
                     "patterns": [{ "include": "#_interpolated-odt" }]
                 },
                 {
-                    "begin": "(?:\\G|^) +(disabled|dynamicActionQuery|precondition): +",
+                    "begin": "(?:\\G|^) +(blockedIndication|disabled|dynamicActionQuery|endDate|precondition|pushmessageIndication|lastEditedBy|startDate|uuid): +",
                     "beginCaptures": {
                         "1": { "name": "keyword.control.omt" }
                     },
@@ -386,27 +386,10 @@
                     "patterns": [{ "include": "source.odt" }]
                 },
                 {
-                    "match": "(?:\\G|^) +(busyDisabled|blockedIndication|pushmessageIndication): *(\\w*)(.*)$",
+                    "match": "(?:\\G|^) +(busyDisabled): *(\\w*)(.*)$",
                     "captures": {
                         "1": { "name": "keyword.control.omt" },
                         "2": { "patterns": [{ "include": "#_boolean-only" }] },
-                        "3": { "patterns": [{ "include": "#_comments-only" }] }
-                    }
-                },
-                {
-                    "begin": "^ +(lastEditedBy): +",
-                    "beginCaptures": {
-                        "1": { "name": "keyword.control.omt" }
-                    },
-                    "end": "$",
-                    "contentName": "meta.embedded.iri-literal.odt",
-                    "patterns": [{ "include": "source.odt#_iri-literal" }]
-                },
-                {
-                    "match": "(?:\\G|^) +(startDate|endDate): *(\\d{4}-\\d{2}-\\d{2})(.*)$",
-                    "captures": {
-                        "1": { "name": "keyword.control.omt" },
-                        "2": { "name": "constant.numeric.date.omt" },
                         "3": { "patterns": [{ "include": "#_comments-only" }] }
                     }
                 }
