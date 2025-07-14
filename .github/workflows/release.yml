@@ -18,7 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # This is a public_repo Github personal access token.
+          # This is a fine-grained Github personal access token
+          # for resource owner "politie" (needs admin approval)
+          # and only repository "politie/omt-odt-language"
+          # with the following "Repository permissions":
+          # - "Contents" (Access: Read and write),
+          # - "Metadata" (Access: Read-only, this is mandatory).
           token: ${{ secrets.WORKFLOW_GITHUB_TOKEN }}
 
       - name: Bump version
@@ -54,7 +59,9 @@ jobs:
         run: npm run test-server && npm run lint
 
       - name: Release on Marketplace
-        # This is a Marketplace (Manage) Azure DevOps personal access token. Choose "All accessible organizations"!
+        # This is a Azure DevOps personal access token
+        # for "All accessible organizations"
+        # with "Marketplace" permission "Manage".
         run: npx @vscode/vsce publish -p ${{ secrets.MARKETPLACE_TOKEN }} --no-git-tag-version
 
       - name: Release on Github
