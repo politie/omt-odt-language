@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import { glob } from 'glob';
 import { WorkspaceLookup } from './workspaceLookup';
 import { DeclaredImportLinkData, isDeclaredImportLinkData, OmtAvailableObjects, OmtDocumentInformation, OmtImport, OmtLocalObject } from './types';
-import { YAMLError } from 'yaml/util';
+import { YAMLError } from 'yaml';
 import { getAvailableObjectsFromDocument } from './omtAvailableObjectsProvider';
 import { dirpath, getDiMatch } from './importMatch';
 
