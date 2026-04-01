@@ -7,6 +7,28 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations
 on how to structure this file.
 This plugin uses [Semantic versioning](https://semver.org).
 
+## [2.15.0] - 2026-04-01
+
+### Added
+
+- Code folding for ODT and OMT using `# region` and `# endregion`
+
+## [2.14.0] - 2025-06-13
+
+### Added
+
+- route global actions in OMT
+
+### Removed
+
+- menu definition in OMT
+
+## [2.13.2] - 2023-12-18
+
+### Fixed
+
+- Bug where tsconfig paths were not handled correctly
+
 ## [2.12.5] - 2022-10-13
 
 ## Fixed
