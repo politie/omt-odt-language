@@ -38,5 +38,11 @@
         "increaseIndentPattern": "^((?!(\\/\\/|#|\\/\\*)).|\\/\\*.*?\\*\\/)*(\\{[^}\\\"'`]*|\\([^)\\\"'`]*|\\[[^\\]\\\"'`]*)$",
         // starts with (optionally a block comment end, and) a closing bracket
         "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[)}\\]].*$"
+    },
+    "folding": {
+        "markers": {
+            "start": "^\\s*# region\\b",
+            "end": "^\\s*# endregion\\b"
+        }
     }
 }
